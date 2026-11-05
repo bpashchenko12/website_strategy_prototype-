@@ -30,7 +30,7 @@
       s.comments = s.comments.concat(op.comments);
       Object.keys(op.votes || {}).forEach(function (k) { s.votes[k] = Object.assign(s.votes[k] || {}, op.votes[k]); });
     } else if (op.type === 'reset') {
-      s = { votes: {}, comments: [] };
+      s = { votes: {}, comments: [], seeded: s.seeded };
     }
     return s;
   }
@@ -41,6 +41,19 @@
 
   function fetchJSON(url, opts) {
     return fetch(url, opts).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  }
+
+  // Static hosting: merge the shipped baseline feedback (data/seed.json) once per browser.
+  function applySeed() {
+    if (S.state.seeded) return Promise.resolve();
+    return fetchJSON(XMStore.apiBase + 'data/seed.json').then(function (seed) {
+      var s = loadLocal(), have = {};
+      s.comments = s.comments || []; s.votes = s.votes || {};
+      s.comments.forEach(function (c) { have[c.id] = 1; });
+      (seed.comments || []).forEach(function (c) { if (!have[c.id]) s.comments.push(c); });
+      Object.keys(seed.votes || {}).forEach(function (k) { s.votes[k] = Object.assign({}, seed.votes[k], s.votes[k] || {}); });
+      s.seeded = 1; saveLocal(s); S.state = s;
+    }).catch(function () {});
   }
 
   function pull() {
@@ -84,6 +97,7 @@
       var tryApi = location.protocol.indexOf('http') === 0;
       var p = tryApi ? fetchJSON(XMStore.apiBase + 'api/state') : Promise.reject();
       return p.then(function (st) { S.mode = 'api'; S.state = st; }, function () { S.mode = 'local'; S.state = loadLocal(); })
+        .then(function () { return S.mode === 'local' ? applySeed() : null; })
         .then(function () {
           emit();
           setInterval(pull, 4000);

@@ -1,0 +1,254 @@
+{
+ "votes": {
+  "11": {
+   "fb-kotoe": {
+    "name": "Kotoe",
+    "role": "Regional Marketing Manager",
+    "ts": 1793893838199
+   }
+  }
+ },
+ "comments": [
+  {
+   "id": "fb00",
+   "idea": "01",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793892764082,
+   "text": "Wave 1: I support all proposed initiatives, with the homepage as our first priority. Start with essential content to reduce complexity and improve the experience, then expand based on evidence. The remaining initiatives appear manageable for our design team within a short timeframe."
+  },
+  {
+   "id": "fb01",
+   "idea": "02",
+   "type": "suggestion",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793892824082,
+   "text": "Prioritise registration testing. A/B test the two concepts prepared before launch: the simple form and the version with selling points in Figma, allowing time to refine version B further before testing. Given the volume of traffic landing directly on registration, we should also test closer alignment between the ad messaging and the registration page. XM's progressive registration suggests a similar direction. I recommend prioritising these improvements ahead of the eventual PWA registration experience."
+  },
+  {
+   "id": "fb02",
+   "idea": "02",
+   "type": "suggestion",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793892884082,
+   "text": "Add clear bonus messaging to the registration journey while keeping the focus on user experience. Our Propeller ads currently direct users only to the registration page, so improving this page could help us make better use of our advertising spend and increase registration and verification rates."
+  },
+  {
+   "id": "fb03",
+   "idea": "05",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793892944082,
+   "text": "I agree with prioritising \"Onboarding: registered users reach the PWA and start trading.\" Guiding users from register success through first PWA login to verification and first deposit is important because it can improve the validation ratio and reduce the biggest drop-off in the current funnel. I also agree with the proposed Wave 1 onboarding initiatives."
+  },
+  {
+   "id": "fb04",
+   "idea": "09",
+   "type": "comment",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793893004082,
+   "text": "Interactive Portal demo: a valuable opportunity to demonstrate the product before registration. We should define the scope and level of interaction upfront."
+  },
+  {
+   "id": "fb05",
+   "idea": "09",
+   "type": "suggestion",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793893064082,
+   "text": "Extend the demo XMTrading portal into a campaign. Explore a guided, playable ad that introduces a few key interactions in the Portal or XMTD Trader Pro app, subject to development feasibility."
+  },
+  {
+   "id": "fb06",
+   "idea": "09",
+   "type": "concern",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793893124082,
+   "text": "I would deprioritise \"Try XMTrading Portal without an account.\" It may be useful later, but it is less urgent than improving the journey for registered users who still need to verify, deposit and start trading."
+  },
+  {
+   "id": "fb07",
+   "idea": "10",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793893184082,
+   "text": "I support the Getting-started hub and try-the-platforms page as acquisition content, and the Wave 2 \"Getting-started hub\" initiative."
+  },
+  {
+   "id": "fb08",
+   "idea": "11",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793893244082,
+   "text": "Instrument pages: a strong opportunity to improve SEO and attract relevant organic traffic."
+  },
+  {
+   "id": "fb09",
+   "idea": "11",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793893304082,
+   "text": "I support \"Instrument subpages\" for SEO and PPC, and agree with the Wave 2 placement."
+  },
+  {
+   "id": "fb11",
+   "idea": "12",
+   "type": "concern",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793893424082,
+   "text": "\"Retention: bring back traders who have not logged in for a long time\" is not our immediate priority and could be postponed until the onboarding and verification journey is improved."
+  },
+  {
+   "id": "fb12",
+   "idea": "15",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793893484082,
+   "text": "Learn-to-earn builds on the positive contribution we have seen from learning to conversion, with potential to support first deposits."
+  },
+  {
+   "id": "fb13",
+   "idea": "15",
+   "type": "suggestion",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793893544082,
+   "text": "Explore learn-to-earn in Wave 2. Align it with the getting-started hub and test whether it helps NRCs become NDCs. Earlier testing would establish its contribution before a broader rollout."
+  },
+  {
+   "id": "fb14",
+   "idea": "15",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-despoina",
+    "name": "Despoina",
+    "role": "Lead BI",
+    "color": "#0b7285"
+   },
+   "ts": 1793893604082,
+   "text": "I support Learn-to-earn as an acquisition hook. It could also be used in paid advertising."
+  },
+  {
+   "id": "fb15",
+   "idea": "17",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "author": {
+    "id": "fb-marios",
+    "name": "Marios",
+    "role": "Head of Design",
+    "color": "#8a3fd1"
+   },
+   "ts": 1793893664082,
+   "text": "XMTD MCP: a promising initiative to retain in the longer-term roadmap."
+  },
+  {
+   "id": "fb10",
+   "idea": "11",
+   "type": "approve",
+   "parent": null,
+   "pin": null,
+   "ts": 1793893739722,
+   "author": {
+    "id": "fb-kotoe",
+    "name": "Kotoe",
+    "role": "Regional Marketing Manager",
+    "color": "#d6336c"
+   },
+   "text": "I like the instrument pages idea.",
+   "resolved": false
+  }
+ ]
+}
