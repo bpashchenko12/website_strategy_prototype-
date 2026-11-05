@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trade ideas hub: top gainers, top losers and trade ideas · XMTrading</title>
+<meta name="description" content="Top gainers and top losers across forex, metals, indices, stocks and crypto, next to trade ideas from XMTrading analysts. Illustrative prototype content.">
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 08 · Trade ideas hub
+   One landing page that combines what is moving (top gainers, top losers) with a preview of trade ideas.
+   Data comes from XM.INSTR and is illustrative. Rows open the instrument page (idea 11).
+   ===================================================================== */
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+button { border: 0; background: none; }
+[data-ic] { display: inline-flex; } [data-ic] svg { width: 16px; height: 16px; }
+.xm-hdr { background: rgba(245, 245, 245, .92); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 64px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.num { font-variant-numeric: tabular-nums; }
+:where(button, a, input, [tabindex]):focus-visible { outline: 2px solid var(--g); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+.hd { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: center; padding: 32px 0 0; }
+.hd h1 { font-size: clamp(28px, 3.6vw, 44px); line-height: 1.08; font-weight: 700; letter-spacing: -.03em; margin-top: 10px; max-width: 18ch; animation: fadeUp .7s both; }
+.hd .lead { margin-top: 12px; max-width: 54ch; animation: fadeUp .7s .08s both; }
+.hd .eyebrow { animation: fadeUp .6s both; }
+.pulse { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 20px 22px; box-shadow: 0 24px 60px -40px rgba(16, 24, 40, .3); animation: fadeUp .8s .12s both; }
+.pulse .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; }
+.live { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 500; color: var(--mut); }
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--up); box-shadow: 0 0 0 0 rgba(18, 165, 106, .5); animation: ping 1.8s infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 7px rgba(18, 165, 106, 0); } 100% { box-shadow: 0 0 0 0 rgba(18, 165, 106, 0); } }
+.breadth { display: flex; height: 12px; border-radius: 8px; overflow: hidden; margin: 14px 0 8px; background: var(--red); }
+.breadth i { display: block; background: var(--up); width: 0; transition: width .9s cubic-bezier(.2, .7, .2, 1); }
+.bl { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; }
+.pk { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.pk a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--bg); transition: background .15s; min-width: 0; }
+.pk a:hover { background: var(--soft); }
+.pk small { display: block; font-size: 11px; color: var(--mut); }
+.pk b { display: block; font-size: 14px; font-weight: 600; line-height: 1.2; white-space: nowrap; }
+.pk span.v { margin-left: auto; font-size: 13px; font-weight: 700; }
+
+/* ---------- sections ---------- */
+.sec { margin-top: 44px; }
+.sec-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.sec-h h2 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.sec-h p { color: var(--mut); font-size: 13.5px; margin-top: 3px; }
+.tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; max-width: 100%; }
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: #fff; border: 1px solid var(--line); border-radius: 999px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
+.seg button { padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--mut); transition: all .15s; white-space: nowrap; }
+.seg button:hover { color: var(--ink); }
+.seg button.on { background: var(--ink); color: #fff; font-weight: 600; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding: 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { flex: none; padding: 8px 14px; border-radius: 999px; background: #fff; border: 1.5px solid var(--line); font-weight: 600; font-size: 13px; transition: .15s; }
+.chips button:hover { border-color: var(--line-2); }
+.chips button.on { background: var(--g); border-color: var(--g); color: #fff; }
+
+/* movers */
+.mg { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.mc { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 8px 10px 10px; box-shadow: 0 24px 60px -44px rgba(16, 24, 40, .3); }
+.mc-h { display: flex; align-items: center; gap: 12px; padding: 14px 14px 10px; }
+.mc-h .mi { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; flex: none; }
+.mc-h .mi svg { width: 18px; height: 18px; }
+.mc.g .mi { background: rgba(18, 165, 106, .12); color: var(--up); }
+.mc.l .mi { background: rgba(229, 55, 63, .1); color: var(--dn); }
+.mc-h b { font-size: 17px; font-weight: 700; letter-spacing: -.01em; display: block; line-height: 1.2; }
+.mc-h small { color: var(--mut); font-size: 12px; }
+.mc-h .all { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--g); white-space: nowrap; padding: 6px 4px; }
+.mc-h .all:hover { text-decoration: underline; }
+.mv { display: grid; grid-template-columns: 22px 38px minmax(0, 1fr) 88px 112px; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 14px; transition: background .15s; }
+.mv:hover { background: var(--bg); }
+.mv .rk { font-size: 12px; font-weight: 600; color: var(--mut); text-align: center; }
+.mv .nm b { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.2; }
+.mv .nm small { display: block; font-size: 12px; color: var(--mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mv .sp svg { display: block; width: 88px; height: 28px; }
+.mv .pr { text-align: right; }
+.mv .pr b { display: block; width: fit-content; margin: 0 -4px 0 auto; padding: 0 4px; font-size: 14px; font-weight: 600; border-radius: 6px; transition: background .6s; }
+.mv .pr b.f-up { background: rgba(18, 165, 106, .2); transition: none; }
+.mv .pr b.f-dn { background: rgba(229, 55, 63, .18); transition: none; }
+.mv .pr .chg { display: table; margin: 2px 0 0 auto; font-size: 12.5px; font-weight: 700; padding: 1px 7px; border-radius: 6px; }
+.mv .pr .chg.up { background: rgba(18, 165, 106, .1); } .mv .pr .chg.dn { background: rgba(229, 55, 63, .09); }
+.none { padding: 26px 16px; color: var(--mut); font-size: 14px; text-align: center; }
+
+/* trade ideas */
+.ig { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.idea { position: relative; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: 18px; box-shadow: 0 24px 60px -46px rgba(16, 24, 40, .3); transition: transform .2s, box-shadow .2s; }
+.idea:hover { transform: translateY(-3px); box-shadow: var(--sh-m); }
+.ic-h { display: flex; align-items: center; gap: 10px; }
+.ic-h b { display: block; font-size: 15px; line-height: 1.2; } .ic-h small { display: block; color: var(--mut); font-size: 12px; }
+.dir { margin-left: auto; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+.dir.long { background: rgba(18, 165, 106, .12); color: #0b7a4e; } .dir.short { background: rgba(229, 55, 63, .1); color: #c0262e; }
+.idea h3 { margin-top: 14px; font-size: 16.5px; line-height: 1.3; font-weight: 700; letter-spacing: -.01em; }
+.idea p { margin-top: 6px; font-size: 13px; line-height: 1.55; color: var(--ink-2); }
+.gt { position: relative; margin: 14px 0; border-radius: 14px; overflow: hidden; }
+.gt .ch { display: block; width: 100%; height: auto; background: var(--bg); border-radius: 14px; }
+.lv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.lv div { padding: 8px 10px; border-radius: 10px; background: var(--bg); }
+.lv small { display: block; font-size: 11px; color: var(--mut); }
+.lv b { font-size: 13px; font-weight: 600; display: block; }
+.lv .t b { color: var(--up); } .lv .s b { color: var(--dn); }
+.gt-in { transition: filter .2s; }
+.idea.lk .gt-in { filter: blur(6px); opacity: .75; user-select: none; pointer-events: none; }
+.idea:not(.lk) .lv b { filter: blur(6px); user-select: none; }
+.lvh { display: block; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--g-d); text-decoration: none; }
+.lvh:hover { text-decoration: underline; }
+.lkb { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 10px; background: rgba(255, 255, 255, .5); border-radius: 14px; }
+.lkb svg { width: 20px; height: 20px; color: var(--ink); }
+.lkb span { font-size: 12.5px; font-weight: 600; line-height: 1.35; max-width: 18ch; }
+.lkb .btn { padding: 7px 16px; font-size: 12.5px; }
+.ic-f { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--mut); }
+.idea .ic-f .btn { padding: 8px 14px; font-size: 13px; }
+.more { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 18px; padding: 18px 22px; border-radius: var(--r-l); background: #fff; border: 1px solid var(--line); }
+.more b { font-size: 15px; font-weight: 600; } .more small { display: block; color: var(--mut); font-size: 13px; margin-top: 2px; }
+.more .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* wiring strip */
+.wire { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.wc { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: 20px; }
+.wc .ic2 { width: 38px; height: 38px; border-radius: 12px; background: var(--g-l); color: var(--g); display: grid; place-items: center; }
+.wc .ic2 svg { width: 19px; height: 19px; }
+.wc b { display: block; margin-top: 12px; font-size: 15px; font-weight: 600; }
+.wc p { margin-top: 5px; font-size: 13px; line-height: 1.55; color: var(--mut); }
+.disc { margin-top: 22px; font-size: 12px; color: var(--mut); line-height: 1.6; }
+
+@media (max-width: 1100px) {
+  .ig { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mg { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .hd { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 24px; }
+  .wire { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 14px; }
+  .mv { grid-template-columns: 38px minmax(0, 1fr) 104px; gap: 10px; padding: 10px 8px; }
+  .mv .rk, .mv .sp { display: none; }
+  .ig { grid-template-columns: minmax(0, 1fr); }
+  .pk { grid-template-columns: minmax(0, 1fr); }
+  .xm-lang, .hdr-login { display: none; }
+  .tools { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Learn & Research"></div>
+
+<main class="wrap">
+  <!-- ===== header + market pulse ===== -->
+  <section class="hd">
+    <div>
+      <span class="eyebrow">Idea 08 &middot; Content hub</span>
+      <h1>See what is moving, then act on it.</h1>
+      <p class="lead">One page for the day's top gainers and top losers, with trade ideas from our analysts beside them. Every row opens the instrument page with the ticket ready.</p>
+    </div>
+    <div class="pulse" aria-label="Market breadth">
+      <div class="top"><span>Market breadth today</span><span class="live"><i></i>Live, illustrative</span></div>
+      <div class="breadth" aria-hidden="true"><i id="brUp"></i></div>
+      <div class="bl"><span class="up" id="brUpT"></span><span class="dn" id="brDnT"></span></div>
+      <div class="pk" id="pk"></div>
+    </div>
+  </section>
+
+  <!-- ===== top movers ===== -->
+  <section class="sec" id="movers" aria-label="Top gainers and top losers">
+    <div class="sec-h">
+      <div><h2>Top movers</h2><p id="mvSub">Biggest changes since the market open</p></div>
+      <div class="tools">
+        <div class="seg" role="group" aria-label="Period" id="win">
+          <button type="button" class="on" data-w="1D">Today</button><button type="button" data-w="1W">1 week</button><button type="button" data-w="1M">1 month</button>
+        </div>
+        <div class="chips" role="group" aria-label="Market" id="cls"></div>
+      </div>
+    </div>
+    <div class="mg">
+      <div class="mc g"><div class="mc-h"><span class="mi" data-ic="chart"></span><div><b>Top gainers</b><small id="gSub"></small></div><a class="all" href="#" data-soon>View all</a></div><div id="gain"></div></div>
+      <div class="mc l"><div class="mc-h"><span class="mi" data-ic="chart" style="transform:scaleY(-1)"></span><div><b>Top losers</b><small id="lSub"></small></div><a class="all" href="#" data-soon>View all</a></div><div id="lose"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== trade ideas preview ===== -->
+  <section class="sec" id="ideas" aria-label="Trade ideas preview">
+    <div class="sec-h">
+      <div><h2>Trade ideas</h2><p>Preview of the latest ideas from XM Research. Entry, stop and target prices are blurred until you register.</p></div>
+      <a class="btn btn-outline btn-sm" href="#" data-soon>See all trade ideas</a>
+    </div>
+    <div class="ig" id="ig"></div>
+    <div class="more">
+      <div><b>Get new trade ideas as they are published</b><small>Free alerts by web push, email or LINE. Pick the markets you follow.</small></div>
+      <div class="acts"><a class="btn btn-primary" href="#" id="alertBtn"><span data-ic="bell"></span>Set up alerts</a></div>
+    </div>
+  </section>
+
+  <!-- ===== how it is wired ===== -->
+  <section class="sec" aria-label="How the hub works">
+    <div class="wire">
+      <div class="wc"><span class="ic2" data-ic="search"></span><b>A destination in its own right</b><p>One URL under Learn &amp; Research, linked from the menu, the homepage and every instrument page. Searchers for "top gainers" or "trade ideas" land here.</p></div>
+      <div class="wc"><span class="ic2" data-ic="bolt"></span><b>Every row leads to a ticket</b><p>Movers and ideas open the instrument page (idea 11) for that market, price and order ticket included. No dead ends.</p></div>
+      <div class="wc"><span class="ic2" data-ic="lock"></span><b>Depth sits behind a free account</b><p>Every idea shows the view and the chart, but entry, stop and target prices are blurred. The first ideas stay open otherwise; the rest unlock after registration. Market data on the page is not hidden.</p></div>
+    </div>
+    <p class="disc">All prices, changes and trade ideas on this page are illustrative placeholders for a strategy prototype, not live data, research or investment advice. CFDs are leveraged products and carry a high risk of losing money rapidly.</p>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = XM.$, $$ = XM.$$, esc = XM.esc, fmt = XM.fmt, I = XM.INSTR;
+  $$('[data-ic]').forEach(function (n) { n.innerHTML = XM.icon(n.getAttribute('data-ic')); });
+
+  /* ---------- deterministic helpers ---------- */
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function lbl(s) { return s.replace(/Cash$/, ''); }
+  function pct(v, p) { return (v >= 0 ? '+' : '-') + Math.abs(v).toFixed(p == null ? 2 : p) + '%'; }
+  function go(sym) { return XM.url('ideas/11-instrument/index.html?s=' + encodeURIComponent(sym)); }
+
+  /* ---------- state ---------- */
+  var S = {}; I.forEach(function (i) { S[i.s] = { i: i, p: i.p, open: i.p / (1 + i.chg / 100) }; });
+  var WINS = { '1D': 'since the open', '1W': 'over the last 7 days', '1M': 'over the last 30 days' };
+  var win = '1D', cls = 'All';
+  var PER = {}; ['1W', '1M'].forEach(function (w) {
+    PER[w] = {}; I.forEach(function (i) { var r = rng(hash(i.s + w))() * 2 - 1; PER[w][i.s] = w === '1W' ? i.chg * 1.6 + r * 3 : i.chg * 2.2 + r * 8; });
+  });
+  function chg(s) { return win === '1D' ? (S[s].p / S[s].open - 1) * 100 : PER[win][s]; }
+
+  /* ---------- pulse ---------- */
+  function paintPulse() {
+    var up = 0, dn = 0, best = null, worst = null;
+    I.forEach(function (i) { var c = (S[i.s].p / S[i.s].open - 1) * 100; if (c >= 0) up++; else dn++; if (!best || c > best.c) best = { s: i.s, c: c }; if (!worst || c < worst.c) worst = { s: i.s, c: c }; });
+    $('#brUp').style.width = (up / (up + dn) * 100) + '%';
+    $('#brUpT').textContent = up + ' rising'; $('#brDnT').textContent = dn + ' falling';
+    function pk(x, t, cl) { var i = S[x.s].i; return '<a href="' + go(x.s) + '">' + XM.logoChip(i, 30) + '<span><small>' + t + '</small><b>' + esc(lbl(x.s)) + '</b></span><span class="v num ' + cl + '">' + pct(x.c) + '</span></a>'; }
+    $('#pk').innerHTML = pk(best, 'Biggest gainer', 'up') + pk(worst, 'Biggest loser', 'dn');
+  }
+
+  /* ---------- movers ---------- */
+  function spark(sym) {
+    var r = rng(hash('sp' + sym + win)), n = 28, end = S[sym].p, c = chg(sym) / 100, start = end / (1 + c), a = [], amp = Math.max(Math.abs(end - start), end * .004) * .6;
+    for (var k = 0; k < n; k++) { var t = k / (n - 1); a.push(start + (end - start) * t + (r() - .5) * amp * Math.sin(Math.PI * t)); }
+    a[n - 1] = end; return a;
+  }
+  function row(sym, n) {
+    var i = S[sym].i, c = chg(sym), up = c >= 0;
+    return '<a class="mv" href="' + go(sym) + '" data-s="' + sym + '"><span class="rk">' + n + '</span>' + XM.logoChip(i, 38) +
+      '<span class="nm"><b>' + esc(lbl(sym)) + '</b><small>' + esc(i.n) + ' &middot; ' + i.cls + '</small></span>' +
+      '<span class="sp">' + XM.sparkline(spark(sym), 88, 28, up ? '#12a56a' : '#e5373f') + '</span>' +
+      '<span class="pr num"><b data-p="' + sym + '">' + fmt(S[sym].p, i.d) + '</b><span class="chg ' + (up ? 'up' : 'dn') + '" data-c="' + sym + '">' + pct(c) + '</span></span></a>';
+  }
+  function renderMovers() {
+    var list = I.filter(function (i) { return cls === 'All' || i.cls === cls; }).map(function (i) { return i.s; });
+    list.sort(function (a, b) { return chg(b) - chg(a); });
+    var n = Math.min(5, Math.floor(list.length / 2)), gain = list.slice(0, n), lose = list.slice(-n).reverse();
+    $('#gain').innerHTML = n ? gain.map(function (s, k) { return row(s, k + 1); }).join('') : '<div class="none">Not enough markets in this group.</div>';
+    $('#lose').innerHTML = n ? lose.map(function (s, k) { return row(s, k + 1); }).join('') : '<div class="none">Not enough markets in this group.</div>';
+    var w = WINS[win];
+    $('#gSub').textContent = 'Biggest rises ' + w; $('#lSub').textContent = 'Biggest falls ' + w;
+    $('#mvSub').textContent = (cls === 'All' ? 'All markets' : cls) + ' \u00b7 ' + w;
+  }
+  var classes = ['All']; I.forEach(function (i) { if (classes.indexOf(i.cls) < 0) classes.push(i.cls); });
+  $('#cls').innerHTML = classes.map(function (c) { return '<button type="button" data-k="' + c + '" class="' + (c === cls ? 'on' : '') + '" aria-pressed="' + (c === cls) + '">' + c + '</button>'; }).join('');
+  $('#cls').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-k]'); if (!b) return; cls = b.getAttribute('data-k');
+    $$('#cls button').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); }); renderMovers();
+  });
+  $('#win').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-w]'); if (!b) return; win = b.getAttribute('data-w');
+    $$('#win button').forEach(function (x) { x.classList.toggle('on', x === b); }); renderMovers();
+  });
+
+  /* ---------- trade ideas ---------- */
+  var IDEAS = [
+    { s: 'NVDA', dir: 'long', tf: '1D', ago: '1 h ago', stop: .035, tgt: .075, t: 'NVIDIA leads the stock gainers', x: 'The strongest move on the board today. A hold above the breakout level keeps the trend intact.' },
+    { s: 'SILVER', dir: 'long', tf: '4H', ago: '3 h ago', stop: .03, tgt: .06, t: 'Silver tries to stabilise after a 5% drop', x: 'Selling looks stretched near the last support. A bounce is the base case while price holds.' },
+    { s: 'EURUSD', dir: 'short', tf: '4H', ago: '5 h ago', stop: .0045, tgt: .0095, t: 'Euro stays heavy below resistance', x: 'Rallies keep stalling at the same zone. Sellers stay in control while the pair is below it.' },
+    { s: 'BTCUSD', dir: 'short', tf: '1D', ago: 'Yesterday', stop: .04, tgt: .09, t: 'Bitcoin loses momentum after a failed bounce', x: 'Lower highs on the daily chart point to more downside if the last low breaks.' }
+  ];
+  function ideaChart(it, e, st, tg) {
+    var r = rng(hash('ic' + it.s)), n = 40, W = 300, H = 112, a = [], i = S[it.s].i, vol = Math.max(Math.abs(tg - e), Math.abs(e - st)) * .35, drift = it.dir === 'long' ? -1 : 1, p = e - drift * vol * 2.2;
+    for (var k = 0; k < n; k++) { p += (r() - .5) * vol * 1.2 + drift * vol * .1; a.push(p); }
+    var shift = e - a[n - 1]; a = a.map(function (v) { return v + shift; });
+    var lo = Math.min(st, tg, Math.min.apply(0, a)), hi = Math.max(st, tg, Math.max.apply(0, a)), pad = (hi - lo) * .08; lo -= pad; hi += pad;
+    var Y = function (v) { return (H - (v - lo) / (hi - lo) * H).toFixed(1); }, X = function (k) { return (k / (n - 1) * (W - 64)).toFixed(1); };
+    var pts = a.map(function (v, k) { return X(k) + ',' + Y(v); }).join(' '), ye = Y(e), ys = Y(st), yt = Y(tg), x1 = W - 60;
+    var up = it.dir === 'long';
+    return '<svg class="ch" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(lbl(it.s)) + ' chart with entry, stop and target">' +
+      '<rect x="0" y="' + Math.min(ye, yt) + '" width="' + x1 + '" height="' + Math.abs(yt - ye).toFixed(1) + '" fill="rgba(18,165,106,.12)"/>' +
+      '<rect x="0" y="' + Math.min(ye, ys) + '" width="' + x1 + '" height="' + Math.abs(ys - ye).toFixed(1) + '" fill="rgba(229,55,63,.1)"/>' +
+      '<line x1="0" x2="' + x1 + '" y1="' + yt + '" y2="' + yt + '" stroke="#12a56a" stroke-dasharray="4 3"/><line x1="0" x2="' + x1 + '" y1="' + ys + '" y2="' + ys + '" stroke="#e5373f" stroke-dasharray="4 3"/>' +
+      '<polyline fill="none" stroke="#1d2024" stroke-width="1.8" stroke-linejoin="round" points="' + pts + '"/><circle cx="' + X(n - 1) + '" cy="' + ye + '" r="3.6" fill="#1d2024"/>' +
+      '<text x="' + (x1 + 6) + '" y="' + (+yt + (up ? 10 : -2)) + '" font-size="9.5" font-weight="600" fill="#0b7a4e">Target</text>' +
+      '<text x="' + (x1 + 6) + '" y="' + (+ys + (up ? -2 : 10)) + '" font-size="9.5" font-weight="600" fill="#c0262e">Stop</text>' +
+      '<text x="' + (x1 + 6) + '" y="' + (+ye + 3) + '" font-size="9.5" font-weight="600" fill="#1d2024">Entry</text></svg>';
+  }
+  function ideaCard(it, k) {
+    var i = S[it.s].i, e = i.p, long = it.dir === 'long', st = e * (1 + (long ? -it.stop : it.stop)), tg = e * (1 + (long ? it.tgt : -it.tgt)), rr = (it.tgt / it.stop).toFixed(1), locked = k >= 2;
+    return '<article class="idea' + (locked ? ' lk' : '') + '"><div class="ic-h">' + XM.logoChip(i, 34) + '<div><b>' + esc(lbl(it.s)) + '</b><small>' + esc(i.n) + '</small></div><span class="dir ' + it.dir + '">' + (long ? 'Long' : 'Short') + '</span></div>' +
+      '<h3>' + esc(it.t) + '</h3><p>' + esc(it.x) + '</p>' +
+      '<div class="gt"><div class="gt-in">' + ideaChart(it, e, st, tg) + '<div class="lv"><div><small>Entry</small><b class="num">' + fmt(e, i.d) + '</b></div><div class="s"><small>Stop</small><b class="num">' + fmt(st, i.d) + '</b></div><div class="t"><small>Target</small><b class="num">' + fmt(tg, i.d) + '</b></div></div></div>' +
+      (locked ? '' : '<a class="lvh" href="' + XM.url('ideas/02-hero-email/register.html?src=trade-ideas&persona=trade-ideas') + '">Register free to see the prices</a>') +
+      (locked ? '<div class="lkb"><span data-ic="lock"></span><span>Register free to see entry, stop and target</span><a class="btn btn-primary" href="' + XM.url('ideas/02-hero-email/register.html?src=trade-ideas&persona=trade-ideas') + '">Register</a></div>' : '') + '</div>' +
+      '<div class="ic-f"><span>' + it.tf + ' &middot; ' + it.ago + ' &middot; R:R ' + rr + '</span><a class="btn btn-outline" href="' + go(it.s) + '">Trade</a></div></article>';
+  }
+  $('#ig').innerHTML = IDEAS.map(ideaCard).join('');
+  $$('#ig [data-ic]').forEach(function (n) { n.innerHTML = XM.icon(n.getAttribute('data-ic')); });
+
+  /* ---------- misc ---------- */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-soon]'); if (a) { e.preventDefault(); XM.toast('Opens the full list (not prototyped)'); }
+  });
+  $('#alertBtn').addEventListener('click', function (e) { e.preventDefault(); XM.toast('Alert set-up lives in the notification centre (idea 13)'); });
+
+  /* ---------- live ticks (prices only; lists are not re-sorted) ---------- */
+  function tick() {
+    I.forEach(function (i) {
+      var s = S[i.s], vol = i.cls === 'Crypto' ? .0016 : i.cls === 'Forex' ? .0003 : .0007, old = s.p;
+      s.p = old * (1 + (Math.random() - .5) * vol * 2);
+      var pe = $('[data-p="' + i.s + '"]'); if (!pe) return;
+      pe.textContent = fmt(s.p, i.d);
+      pe.classList.remove('f-up', 'f-dn'); void pe.offsetWidth; pe.classList.add(s.p >= old ? 'f-up' : 'f-dn');
+      setTimeout(function () { pe.classList.remove('f-up', 'f-dn'); }, 260);
+      if (win === '1D') { var c = chg(i.s), ce = $('[data-c="' + i.s + '"]'); if (ce) { ce.textContent = pct(c); ce.className = 'chg ' + (c >= 0 ? 'up' : 'dn'); } }
+    });
+  }
+  setInterval(tick, 2500);
+
+  paintPulse(); renderMovers();
+
+  XM.notes({
+    title: 'Trade ideas hub: top movers and trade ideas',
+    today: 'There is no single landing page that combines what is moving in the market with ideas to act on.',
+    proposed: 'A Learn & Research page that pairs top gainers and top losers (by market and period) with a preview of analyst trade ideas. Rows open the instrument page with the ticket ready; the later ideas unlock after a free registration.',
+    why: 'Market-movers searches are high intent and recurring. Showing the market first, then an idea with blurred entry, stop and target prices, turns a visit into a registration and then a trade.',
+    metric: 'Hub visits from search; row and idea click-through to instrument pages; locked idea to register; hub visit to first trade.'
+  });
+});
+</script>
+<script src="../../assets/js/review.js" data-idea="08"></script>
+</body>
+</html>

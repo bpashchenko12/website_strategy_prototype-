@@ -1,0 +1,7 @@
+.DS_Store
+data/state.json
+data/state.json.tmp
+*.pptx
+Some screenshot references/
+xm-badge-platform.png
+xm-welcome-back.ics

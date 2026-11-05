@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   SHARED REGISTRATION PAGE (used by every prototype)
+   Pixel-close to the current xmtrading.com form: centered white card on #f5f5f5.
+   Query: email, src (affiliate|ppc|organic|crm|direct), persona, promo.  ?embed=1 supported.
+   ===================================================================== */
+body { background: #f5f5f5; min-height: 100vh; }
+[hidden] { display: none !important; }
+.rg-hdr { display: flex; align-items: center; justify-content: space-between; max-width: 1320px; margin: 0 auto; padding: 18px 28px 6px; }
+.rg-hdr .xm-logo svg { height: 24px; }
+.rg-hdr .xm-lang { padding: 8px 0; }
+main { padding: 14px 16px 120px; }
+
+.rg { max-width: 480px; margin: 0 auto; background: #fff; border-radius: 22px; padding: 40px 38px 34px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 30px 70px -30px rgba(16, 24, 40, .22); animation: fadeUp .5s both; }
+.rg h1 { text-align: center; font-size: 27px; line-height: 1.2; font-weight: 700; letter-spacing: -.02em; }
+.rg .sub { text-align: center; margin-top: 8px; font-size: 13.5px; color: var(--ink-2); }
+.rg .sub a { color: var(--g); font-weight: 600; }
+.rg .sub a:hover { text-decoration: underline; }
+form { margin-top: 26px; display: grid; gap: 18px; }
+
+.bonus { display: flex; align-items: center; gap: 10px; margin: 22px 0 -6px; padding: 10px 14px; border-radius: 12px; background: var(--g-l); color: #00633f; font-size: 13px; font-weight: 500; animation: fadeUp .45s .15s both; }
+.bonus svg { width: 18px; height: 18px; flex: none; color: var(--g); }
+.bonus small { margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--g); opacity: .8; }
+
+.field > span { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 7px; }
+.field > span i { color: var(--red); font-style: normal; margin-left: -3px; }
+.inp { height: 50px; font-size: 14px; }
+.sel-wrap { position: relative; }
+.sel-wrap .fl { position: absolute; left: 15px; top: 50%; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08); }
+.sel-wrap select.inp { padding-left: 39px; cursor: pointer; font-weight: 500; }
+select.inp.plain { padding-left: 14px; }
+select.inp.plain { font-size: 13.5px; text-overflow: ellipsis; }
+@media (max-width: 480px) { select.inp.plain { font-size: 12px; padding-right: 30px; } }
+
+.perks { margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.perks li { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--ink-2); padding: 3px 0; }
+.perks li svg { width: 16px; height: 16px; flex: none; padding: 3px; border-radius: 50%; background: var(--g); color: #fff; stroke-width: 3; }
+.perks p { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 11.5px; line-height: 1.55; color: var(--mut); }
+
+.eml { position: relative; }
+.eml .inp { padding-right: 46px; }
+.eml .ico { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #9aa1ab; transition: color .2s; }
+.eml.pre .inp { border-color: rgba(0, 132, 84, .45); background: #f3faf6; }
+.eml.pre .inp:focus { background: #fff; border-color: var(--g); }
+.eml.pre .ico { color: var(--g); }
+.pre-note { display: flex; align-items: center; gap: 6px; margin-top: 7px; font-size: 12px; font-weight: 500; color: var(--g); animation: fadeUp .4s .2s both; }
+.pre-note svg { width: 14px; height: 14px; stroke-width: 2.6; }
+.sugg { margin-top: 7px; font-size: 12px; color: var(--ink-2); }
+.sugg button { background: none; border: 0; padding: 0; color: var(--g); font-weight: 600; text-decoration: underline; }
+
+.pw { position: relative; }
+.pw .inp { padding-right: 48px; }
+.pw .eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border: 0; border-radius: 9px; background: none; display: grid; place-items: center; color: #8a919b; }
+.pw .eye:hover { background: rgba(0, 0, 0, .05); color: var(--ink); }
+.pw .eye svg { width: 20px; height: 20px; }
+.meter { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
+.meter i { flex: 1; height: 4px; border-radius: 4px; background: var(--line); transition: background .25s; }
+.meter span { min-width: 54px; text-align: right; font-size: 11.5px; font-weight: 600; color: var(--mut); transition: color .2s; }
+.meter[data-s="1"] i:nth-child(-n+1) { background: var(--red); } .meter[data-s="1"] span { color: var(--red); }
+.meter[data-s="2"] i:nth-child(-n+2) { background: #f0a020; } .meter[data-s="2"] span { color: #c27a00; }
+.meter[data-s="3"] i:nth-child(-n+3) { background: #7cc35a; } .meter[data-s="3"] span { color: #4d9a2a; }
+.meter[data-s="4"] i:nth-child(-n+4) { background: var(--g); } .meter[data-s="4"] span { color: var(--g); }
+
+.ref { font-size: 13px; color: var(--ink-2); }
+.ref button { background: none; border: 0; padding: 0; color: var(--g); font-weight: 600; }
+.ref button:hover { text-decoration: underline; }
+.ref-in { margin-top: 10px; animation: fadeUp .25s both; }
+
+.chk { display: flex; gap: 12px; align-items: flex-start; font-size: 12.5px; line-height: 1.5; color: var(--ink-2); cursor: pointer; }
+.chk input { position: absolute; opacity: 0; pointer-events: none; }
+.chk .bx { width: 20px; height: 20px; flex: none; margin-top: 1px; border-radius: 6px; border: 1.5px solid #c5cad1; background: #fff; display: grid; place-items: center; transition: .15s; color: #fff; }
+.chk .bx svg { width: 13px; height: 13px; stroke-width: 3.2; opacity: 0; transform: scale(.6); transition: .15s; }
+.chk input:checked + .bx { background: var(--g); border-color: var(--g); }
+.chk input:checked + .bx svg { opacity: 1; transform: none; }
+.chk input:focus-visible + .bx { box-shadow: 0 0 0 4px rgba(0, 132, 84, .18); }
+.chk a { color: var(--g); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+.chk.bad .bx { border-color: var(--red); background: var(--red-l); }
+
+.reg { height: 54px; border-radius: 12px; font-size: 16px; position: relative; }
+.reg .spin { display: none; width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: rot .7s linear infinite; }
+.reg.busy .spin { display: block; } .reg.busy { pointer-events: none; opacity: .9; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.fine { text-align: center; font-size: 12px; color: var(--mut); margin-top: 4px; }
+.fine svg { display: inline-block; width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; }
+.shake { animation: shake .38s; }
+@keyframes shake { 20% { transform: translateX(-7px); } 45% { transform: translateX(6px); } 70% { transform: translateX(-4px); } 90% { transform: translateX(2px); } }
+.err-msg { display: flex; align-items: center; gap: 6px; }
+@media (max-width: 520px) {
+  .rg { padding: 30px 20px 26px; border-radius: 18px; }
+  .rg h1 { font-size: 24px; }
+  .rg-hdr { padding: 14px 18px 2px; }
+  main { padding: 10px 12px 110px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div class="rg-hdr"><a class="xm-logo" href="#" id="logo"></a><span class="xm-lang" id="lang"></span></div>
+
+<main>
+  <div class="rg" id="card" data-xm-register>
+    <div class="bonus" id="bonus" hidden></div>
+    <h1 style="margin-top:0">Let&rsquo;s get you registered!</h1>
+    <p class="sub">Already have an account? <a href="#" data-login>Login</a></p>
+
+    <form id="f" novalidate data-xm-register-form autocomplete="on">
+      <label class="field">
+        <span>Country of residence</span>
+        <div class="sel-wrap"><i class="fl" id="flag"></i>
+          <select class="inp" id="country" name="country" autocomplete="country-name"></select></div>
+      </label>
+
+      <div class="field">
+        <span id="brandLbl">Your account will be created with this brand:</span>
+        <select class="inp plain" id="brand" aria-labelledby="brandLbl">
+          <option value="fin">Fintrade Limited &mdash; Regulated by FSC (Mauritius)</option>
+          <option value="tfx">Tradexfin Limited &mdash; Regulated by FSA (Seychelles)</option>
+        </select>
+        <div class="perks">
+          <ul>
+            <li id="ck1"></li><li id="ck2"></li><li id="ck3"></li>
+          </ul>
+          <p id="brandTxt"></p>
+        </div>
+      </div>
+
+      <div class="field">
+        <span>Email<i>*</i></span>
+        <div class="eml" id="emlWrap">
+          <input class="inp" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Enter email" aria-label="Email" aria-describedby="emlErr" required>
+          <span class="ico" id="emlIco"></span>
+        </div>
+        <div class="pre-note" id="preNote" hidden></div>
+        <div class="sugg" id="sugg" hidden></div>
+        <div class="err-msg" id="emlErr" role="alert" hidden></div>
+      </div>
+
+      <div class="field">
+        <span>Password<i>*</i></span>
+        <div class="pw">
+          <input class="inp" id="pw" name="password" type="password" autocomplete="new-password" placeholder="Enter password" aria-label="Password" aria-describedby="pwHelp pwErr" required>
+          <button class="eye" type="button" id="eye" aria-label="Show password"></button>
+        </div>
+        <div class="meter" id="meter" data-s="0" aria-live="polite"><i></i><i></i><i></i><i></i><span id="mlbl"></span></div>
+        <div class="help" id="pwHelp">Use 8 or more characters with letters and numbers.</div>
+        <div class="err-msg" id="pwErr" role="alert" hidden></div>
+      </div>
+
+      <div class="ref">Have a partner or referral code? <button type="button" id="refBtn">Enter here</button>
+        <div class="ref-in" id="refIn" hidden><input class="inp" id="ref" placeholder="Partner or referral code" autocomplete="off"></div>
+      </div>
+
+      <div>
+        <label class="chk" id="chk"><input type="checkbox" id="terms"><span class="bx"></span>
+          <span>I&rsquo;m 18 or older and I accept the <a href="#">Terms and Conditions</a> and the <a href="#">Privacy Policy</a>.</span></label>
+        <div class="err-msg" id="termsErr" role="alert" hidden></div>
+      </div>
+
+      <button class="btn btn-primary btn-block reg" type="submit" id="regBtn"><span class="spin"></span><span id="regLbl">Register</span></button>
+      <p class="fine" id="fine"></p>
+    </form>
+  </div>
+</main>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var $ = XM.$;
+  var flow = XM.flow.get();
+  var SRC = ['affiliate', 'ppc', 'organic', 'crm', 'direct'];
+  function clean(v) { v = (v || '').toString().replace(/[^\w\-.]/g, '').slice(0, 40); return v; }
+
+  /* ---------- header bits ---------- */
+  $('#logo').innerHTML = XM.logo(false);
+  $('#lang').innerHTML = XM.icon('globe', 'w16') + ' EN';
+
+  /* ---------- query + flow fallback ---------- */
+  var qEmail = (XM.qs('email') || '').trim().slice(0, 120);
+  var email = qEmail || flow.email || '';
+  var src = XM.qs('src') || flow.src || 'direct'; if (SRC.indexOf(src) < 0) src = 'direct';
+  var persona = clean(XM.qs('persona') || flow.persona);
+  var promo = clean(XM.qs('promo') || flow.promo);
+  document.body.setAttribute('data-src', src);
+  if (persona) document.body.setAttribute('data-persona', persona);
+  if (promo) document.body.setAttribute('data-promo', promo);
+
+  /* ---------- icons ---------- */
+  var CHECK = XM.icon('check');
+  ['ck1', 'ck2', 'ck3'].forEach(function (id, i) { $('#' + id).innerHTML = CHECK + ['Negative balance protection', 'Segregated client funds', 'Maximum leverage: 1000:1'][i]; });
+  $('#chk .bx').innerHTML = CHECK;
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7c1.7 0 3.2-.4 4.5-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  $('#eye').innerHTML = EYE_OFF;
+  $('#emlIco').innerHTML = XM.icon('mail');
+
+  /* ---------- country / brand ---------- */
+  var COUNTRIES = [['Japan', '#e5373f'], ['United Kingdom', '#2b4a9b'], ['Germany', '#e0a800'], ['Spain', '#d9363e'], ['Thailand', '#2f4aa0'], ['Australia', '#1f3f8f'], ['Brazil', '#1f9a4a'], ['Indonesia', '#d9363e'], ['Vietnam', '#d9363e'], ['South Africa', '#12805c']];
+  var cs = $('#country');
+  cs.innerHTML = COUNTRIES.map(function (c) { return '<option>' + c[0] + '</option>'; }).join('');
+  function setFlag() { var c = COUNTRIES.filter(function (x) { return x[0] === cs.value; })[0]; $('#flag').style.background = c ? c[1] : '#ccc'; }
+  cs.addEventListener('change', setFlag); setFlag();
+  var BR = { fin: 'Fintrade Limited, which is authorised and regulated by the Financial Services Commission of Mauritius (FSC).', tfx: 'Tradexfin Limited, which is authorised and regulated by the Financial Services Authority of Seychelles (FSA).' };
+  function setBrand() { $('#brandTxt').textContent = 'Based on your selection, you will register for an account with ' + BR[$('#brand').value]; }
+  $('#brand').addEventListener('change', setBrand); setBrand();
+
+  /* ---------- email ---------- */
+  var em = $('#email'), pw = $('#pw');
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var prefilled = false;
+  function setPre(on) {
+    prefilled = on;
+    $('#emlWrap').classList.toggle('pre', on);
+    $('#preNote').hidden = !on;
+    $('#emlIco').innerHTML = on ? XM.icon('check') : XM.icon('mail');
+  }
+  if (email) {
+    em.value = email;
+    $('#preNote').innerHTML = XM.icon('check') + (XM.qs('resume') === '1' || src === 'crm' ? 'Welcome back. We kept your email' : 'Pre-filled from the homepage');
+    setPre(true);
+  }
+  var TYPOS = { 'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gmail.con': 'gmail.com', 'hotmial.com': 'hotmail.com', 'yaho.com': 'yahoo.com', 'yahoo.con': 'yahoo.com', 'outlok.com': 'outlook.com' };
+  function suggest() {
+    var m = em.value.trim().split('@'), s = $('#sugg');
+    if (m.length === 2 && TYPOS[m[1].toLowerCase()]) {
+      var fix = m[0] + '@' + TYPOS[m[1].toLowerCase()];
+      s.innerHTML = 'Did you mean <button type="button">' + XM.esc(fix) + '</button>?'; s.hidden = false;
+      s.firstElementChild.onclick = function () { em.value = fix; s.hidden = true; setPre(false); clearErr('email'); };
+    } else s.hidden = true;
+  }
+  em.addEventListener('input', function () { if (prefilled) setPre(false); clearErr('email'); $('#sugg').hidden = true; });
+  em.addEventListener('blur', suggest);
+
+  /* ---------- password ---------- */
+  function score(v) {
+    if (!v) return 0;
+    var s = 0;
+    if (v.length >= 8) s++;
+    if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++;
+    if (/\d/.test(v)) s++;
+    if (/[^A-Za-z0-9]/.test(v) || v.length >= 12) s++;
+    return Math.max(1, s);
+  }
+  var LBL = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  pw.addEventListener('input', function () { var s = score(pw.value); $('#meter').setAttribute('data-s', s); $('#mlbl').textContent = LBL[s]; clearErr('pw'); });
+  $('#eye').addEventListener('click', function () {
+    var show = pw.type === 'password'; pw.type = show ? 'text' : 'password';
+    $('#eye').innerHTML = show ? EYE : EYE_OFF; $('#eye').setAttribute('aria-label', show ? 'Hide password' : 'Show password'); pw.focus();
+  });
+
+  /* ---------- referral ---------- */
+  $('#refBtn').addEventListener('click', function () { var r = $('#refIn'); r.hidden = !r.hidden; this.textContent = r.hidden ? 'Enter here' : 'Hide'; if (!r.hidden) $('#ref').focus(); });
+  if (promo || XM.qs('ref')) { /* a promo does not need a partner code */ }
+
+  /* ---------- promo banner ---------- */
+  if (promo) {
+    var b = $('#bonus'); b.hidden = false;
+    b.innerHTML = XM.icon('gift') + '<span>Welcome bonus applied (illustrative)</span><small>' + XM.esc(promo.replace(/[-_]/g, ' ')) + '</small>';
+    $('.rg h1').style.marginTop = '22px';
+  }
+  $('#fine').innerHTML = XM.icon('lock') + 'Your data is sent securely. Next: confirm your email.';
+
+  /* ---------- validation ---------- */
+  var errs = { email: $('#emlErr'), pw: $('#pwErr'), terms: $('#termsErr') };
+  function setErr(k, msg) { var e = errs[k]; e.innerHTML = XM.icon('warn', 'w16') + XM.esc(msg); e.hidden = false; if (k === 'email') { em.classList.add('err'); em.setAttribute('aria-invalid', 'true'); } if (k === 'pw') { pw.classList.add('err'); pw.setAttribute('aria-invalid', 'true'); } if (k === 'terms') $('#chk').classList.add('bad'); }
+  function clearErr(k) { errs[k].hidden = true; if (k === 'email') { em.classList.remove('err'); em.removeAttribute('aria-invalid'); } if (k === 'pw') { pw.classList.remove('err'); pw.removeAttribute('aria-invalid'); } if (k === 'terms') $('#chk').classList.remove('bad'); }
+  function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+  $('#terms').addEventListener('change', function () { clearErr('terms'); });
+  $('#chk a').addEventListener('click', function (e) { e.stopPropagation(); });
+
+  $('#f').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if ($('#regBtn').classList.contains('busy')) return;
+    var bad = null, v = em.value.trim();
+    ['email', 'pw', 'terms'].forEach(clearErr);
+    if (!v) { setErr('email', 'Please enter your email address.'); bad = bad || em; }
+    else if (!EMAIL_RE.test(v)) { setErr('email', 'That email address doesn\u2019t look right.'); bad = bad || em; }
+    if (!pw.value) { setErr('pw', 'Please create a password.'); bad = bad || pw; }
+    else if (pw.value.length < 8 || !/[A-Za-z]/.test(pw.value) || !/\d/.test(pw.value)) { setErr('pw', 'Use 8 or more characters with letters and numbers.'); bad = bad || pw; }
+    if (!$('#terms').checked) { setErr('terms', 'Please accept the terms to continue.'); bad = bad || $('#chk'); }
+    if (bad) { shake($('#card')); if (bad !== $('#chk')) bad.focus(); else $('#chk').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+
+    XM.flow.set({ email: v, registeredAt: new Date().toISOString(), src: src, persona: persona || undefined, promo: promo || undefined, step: 'verify' });
+    var btn = $('#regBtn'); btn.classList.add('busy'); $('#regLbl').textContent = 'Creating your account\u2026';
+    setTimeout(function () { location.href = XM.url('ideas/03-verification/index.html') + (/[?&]present=1/.test(location.search) ? '?present=1' : XM.embedded ? '?embed=1' : ''); }, 650);
+  });
+
+  /* ---------- autofocus first empty field (not in embed / on touch screens) ---------- */
+  var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  if (!XM.embedded && !coarse) {
+    var first = !em.value ? em : (!pw.value ? pw : null);
+    if (first) setTimeout(function () { first.focus({ preventScroll: true }); }, 120);
+  }
+
+  XM.notes({
+    title: 'Shared registration page',
+    today: 'The XM form starts empty: country, brand, email, password, terms. Visitors only reach it after finding and clicking "Join today".',
+    proposed: 'The same form, but every prototype lands here with context: email pre-filled from the homepage, traffic source kept, an optional bonus banner.',
+    why: 'One registration screen for all entry points means one thing to test, one place to measure drop-off and no dead ends.',
+    metric: 'Form completion rate and time-to-register by entry point (pre-filled vs empty).'
+  });
+});
+</script>
+<script src="../../assets/js/review.js" data-idea="02"></script>
+</body>
+</html>

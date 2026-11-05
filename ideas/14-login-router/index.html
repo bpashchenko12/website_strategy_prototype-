@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login router · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 14 · Segmentation in action: recognising an already-client user
+   ===================================================================== */
+:root { --gl: #00c27c; --gl2: #3ddc97; --bd: rgba(255, 255, 255, .1); --ui-mut: #7d8794; --ui-ln: rgba(255, 255, 255, .08); }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.sec { margin-top: 104px; }
+.sh { text-align: center; max-width: 720px; margin: 0 auto 40px; }
+.sh .h-l { margin-top: 12px; } .sh .lead { margin-top: 12px; }
+.pill { border-radius: 999px; }
+svg { flex: none; }
+button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55); outline-offset: 2px; }
+.xm-hdr { top: 64px; background: rgba(245, 245, 245, .92); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 96px; }
+.up { color: #2fe39a; } .dn { color: #ff6b72; }
+
+/* ---------- demo bar (cookie toggle) ---------- */
+.demobar { position: sticky; top: 0; z-index: 60; height: 64px; background: #0b0d10; color: #cfd5dc; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 20px; font-size: 12.5px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.demobar .l, .demobar .r { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; } .demobar .r { justify-content: flex-end; color: #6f7885; }
+.ckp { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px 4px 8px; border-radius: 999px; background: rgba(255, 255, 255, .07); font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: #aab2bc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ckp i { width: 8px; height: 8px; border-radius: 50%; background: #6f7885; flex: none; transition: background .3s, box-shadow .3s; }
+.ckp.on i { background: #3ddc97; box-shadow: 0 0 0 4px rgba(61, 220, 151, .18); } .ckp.on { color: #d9f7e8; }
+.dseg { position: relative; display: inline-grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, .1); border: 1.5px solid rgba(61, 220, 151, .55); box-shadow: 0 0 0 4px rgba(61, 220, 151, .12), 0 8px 24px -8px rgba(61, 220, 151, .45); animation: dsegPulse 2.8s ease-in-out infinite; }
+@keyframes dsegPulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(61, 220, 151, .12), 0 8px 24px -8px rgba(61, 220, 151, .45); } 50% { box-shadow: 0 0 0 7px rgba(61, 220, 151, .06), 0 8px 24px -8px rgba(61, 220, 151, .45); } }
+@media (prefers-reduced-motion: reduce) { .dseg { animation: none; } }
+@media (max-width: 600px) { .dseg button { padding: 10px 14px; min-width: 0; font-size: 13.5px; } .demobar .ckp { display: none; } }
+.dseg button { position: relative; z-index: 1; border: 0; background: none; color: #cfd5dc; padding: 11px 26px; min-width: 128px; border-radius: 999px; font-size: 15px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: color .2s; }
+.dseg button:hover:not(.on) { color: #fff; }
+.dseg button.on { color: #00241a; }
+.dseg::before { content: ''; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: #3ddc97; transition: transform .3s cubic-bezier(.3, .8, .3, 1); }
+.dseg[data-v="client"]::before { transform: translateX(100%); }
+
+/* ---------- header router ---------- */
+.xm-hdr .right { position: relative; }
+.lr { position: relative; }
+.lr-btn { display: inline-flex; align-items: center; gap: 8px; }
+.lr-btn svg { width: 15px; height: 15px; transition: transform .2s; } .lr-btn[aria-expanded=true] svg.cv { transform: rotate(180deg); }
+.lr-btn .fp { width: 18px; height: 18px; }
+.btn-primary.lr-btn { box-shadow: 0 6px 20px rgba(0, 132, 84, .35); }
+.lr-menu { position: absolute; right: 0; top: calc(100% + 12px); width: 392px; background: #fff; border-radius: 24px; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(10, 14, 20, .28), 0 4px 14px rgba(10, 14, 20, .06); padding: 10px; z-index: 80; transform-origin: top right; animation: menuIn .22s cubic-bezier(.2, .8, .3, 1) both; color: var(--ink); text-align: left; }
+@keyframes menuIn { from { opacity: 0; transform: translateY(-8px) scale(.97); } to { opacity: 1; transform: none; } }
+.lr-hd { display: flex; align-items: center; gap: 10px; padding: 10px 12px 8px; }
+.lr-hd .av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #00c27c, #006b44); color: #fff; font-weight: 700; font-size: 13px; display: grid; place-items: center; flex: none; }
+.lr-hd b { display: block; font-size: 14px; line-height: 1.2; } .lr-hd small { color: var(--mut); font-size: 12px; }
+.lr-pk { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border: 0; border-radius: 16px; padding: 14px 16px; margin: 4px 0 6px; background: linear-gradient(135deg, #064a33, #0a8658); color: #fff; box-shadow: 0 10px 26px -8px rgba(0, 132, 84, .6), inset 0 1px 0 rgba(255, 255, 255, .2); transition: transform .15s, box-shadow .15s; position: relative; overflow: hidden; }
+.lr-pk:hover { transform: translateY(-1px); box-shadow: 0 14px 30px -8px rgba(0, 132, 84, .7), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.lr-pk .fi { width: 42px; height: 42px; border-radius: 13px; background: rgba(255, 255, 255, .16); display: grid; place-items: center; flex: none; } .lr-pk .fi svg { width: 24px; height: 24px; }
+.lr-pk b { display: block; font-size: 15px; } .lr-pk small { font-size: 12px; opacity: .82; }
+.lr-pk .rc { margin-left: auto; flex: none; white-space: nowrap; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; background: rgba(255, 255, 255, .18); border-radius: 999px; padding: 3px 9px; }
+.lr-lab { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--mut); font-weight: 600; padding: 10px 12px 6px; }
+.lr-it { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; border: 1.5px solid transparent; background: none; border-radius: 16px; padding: 11px 12px; transition: background .15s, border-color .15s; position: relative; }
+.lr-it:hover, .lr-it:focus-visible { background: var(--bg); outline: none; }
+.lr-it.last { border-color: rgba(0, 132, 84, .35); background: var(--g-l); }
+.lr-it .ti { width: 40px; height: 40px; border-radius: 12px; background: var(--ink); color: #fff; display: grid; place-items: center; flex: none; } .lr-it .ti svg { width: 20px; height: 20px; }
+.lr-it.last .ti { background: var(--g); }
+.lr-it b { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.25; } .lr-it small { display: block; font-size: 12px; color: var(--mut); line-height: 1.35; margin-top: 1px; }
+.lr-it .lu { display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; font-size: 11px; font-weight: 600; color: var(--g); background: #fff; border-radius: 999px; padding: 2px 9px 2px 7px; border: 1px solid rgba(0, 132, 84, .25); } .lr-it .lu svg { width: 11px; height: 11px; }
+.lr-it .ar { margin-left: auto; width: 16px; height: 16px; color: var(--mut); transition: transform .15s; } .lr-it:hover .ar { transform: translateX(3px); color: var(--ink); }
+.lr-ft { margin-top: 6px; padding: 12px 14px 8px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--mut); display: flex; justify-content: space-between; gap: 10px; } .lr-ft a { color: var(--g); font-weight: 600; }
+.wb-tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 12px; border-radius: 999px; background: var(--g-l); color: var(--g); font-size: 13px; font-weight: 600; white-space: nowrap; animation: fadeUp .4s both; }
+
+/* ---------- hero ---------- */
+.hero { margin-top: 10px; position: relative; }
+.hero::before { background: radial-gradient(70% 62% at 50% -6%, rgba(0, 200, 125, .42), rgba(0, 132, 84, .14) 48%, transparent 72%); }
+.hero::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .08) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 55%); mask-image: linear-gradient(180deg, #000, transparent 55%); }
+.pane { animation: fadeUp .6s both; }
+.p-vis { padding: 80px 48px 0; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: min(780px, calc(100vh - 140px)); }
+.kick { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; }
+.xmk { width: 28px; height: 28px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 11px; letter-spacing: -.5px; }
+.bdg { background: #fff; color: #0b0d10; font-weight: 700; font-size: 12px; letter-spacing: .08em; padding: 6px 11px; border-radius: 8px; }
+.bdg.g { background: rgba(0, 194, 124, .18); color: var(--gl2); }
+.hero h1 { font-size: clamp(38px, 5.2vw, 68px); line-height: 1.04; letter-spacing: -.035em; font-weight: 700; max-width: 16ch; }
+.hero .sub { margin: 20px auto 30px; max-width: 540px; color: #a9b0ba; font-size: clamp(16px, 1.5vw, 19px); line-height: 1.6; }
+.hbtn { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn-xl { padding: 16px 34px; font-size: 16px; }
+.btn-glass { background: rgba(255, 255, 255, .08); color: #fff; border-color: rgba(255, 255, 255, .22); } .btn-glass:hover { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .45); }
+.glow-btn { box-shadow: 0 10px 34px rgba(0, 132, 84, .45), inset 0 1px 0 rgba(255, 255, 255, .25); background: linear-gradient(180deg, #00a064, #008454); color: #fff; }
+.glow-btn:hover { background: linear-gradient(180deg, #00b06d, #007a4d); box-shadow: 0 14px 40px rgba(0, 150, 95, .6); transform: translateY(-1px); }
+.btn svg { width: 18px; height: 18px; }
+.vis { margin-top: auto; padding-top: 56px; width: 100%; }
+
+/* portal preview */
+.pv { max-width: 1020px; margin: 0 auto; border-radius: 16px 16px 0 0; overflow: hidden; background: #0f1216; border: 1px solid rgba(255, 255, 255, .13); border-bottom: 0; box-shadow: 0 -10px 80px rgba(0, 180, 110, .18), 0 30px 80px rgba(0, 0, 0, .6); text-align: left; font-size: 12px; color: #e9edf1; }
+.pv-bar { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; background: #1a1f26; border-bottom: 1px solid var(--ui-ln); }
+.pv-bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a414b; } .pv-bar i:nth-child(1) { background: #ff5f57; } .pv-bar i:nth-child(2) { background: #febc2e; } .pv-bar i:nth-child(3) { background: #28c840; }
+.pv-bar span { margin: 0 auto; height: 24px; padding: 0 18px; border-radius: 8px; background: #0f1216; color: #98a2ad; font-size: 11.5px; display: flex; align-items: center; }
+.pv-b { display: grid; grid-template-columns: 240px 1fr 230px; height: 330px; }
+.pv-wl { border-right: 1px solid var(--ui-ln); padding: 14px 10px; } .pv-wl h6 { margin: 0 6px 10px; font-size: 13px; font-weight: 600; }
+.pv-wl li { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: 10px; } .pv-wl li.on { background: rgba(255, 255, 255, .06); }
+.pv-wl .n { flex: 1; min-width: 0; } .pv-wl .n b { display: block; font-size: 12.5px; } .pv-wl .n small { color: var(--ui-mut); font-size: 10.5px; }
+.pv-wl .v { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 500; display: flex; flex-direction: column; } .pv-wl .v span:last-child { font-size: 11px; }
+.pv-ch { padding: 14px 16px 0; border-right: 1px solid var(--ui-ln); min-width: 0; }
+.pv-ch .hd { display: flex; align-items: baseline; gap: 12px; } .pv-ch .hd b { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; } .pv-ch .hd small { color: var(--ui-mut); }
+.pv-ch svg { width: 100%; height: 240px; margin-top: 6px; }
+.pv-tk { padding: 14px; } .pv-tk .acc { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, .05); margin-bottom: 12px; } .pv-tk .acc small { color: var(--ui-mut); display: block; font-size: 10.5px; } .pv-tk .acc b { font-size: 14px; }
+.pv-tk .sb { display: flex; gap: 8px; margin-bottom: 12px; } .pv-tk .sb span { flex: 1; padding: 9px 12px; border-radius: 10px; font-weight: 700; font-size: 12px; line-height: 1.25; } .pv-tk .sb small { display: block; font-weight: 500; font-size: 10px; opacity: .8; }
+.pv-tk .sell { background: #e5373f; } .pv-tk .buy { background: #0a9a63; }
+.pv-tk .fld { display: flex; justify-content: space-between; padding: 10px 12px; border: 1px solid var(--ui-ln); border-radius: 10px; margin-bottom: 8px; font-size: 12px; color: var(--ui-mut); } .pv-tk .fld b { color: #fff; font-weight: 600; }
+
+/* client pane */
+.p-cli { padding: 64px 56px 64px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; align-items: center; text-align: left; }
+.p-cli h1 { font-size: clamp(36px, 4.4vw, 58px); max-width: 12ch; }
+.p-cli .sub { margin: 18px 0 28px; max-width: 460px; }
+.p-cli .hbtn { justify-content: flex-start; }
+.lu-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; font-size: 13px; color: #a9b0ba; }
+.dlp { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 9px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid var(--bd); font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: #cfd5dc; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.dlp svg { width: 12px; height: 12px; color: var(--gl2); }
+.utag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--gl2); background: rgba(0, 194, 124, .14); padding: 4px 11px; border-radius: 999px; white-space: nowrap; } .utag svg { width: 13px; height: 13px; flex: none; }
+.pick { border-radius: 26px; background: rgba(18, 22, 27, .85); border: 1px solid rgba(255, 255, 255, .12); padding: 22px; backdrop-filter: blur(10px); box-shadow: 0 30px 70px rgba(0, 0, 0, .5), 0 0 80px rgba(0, 190, 130, .1); }
+.pick-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pick-h h3 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; } .pick-h h3 svg { width: 18px; height: 18px; color: var(--gl2); }
+.bal { display: inline-flex; flex-direction: column; align-items: flex-end; padding: 6px 14px; border-radius: 14px; background: rgba(255, 255, 255, .07); line-height: 1.2; } .bal small { font-size: 10.5px; color: #8e97a3; } .bal b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pick-s { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 0 6px; }
+.pick-s .pl { font-size: 32px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; } .pick-s small { color: #8e97a3; font-size: 12px; }
+.pos { display: flex; align-items: center; gap: 12px; padding: 12px 10px; border-top: 1px solid rgba(255, 255, 255, .07); }
+.pos .n { flex: 1; min-width: 0; } .pos .n b { display: block; font-size: 14px; font-weight: 600; } .pos .n small { color: #8e97a3; font-size: 12px; }
+.pos .s { text-align: right; font-variant-numeric: tabular-nums; } .pos .s b { display: block; font-size: 14.5px; font-weight: 600; } .pos .s small { color: #8e97a3; font-size: 11.5px; }
+.pick .go { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; } .pick .go .btn { flex: 1 1 auto; }
+.lv { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #8e97a3; } .lv i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc97; animation: pulse 1.6s infinite; }
+
+/* client module row */
+.ph-row { border: 2px dashed var(--line-2); border-radius: 28px; padding: 36px 24px; text-align: center; color: var(--mut); background: rgba(255, 255, 255, .5); }
+.ph-row b { display: block; font-size: 18px; color: var(--ink); margin-bottom: 6px; } .ph-row .btn { margin-top: 16px; }
+.oc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.of { background: #fff; border: 1px solid var(--line); border-radius: 26px; padding: 10px 10px 24px; display: flex; flex-direction: column; box-shadow: 0 20px 50px -36px rgba(16, 24, 40, .35); transition: transform .25s, box-shadow .25s; animation: fadeUp .6s both; }
+.of:hover { transform: translateY(-6px); box-shadow: 0 30px 60px -28px rgba(16, 24, 40, .35); }
+.of .tile { border-radius: 18px; aspect-ratio: 16 / 9; overflow: hidden; position: relative; display: grid; place-items: center; }
+.of .tile svg { width: 100%; height: 100%; transition: transform .5s cubic-bezier(.2, .7, .2, 1); } .of:hover .tile svg { transform: scale(1.05); }
+.t1 { background: linear-gradient(145deg, #063d2b, #0a8658); } .t2 { background: linear-gradient(145deg, #14183f, #2f62f0); } .t3 { background: linear-gradient(145deg, #4a2d05, #d08a1e); }
+.of .why { position: absolute; left: 12px; top: 12px; font-size: 11px; font-weight: 600; background: rgba(0, 0, 0, .45); color: #fff; padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(6px); }
+.of h4 { font-size: 21px; font-weight: 700; letter-spacing: -.02em; margin: 20px 14px 0; }
+.of p { margin: 8px 14px 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+.of .dlp { margin: 16px 14px 0; background: var(--bg); border-color: var(--line); color: var(--ink-2); align-self: flex-start; } .of .dlp svg { color: var(--g); }
+.of .btn { margin: 16px 14px 0; align-self: flex-start; }
+.of .btn svg { transition: transform .2s; } .of .btn:hover svg { transform: translateX(3px); }
+.of .sp { flex: 1; }
+
+/* recognise explainer */
+.rec { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.rec-l { background: #fff; border: 1px solid var(--line); border-radius: 28px; padding: 40px 40px 36px; }
+.rec-l .h-l { margin: 12px 0 0; font-size: clamp(26px, 3vw, 38px); } .rec-l .lead { margin-top: 12px; }
+.pts { margin-top: 28px; display: grid; gap: 20px; }
+.pt { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; }
+.pt .n { width: 40px; height: 40px; border-radius: 12px; background: var(--g-l); color: var(--g); display: grid; place-items: center; } .pt .n svg { width: 20px; height: 20px; }
+.pt b { display: block; font-size: 16px; font-weight: 600; } .pt span { display: block; color: var(--ink-2); font-size: 14px; line-height: 1.55; margin-top: 2px; } .pt code { font-size: 12px; background: var(--bg); border: 1px solid var(--line); padding: 1px 6px; border-radius: 6px; font-family: ui-monospace, Menlo, monospace; }
+.jar { position: relative; border-radius: 28px; padding: 28px; overflow: hidden; display: flex; flex-direction: column; gap: 18px; }
+.jar::before { background: radial-gradient(80% 50% at 80% 0%, rgba(0, 194, 124, .28), transparent 70%); }
+.jar h5 { margin: 0; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #8e97a3; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.ckc { border-radius: 18px; background: #12161b; border: 1px solid rgba(255, 255, 255, .1); overflow: hidden; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+.ckc .r { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 11px 16px; border-top: 1px solid rgba(255, 255, 255, .06); } .ckc .r:first-child { border-top: 0; }
+.ckc .r span { color: #6f7885; } .ckc .r b { font-weight: 500; color: #e4e9ee; word-break: break-all; } .ckc .r b.g { color: var(--gl2); }
+.ckc.empty { padding: 26px 16px; text-align: center; color: #6f7885; font-family: var(--font); font-size: 13px; }
+.nots { display: flex; flex-wrap: wrap; gap: 8px; }
+.nots span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 9px; border-radius: 999px; background: rgba(255, 255, 255, .06); border: 1px solid var(--bd); font-size: 12.5px; color: #cfd5dc; text-decoration: line-through; text-decoration-color: rgba(255, 107, 114, .8); }
+.nots svg { width: 13px; height: 13px; color: #ff6b72; }
+.flow3 { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr; align-items: center; gap: 4px; }
+.fb { border-radius: 14px; background: rgba(255, 255, 255, .06); border: 1px solid var(--bd); padding: 12px 10px; text-align: center; font-size: 12px; color: #cfd5dc; line-height: 1.3; } .fb b { display: block; color: #fff; font-size: 13px; margin-bottom: 2px; } .fb svg { width: 22px; height: 22px; margin: 0 auto 6px; color: var(--gl2); }
+.fa { color: #4a525c; text-align: center; font-size: 18px; }
+.fb.act { border-color: rgba(0, 194, 124, .5); background: rgba(0, 194, 124, .1); }
+
+/* before / after */
+.cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; }
+.cm { border-radius: 30px; padding: 32px 32px 28px; position: relative; overflow: hidden; }
+.cm.today { background: #fff; border: 1px solid var(--line); box-shadow: 0 30px 70px -44px rgba(16, 24, 40, .35); }
+.cm.prop { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.cm.prop::before { background: radial-gradient(80% 60% at 100% 0%, rgba(0, 194, 124, .35), transparent 70%); }
+.cm .lb { display: inline-flex; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.today .lb { color: var(--mut); } .prop .lb { color: var(--gl2); }
+.cm .big { display: flex; align-items: baseline; gap: 12px; margin: 10px 0 4px; }
+.cm .big b { font-size: clamp(64px, 8vw, 104px); font-weight: 800; letter-spacing: -.06em; line-height: .95; font-variant-numeric: tabular-nums; }
+.today .big b { color: var(--ink); } .prop .big b { background: linear-gradient(180deg, #fff 20%, #7fe7b8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cm .big span { font-size: 18px; font-weight: 600; } .today .big span { color: var(--ink-2); } .prop .big span { color: #cfd5dc; }
+.cm .meta { font-size: 13px; } .today .meta { color: var(--mut); } .prop .meta { color: #8e97a3; }
+.cl { margin-top: 24px; display: grid; gap: 8px; }
+.cs { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 16px; font-size: 14.5px; font-weight: 500; transition: background .3s, transform .3s, opacity .3s; opacity: .55; }
+.today .cs { background: var(--bg); } .prop .cs { background: rgba(255, 255, 255, .06); color: #cfd5dc; }
+.cs .nn { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 12.5px; font-weight: 700; flex: none; transition: .3s; }
+.today .cs .nn { background: #fff; border: 1.5px solid var(--line-2); } .prop .cs .nn { background: rgba(255, 255, 255, .1); }
+.cs small { display: block; font-weight: 400; font-size: 12px; color: var(--mut); } .prop .cs small { color: #8e97a3; }
+.cs.on { opacity: 1; transform: translateX(4px); } .today .cs.on { background: #fff; box-shadow: 0 8px 24px -12px rgba(16, 24, 40, .35); } .today .cs.on .nn { background: var(--ink); color: #fff; border-color: var(--ink); }
+.prop .cs.on { background: rgba(0, 194, 124, .16); color: #fff; } .prop .cs.on .nn { background: var(--gl); color: #04130c; }
+.cs.on.cur { }
+.cmp-f { margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.delta { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 999px; background: var(--g-l); color: var(--g); font-weight: 700; font-size: 15px; opacity: 0; transform: translateY(6px); transition: .4s; } .delta.in { opacity: 1; transform: none; }
+.fine { margin-top: 14px; text-align: center; font-size: 12px; color: var(--mut); }
+
+/* responsive */
+@media (max-width: 1180px) { .wb-tag { display: none; } }
+@media (max-width: 1100px) { .p-cli { grid-template-columns: 1fr; gap: 36px; padding: 48px 32px; } .rec { grid-template-columns: 1fr; } .oc { grid-template-columns: 1fr; } .of .tile { aspect-ratio: 21 / 8; } .pv-b { grid-template-columns: 200px 1fr; } .pv-tk { display: none; } }
+@media (max-width: 820px) { .cmp { grid-template-columns: 1fr; } .demobar .l .t, .demobar .r { display: none; } .demobar { justify-content: center; } .demobar .l { flex: 0 1 auto; min-width: 0; } .demobar .ckp { max-width: 168px; } }
+@media (max-width: 720px) {
+  .wrap { padding: 0 12px; } .sec { margin-top: 72px; }
+  .p-vis { padding: 52px 20px 0; min-height: 0; } .p-cli { padding: 40px 20px; } .pv-b { grid-template-columns: 1fr; height: 280px; } .pv-wl { display: none; } .pv-ch { border-right: 0; } .pv-ch svg { height: 190px; }
+  .rec-l { padding: 28px 22px; } .jar { padding: 22px 18px; } .cm { padding: 26px 20px 22px; } .ckc .r { grid-template-columns: 76px 1fr; padding: 10px 12px; } .flow3 { grid-template-columns: 1fr; } .fa { transform: rotate(90deg); }
+  .lr-menu { position: fixed; left: 12px; right: 12px; top: 110px; width: auto; }
+  .xm-lang, .xm-hdr [data-register] { display: none; } .wb-tag { display: none; }
+}
+</style>
+</head>
+<body>
+<!-- cookie / segment toggle -->
+<div class="demobar" id="demobar">
+  <div class="l"><span class="ckp" id="ckp"><i></i><span id="ckT">xm_rc: not set</span></span><span class="t" style="color:#8d96a3">Cookie-recognised user</span></div>
+  <div class="dseg" id="dseg" data-v="visitor" role="group" aria-label="Simulated segment"><button data-v="visitor" class="on" type="button" aria-pressed="true">Visitor</button><button data-v="client" type="button" aria-pressed="false">Existing client</button></div>
+  <div class="r">Prototype control</div>
+</div>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main class="wrap">
+  <!-- ================= HERO ================= -->
+  <section class="block hero" id="hero">
+    <!-- visitor pane -->
+    <div class="pane p-vis" id="paneV">
+      <span class="kick"><b class="xmk">XM</b><span class="bdg">PORTAL</span></span>
+      <h1>Every market.<br>One trusted broker.</h1>
+      <p class="sub">Forex, metals, indices, stocks and crypto CFDs on the web, on your phone and on MetaTrader.</p>
+      <div class="hbtn"><a class="btn btn-primary btn-lg btn-xl pill glow-btn" id="join" href="#">Join today</a><button class="btn btn-glass btn-lg btn-xl pill" id="heroLogin" type="button">Log in</button></div>
+      <div class="vis">
+        <div class="pv">
+          <div class="pv-bar"><i></i><i></i><i></i><span>my.xmtrading.com/portal</span></div>
+          <div class="pv-b">
+            <div class="pv-wl"><h6>Popular</h6><ul id="pvWl"></ul></div>
+            <div class="pv-ch"><div class="hd"><b id="pvP">4,055.26</b><span class="dn">-2.07%</span><small>GOLD &middot; 15m</small></div><svg id="pvC" viewBox="0 0 520 240" preserveAspectRatio="none"></svg></div>
+            <div class="pv-tk"><div class="acc"><div><small>Real account</small><b>$12,480.35</b></div><small>Zero</small></div><div class="sb"><span class="sell"><small>Sell</small>4,055.11</span><span class="buy"><small>Buy</small>4,055.46</span></div><div class="fld"><span>Volume</span><b>0.10 lots</b></div><div class="fld"><span>Stop loss</span><b>4,021.00</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- client pane -->
+    <div class="pane p-cli" id="paneC" hidden>
+      <div>
+        <span class="kick"><b class="xmk">XM</b><span class="bdg g">WELCOME BACK</span></span>
+        <h1>Welcome back, Taro.</h1>
+        <p class="sub">Your account is exactly where you left it. Jump straight back in, or pick something new to try.</p>
+        <div class="hbtn"><button class="btn btn-primary btn-lg btn-xl pill glow-btn" id="contPortal" type="button">Continue in Portal</button><button class="btn btn-glass btn-lg btn-xl pill" id="contPk" type="button"><span id="pkIc"></span>Continue with passkey</button></div>
+        <div class="lu-line"><span class="utag" id="luTag"></span><span class="dlp" id="luLink"></span></div>
+      </div>
+      <div class="pick" id="pick">
+        <div class="pick-h"><h3 id="pickH">Pick up where you left off</h3><span class="bal"><small>Balance</small><b>$12,480.35</b></span></div>
+        <div class="pick-s"><div><small>Open P/L</small><div class="pl" id="plT">$0.00</div></div><span class="lv"><i></i>Live (illustrative)</span></div>
+        <div id="posL"></div>
+        <div class="go"><button class="btn btn-primary pill" id="openPos" type="button">Open positions</button><button class="btn btn-glass pill" id="lastView" type="button">Back to GOLD chart</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ALREADY A CLIENT ================= -->
+  <section class="sec" id="cliSec">
+    <div class="sh"><span class="eyebrow">Already a client</span><h2 class="h-l">Your next step, one click away.</h2><p class="lead">Offers chosen for how you trade today, each one deep-linked straight into the Portal.</p></div>
+    <div id="cliRow"></div>
+  </section>
+
+  <!-- ================= HOW WE RECOGNISE YOU ================= -->
+  <section class="sec" id="recSec">
+    <div class="rec">
+      <div class="rec-l">
+        <span class="eyebrow">How we recognise you</span>
+        <h2 class="h-l">Recognised, not tracked.</h2>
+        <p class="lead">Two small signals are enough to know a returning client. Neither carries personal data.</p>
+        <div class="pts">
+          <div class="pt"><span class="n">__COOKIE__</span><div><b>A first-party cookie</b><span><code>xm_rc</code> holds a random ID only. No name, email, balance or positions are ever written to it.</span></div></div>
+          <div class="pt"><span class="n">__FP__</span><div><b>A device passkey</b><span>Face ID, Touch ID or Windows Hello proves it is really you, so there is no password to type.</span></div></div>
+          <div class="pt"><span class="n">__SH__</span><div><b>The server decides</b><span>It matches the ID to a segment and adapts the page. Your name appears only after that match. Clear the cookie and you are a visitor again.</span></div></div>
+        </div>
+      </div>
+      <div class="block jar">
+        <h5 id="jarH"></h5>
+        <div id="jarB"></div>
+        <h5>Never stored in the cookie</h5>
+        <div class="nots" id="nots"></div>
+        <div class="flow3"><div class="fb" id="f1"><b>Browser</b>sends xm_rc</div><span class="fa">&rsaquo;</span><div class="fb" id="f2"><b>Segment lookup</b>client / visitor</div><span class="fa">&rsaquo;</span><div class="fb" id="f3"><b>Page adapts</b>router + offers</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BEFORE / AFTER ================= -->
+  <section class="sec" id="cmpSec">
+    <div class="sh"><span class="eyebrow">Clicks to trade</span><h2 class="h-l">From five clicks to one.</h2><p class="lead">A recognised client should never have to explain where they want to go.</p></div>
+    <div class="cmp" id="cmp">
+      <div class="cm today"><span class="lb">Today</span><div class="big"><b id="nT">0</b><span>clicks to trade</span></div><div class="meta">Log in, pick the right door, authenticate, then find the Trade tab.</div><div class="cl" id="clT"></div></div>
+      <div class="cm block prop"><span class="lb">Proposed</span><div class="big"><b id="nP">0</b><span>click to trade</span></div><div class="meta">Recognised on this device, so one passkey tap lands on the Trade screen.</div><div class="cl" id="clP"></div></div>
+    </div>
+    <div class="cmp-f"><button class="btn btn-outline pill" id="replay" type="button">Replay comparison</button><span class="delta" id="delta">80% fewer clicks</span></div>
+    <p class="fine">Click counts are an illustrative walkthrough of the current and proposed login journeys, not measured data.</p>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$;
+  var K_CLIENT = 'xm.lr.client', K_LAST = 'xm.lr.last';
+  var client = false, last = { k: 'portal', t: 0 };
+  var ICON = {
+    cookie: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 3.500 3.500 0 0 0 4 4 3 3 0 0 0 3.500 3.500A3 3 0 0 0 21 12z"/><path d="M8.500 9.500v.01M12 14v.01M15.500 16v.01M8 14.500v.01"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.700 0l3-3a4 4 0 0 0-5.700-5.700l-1 1"/><path d="M14 10a4 4 0 0 0-5.700 0l-3 3a4 4 0 0 0 5.700 5.700l1-1"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+  };
+  var DEST = [
+    { k: 'portal', t: 'Trade in the Portal', v: 'Client Portal', d: 'Charts, orders and ideas on the web', u: 'my.xmtrading.com/portal/trade', ic: 'chart' },
+    { k: 'members', t: 'Members area', v: 'Members area', d: 'Deposits, withdrawals and documents', u: 'my.xmtrading.com/members', ic: 'user' },
+    { k: 'mt', t: 'MetaTrader 4 / 5', v: 'MetaTrader 4 / 5', d: 'Launch with your MT login and server', u: 'my.xmtrading.com/platforms/launch', ic: 'monitor' }
+  ];
+  function dest(k) { return DEST.filter(function (d) { return d.k === k; })[0]; }
+  function ago() {
+    if (!last.t) return '2 days ago';
+    var m = Math.round((Date.now() - last.t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : Math.round(m / 60) + ' h ago';
+  }
+  function save() { try { sessionStorage.setItem(K_CLIENT, client ? '1' : '0'); localStorage.setItem(K_LAST, JSON.stringify(last)); } catch (e) {} }
+  try { client = sessionStorage.getItem(K_CLIENT) === '1'; var l = JSON.parse(localStorage.getItem(K_LAST)); if (l && l.k) last = l; } catch (e) {}
+  if (XM.qs('client') === '1') client = true; if (XM.qs('client') === '0') client = false;
+
+  /* ---------- header + router ---------- */
+  function renderHeader() {
+    var right = $('.xm-hdr .right'); if (!right) return;
+    var reg = XM.url('ideas/02-hero-email/register.html');
+    right.innerHTML = '<span class="xm-lang">' + XM.icon('globe') + 'EN</span>' +
+      (client ? '<span class="wb-tag"><span class="dot"></span>Welcome back, Taro</span>' : '') +
+      '<div class="lr"><button class="btn ' + (client ? 'btn-primary' : 'btn-outline hdr-login') + ' lr-btn" id="lrBtn" type="button" aria-haspopup="menu" aria-expanded="false">' + (client ? XM.icon('fingerprint', 'fp') : '') + 'Log in' + XM.icon('chev', 'cv') + '</button></div>' +
+      (client ? '' : '<a class="btn btn-primary" href="' + reg + '" data-register>Register</a>') +
+      '<button class="xm-burger" aria-label="Menu">' + XM.icon('grid', 'w20') + '</button>';
+    $('#lrBtn').addEventListener('click', function (e) { e.stopPropagation(); menu() ? closeMenu() : openMenu(); });
+  }
+  function menu() { return $('.lr-menu'); }
+  function openMenu() {
+    closeMenu(); var btn = $('#lrBtn'); if (!btn) return;
+    var items = DEST.map(function (d) {
+      var isLast = client && d.k === last.k;
+      return '<button class="lr-it' + (isLast ? ' last' : '') + '" role="menuitem" data-k="' + d.k + '" type="button"><span class="ti">' + XM.icon(d.ic) + '</span><span><b>' + (client ? d.t : d.v) + '</b><small>' + d.d + '</small>' + (isLast ? '<span class="lu">' + ICON.clock + 'Last used: ' + (d.k === 'portal' ? 'Portal' : d.k === 'members' ? 'Members' : 'MetaTrader') + ' ' + ago() + '</span>' : '') + '</span>' + XM.icon('arrow', 'ar') + '</button>';
+    }).join('');
+    var html = client
+      ? '<div class="lr-hd"><span class="av">T</span><div><b>Taro</b><small>Recognised on this device</small></div></div>' +
+        '<button class="lr-pk" role="menuitem" data-pk="1" type="button"><span class="fi">' + XM.icon('fingerprint') + '</span><span><b>Continue with passkey</b><small>Face ID on this device, straight to ' + dest(last.k).t.replace('Trade in the ', '') + '</small></span><span class="rc">1 tap</span></button>' +
+        '<div class="lr-lab">Or choose where to go</div>' + items +
+        '<div class="lr-ft"><span>Not Taro?</span><a href="#" data-switch>Use a different account</a></div>'
+      : '<div class="lr-lab" style="padding-top:12px">Where do you want to log in?</div>' + items +
+        '<div class="lr-ft"><span>New to XM?</span><a href="' + XM.url('ideas/02-hero-email/register.html') + '">Register</a></div>';
+    var m = XM.el('<div class="lr-menu" role="menu" aria-label="Log in">' + html + '</div>');
+    $('.lr').appendChild(m); btn.setAttribute('aria-expanded', 'true');
+    if (window.innerWidth <= 720) { var hd = btn.closest('.xm-hdr'), cb = hd ? hd.getBoundingClientRect().top : 0; m.style.top = (btn.getBoundingClientRect().bottom - cb + 10) + 'px'; }
+    m.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var it = e.target.closest('.lr-it'), pk = e.target.closest('[data-pk]'), sw = e.target.closest('[data-switch]');
+      if (it) route(it.getAttribute('data-k'), false); else if (pk) route(last.k, true); else if (sw) { e.preventDefault(); closeMenu(); XM.toast('Switching account: cookie ID cleared'); setClient(false); }
+    });
+    var f = m.querySelector('.lr-pk') || m.querySelector('.lr-it'); if (f) setTimeout(function () { try { f.focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function closeMenu() { var m = menu(); if (m) m.remove(); var b = $('#lrBtn'); if (b) b.setAttribute('aria-expanded', 'false'); }
+  function route(k, pk) {
+    var d = dest(k); closeMenu();
+    if (client) { last = { k: k, t: Date.now() }; save(); renderClient(); XM.toast((pk ? 'Passkey verified. ' : '') + 'Opening ' + XM.esc(d.u) + (pk ? '' : ' (last used updated)')); }
+    else XM.toast('Taking you to the ' + XM.esc(d.v) + ' login form. Next: email, password, submit.');
+  }
+  document.addEventListener('click', function (e) { if (menu() && !e.target.closest('.lr')) closeMenu(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu()) { closeMenu(); var b = $('#lrBtn'); if (b) b.focus(); } });
+  window.addEventListener('resize', closeMenu);
+
+  /* ---------- segment toggle ---------- */
+  function setClient(v, announce) {
+    client = v; save(); closeMenu(); render();
+    if (announce) XM.toast(v ? 'Cookie xm_rc found. Showing the existing-client experience.' : 'No cookie. Showing the visitor experience.');
+  }
+  function render() {
+    $('#dseg').setAttribute('data-v', client ? 'client' : 'visitor');
+    $$('#dseg button').forEach(function (b) { var on = (b.getAttribute('data-v') === 'client') === client; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    $('#ckp').classList.toggle('on', client); $('#ckT').textContent = client ? 'xm_rc=c_8f3a91\u2026e2 \u00b7 passkey on device' : 'xm_rc: not set';
+    $('#paneV').hidden = client; $('#paneC').hidden = !client;
+    renderHeader(); renderClient(); renderOffers(); renderJar();
+  }
+  function renderClient() {
+    var d = dest(last.k);
+    $('#luTag').innerHTML = ICON.clock + 'Last used: ' + (last.k === 'portal' ? 'Portal' : last.k === 'members' ? 'Members area' : 'MetaTrader') + ' ' + ago();
+    $('#luLink').innerHTML = ICON.link + XM.esc(d.u);
+    $('#contPortal').textContent = last.k === 'portal' ? 'Continue in Portal' : last.k === 'members' ? 'Continue to Members area' : 'Continue to MetaTrader';
+  }
+
+  /* ---------- visitor hero visual ---------- */
+  function drawPv() {
+    var names = ['GOLD', 'BTCUSD', 'EURUSD', 'USDJPY', 'NVDA'];
+    $('#pvWl').innerHTML = names.map(function (s, i) {
+      var x = XM.instr(s); return '<li class="' + (i === 0 ? 'on' : '') + '">' + XM.logoChip(x, 30) + '<span class="n"><b>' + x.s + '</b><small>' + XM.esc(x.cls) + '</small></span><span class="v"><span>' + XM.fmt(x.p, Math.min(x.d, 3)) + '</span><span class="' + (x.chg >= 0 ? 'up' : 'dn') + '">' + (x.chg >= 0 ? '+' : '') + x.chg.toFixed(2) + '%</span></span></li>';
+    }).join('');
+    var seed = 5, v = 100, pts = [], w = 520, h = 240;
+    for (var i = 0; i < 70; i++) { seed = (seed * 9301 + 49297) % 233280; v += (seed / 233280 - .5) * 8 - .25 + Math.sin(i / 7) * 1.4; pts.push(v); }
+    var mn = Math.min.apply(0, pts), mx = Math.max.apply(0, pts);
+    var xy = pts.map(function (p, i) { return [i / 69 * w, 16 + (1 - (p - mn) / (mx - mn)) * (h - 50)]; });
+    var d = xy.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+    var g = ''; for (var j = 1; j < 6; j++) g += '<line x1="0" x2="' + w + '" y1="' + j * 40 + '" y2="' + j * 40 + '" stroke="rgba(255,255,255,.05)"/>';
+    $('#pvC').innerHTML = '<defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00c27c" stop-opacity=".35"/><stop offset="1" stop-color="#00c27c" stop-opacity="0"/></linearGradient></defs>' + g + '<path d="' + d + ' L' + w + ' ' + h + ' L0 ' + h + 'Z" fill="url(#pg)"/><path d="' + d + '" fill="none" stroke="#3ddc97" stroke-width="2.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+  }
+
+  /* ---------- open positions (client hero) ---------- */
+  var POS = [
+    { s: 'USDJPY', side: 'Buy', lots: .5, e: 156.812, c: 157.156, d: 3, f: function (e, c, l) { return l * 100000 * (c - e) / c; }, st: .004 },
+    { s: 'GOLD', side: 'Sell', lots: .1, e: 4071.4, c: 4055.26, d: 2, f: function (e, c, l) { return (e - c) * l * 100; }, st: .35 },
+    { s: 'EURUSD', side: 'Buy', lots: .2, e: 1.1221, c: 1.11948, d: 5, f: function (e, c, l) { return l * 100000 * (c - e); }, st: .00006 }
+  ];
+  function money(n) { return (n < 0 ? '-' : '+') + '$' + XM.fmt(Math.abs(n), 2); }
+  function drawPos() {
+    var tot = 0;
+    $('#posL').innerHTML = POS.map(function (p) {
+      var pl = p.f(p.e, p.c, p.lots); tot += pl; var x = XM.instr(p.s);
+      return '<div class="pos">' + XM.logoChip(x, 36) + '<div class="n"><b>' + p.s + '</b><small>' + p.side + ' ' + p.lots.toFixed(2) + ' lots</small></div><div class="s"><b class="' + (pl >= 0 ? 'up' : 'dn') + '">' + money(pl) + '</b><small>' + p.e.toFixed(p.d) + ' &rarr; ' + p.c.toFixed(p.d) + '</small></div></div>';
+    }).join('');
+    var t = $('#plT'); t.textContent = money(tot); t.className = 'pl ' + (tot >= 0 ? 'up' : 'dn');
+  }
+  function tickPos() { POS.forEach(function (p) { p.c = +(p.c + (Math.random() - .5) * 2 * p.st).toFixed(p.d); }); if (client && !document.hidden) drawPos(); }
+
+  /* ---------- offers ---------- */
+  var OFFERS = [
+    { cls: 't1', why: 'Based on: Standard account', t: 'Open a Zero account', p: 'Spreads from 0.0 pips with a flat commission per lot. Same login, ready in about a minute.', cta: 'Open account', u: 'my.xmtrading.com/open-account?type=zero',
+      art: '<svg viewBox="0 0 320 180" fill="none"><rect x="60" y="34" width="200" height="112" rx="18" fill="#0b0d10" stroke="rgba(255,255,255,.2)"/><text x="82" y="82" font-family="Poppins,sans-serif" font-weight="800" font-size="40" fill="#fff" letter-spacing="-2">0.0</text><text x="150" y="82" font-family="Poppins,sans-serif" font-weight="600" font-size="14" fill="#7fe7b8">pips</text><path d="M82 112h96" stroke="#3a414b" stroke-width="6" stroke-linecap="round"/><path d="M82 128h58" stroke="#2a313b" stroke-width="6" stroke-linecap="round"/><circle cx="226" cy="108" r="22" fill="#00c27c"/><path d="m216 108 7 7 13-14" stroke="#04130c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="276" cy="28" r="4" fill="#9ff0c8"/><circle cx="38" cy="150" r="5" fill="#9ff0c8" opacity=".6"/></svg>' },
+    { cls: 't2', why: 'Based on: You use MT4', t: 'Move to MT5', p: 'More timeframes and market depth, plus your settings carried across. Your balance stays put.', cta: 'Start the move', u: 'my.xmtrading.com/platforms/mt5?migrate=1',
+      art: '<svg viewBox="0 0 320 180" fill="none"><rect x="40" y="28" width="150" height="104" rx="12" fill="#0b0d10" stroke="rgba(255,255,255,.22)"/><path d="M52 104l24-30 22 18 28-40 28 24" stroke="#00c27c" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"/><rect x="204" y="52" width="76" height="104" rx="14" fill="#0b0d10" stroke="rgba(255,255,255,.22)"/><text x="242" y="96" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="800" font-size="22" fill="#fff">MT5</text><path d="M220 118h44M220 130h30" stroke="#4a525c" stroke-width="5" stroke-linecap="round"/><path d="M194 82h8" stroke="#9fb7ff" stroke-width="3" stroke-linecap="round"/><path d="m198 76 6 6-6 6" stroke="#9fb7ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>' },
+    { cls: 't3', why: 'Based on: Active trader', t: 'Start copy trading', p: 'Follow strategies from experienced traders and mirror them in your account, always with you in control.', cta: 'Browse traders', u: 'my.xmtrading.com/copy-trading?src=home',
+      art: '<svg viewBox="0 0 320 180" fill="none"><rect x="30" y="34" width="150" height="112" rx="18" fill="#12161b" stroke="rgba(255,255,255,.2)"/><circle cx="62" cy="66" r="15" fill="#f5a623"/><path d="M90 60h58M90 74h36" stroke="#4a525c" stroke-width="5" stroke-linecap="round"/><path d="M46 124l22-18 20 10 26-26 24 14" stroke="#3ddc97" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"/><rect x="150" y="62" width="140" height="92" rx="18" fill="#12161b" stroke="rgba(255,255,255,.2)"/><circle cx="182" cy="94" r="15" fill="#00c27c"/><path d="M210 88h54M210 102h34" stroke="#4a525c" stroke-width="5" stroke-linecap="round"/><rect x="170" y="124" width="100" height="18" rx="9" fill="#00c27c"/><text x="220" y="137" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="700" font-size="10" fill="#04130c">COPY</text></svg>' }
+  ];
+  function renderOffers() {
+    var box = $('#cliRow');
+    if (!client) {
+      box.innerHTML = '<div class="ph-row"><b>This module appears once the cookie is recognised.</b>Existing clients see three personalised offers here instead of acquisition content.<br><button class="btn btn-primary pill" id="phGo" type="button">Switch to Existing client</button></div>';
+      $('#phGo').addEventListener('click', function () { setClient(true, true); }); return;
+    }
+    box.innerHTML = '<div class="oc">' + OFFERS.map(function (o, i) {
+      return '<article class="of" style="animation-delay:' + (i * .08) + 's"><div class="tile ' + o.cls + '">' + o.art + '<span class="why">' + o.why + '</span></div><h4>' + o.t + '</h4><p>' + o.p + '</p><span class="sp"></span><span class="dlp" title="Deep link target">' + ICON.link + o.u + '</span><button class="btn btn-primary pill" type="button" data-i="' + i + '">' + o.cta + ' ' + XM.icon('arrow') + '</button></article>';
+    }).join('') + '</div>';
+    $$('#cliRow .btn').forEach(function (b) { b.addEventListener('click', function () { var o = OFFERS[+b.getAttribute('data-i')]; XM.toast('Deep link \u2192 ' + XM.esc(o.u)); }); });
+  }
+
+  /* ---------- explainer jar ---------- */
+  function renderJar() {
+    $('#jarH').innerHTML = ICON.cookie.replace('<svg ', '<svg width="16" height="16" ') + 'Cookies for .xmtrading.com';
+    $('#jarB').innerHTML = client
+      ? '<div class="ckc"><div class="r"><span>name</span><b class="g">xm_rc</b></div><div class="r"><span>value</span><b>c_8f3a91d27b4e0c65e2</b></div><div class="r"><span>domain</span><b>.xmtrading.com</b></div><div class="r"><span>expires</span><b>in 180 days</b></div><div class="r"><span>flags</span><b>Secure; HttpOnly; SameSite=Lax</b></div></div>'
+      : '<div class="ckc empty">No <b style="color:#cfd5dc">xm_rc</b> cookie found.<br>This browser is treated as a visitor.</div>';
+    $('#nots').innerHTML = ['Name', 'Email', 'Balance', 'Positions'].map(function (n) { return '<span>' + ICON.x + n + '</span>'; }).join('');
+    $('#f1').classList.toggle('act', client); $('#f2').classList.toggle('act', true); $('#f3').classList.toggle('act', true);
+    $('#f2').innerHTML = '<b>Segment lookup</b>' + (client ? 'existing client' : 'visitor'); $('#f3').innerHTML = '<b>Page adapts</b>' + (client ? 'router + offers' : 'acquisition hero');
+    $('#f1').innerHTML = '<b>Browser</b>' + (client ? 'sends xm_rc' : 'sends nothing');
+  }
+
+  /* ---------- before / after ---------- */
+  var TODAY = [['Open the Log in menu', 'Header, top right'], ['Pick where to log in', 'Portal, Members area or MetaTrader'], ['Submit email and password', 'Type, then click Log in'], ['Confirm the device check', '2-step or captcha prompt'], ['Open the Trade tab', 'Find it in the Portal menu']];
+  var PROP = [['Tap Continue with passkey', 'Lands on the Trade screen']];
+  function drawCmp() {
+    var mk = function (a) { return a.map(function (s, i) { return '<div class="cs"><span class="nn">' + (i + 1) + '</span><span>' + s[0] + '<small>' + s[1] + '</small></span></div>'; }).join(''); };
+    $('#clT').innerHTML = mk(TODAY); $('#clP').innerHTML = mk(PROP);
+  }
+  var cmpTimers = [];
+  function playCmp() {
+    cmpTimers.forEach(clearTimeout); cmpTimers = [];
+    $$('#cmp .cs').forEach(function (c) { c.classList.remove('on'); }); $('#nT').textContent = '0'; $('#nP').textContent = '0'; $('#delta').classList.remove('in');
+    var T = $$('#clT .cs');
+    T.forEach(function (c, i) { cmpTimers.push(setTimeout(function () { c.classList.add('on'); $('#nT').textContent = i + 1; }, 500 + i * 650)); });
+    cmpTimers.push(setTimeout(function () { $$('#clP .cs')[0].classList.add('on'); $('#nP').textContent = '1'; }, 500));
+    cmpTimers.push(setTimeout(function () { $('#delta').classList.add('in'); }, 500 + T.length * 650 + 200));
+  }
+  function initCmp() {
+    drawCmp(); $('#replay').addEventListener('click', playCmp);
+    if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { playCmp(); io.disconnect(); } }, { threshold: .35 }); io.observe($('#cmp')); } else playCmp();
+  }
+
+  function init() {
+    $('#pkIc').innerHTML = XM.icon('fingerprint');
+    $('.pt:nth-child(1) .n').innerHTML = ICON.cookie; $('.pt:nth-child(2) .n').innerHTML = XM.icon('fingerprint'); $('.pt:nth-child(3) .n').innerHTML = XM.icon('shield');
+    $$('#dseg button').forEach(function (b) { b.addEventListener('click', function () { var v = b.getAttribute('data-v') === 'client'; if (v !== client) setClient(v, true); }); });
+    $('#join').setAttribute('href', XM.url('ideas/02-hero-email/register.html'));
+    $('#heroLogin').addEventListener('click', function (e) { e.stopPropagation(); window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(openMenu, 350); });
+    $('#contPortal').addEventListener('click', function () { route(last.k, false); });
+    $('#contPk').addEventListener('click', function () { route(last.k, true); });
+    $('#openPos').addEventListener('click', function () { XM.toast('Deep link \u2192 my.xmtrading.com/portal/positions'); });
+    $('#lastView').addEventListener('click', function () { XM.toast('Deep link \u2192 my.xmtrading.com/portal/trade?symbol=GOLD'); });
+    drawPv(); drawPos(); initCmp(); render(); setInterval(tickPos, 1500);
+    XM.notes({
+      title: 'Login router (idea 14)',
+      today: 'A returning client sees the same acquisition homepage as a stranger, then needs about five clicks to reach the Trade screen.',
+      proposed: 'Recognise returning clients by an opaque cookie plus a device passkey. The header greets them, the Log in button becomes a router with a remembered destination, and the hero turns into a pick-up-where-you-left-off module with relevant offers.',
+      why: 'Existing clients are the cheapest revenue to grow. Removing friction and replacing acquisition content with relevant cross-sell raises logins and product adoption.',
+      metric: 'Clicks and time from landing to first order; login success rate; adoption of Zero, MT5 and copy trading among existing clients.'
+    });
+  }
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="14"></script>
+</body>
+</html>

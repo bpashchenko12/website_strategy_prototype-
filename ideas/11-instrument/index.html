@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gold (GOLD) price, chart and trading conditions · XMTrading</title>
+<meta name="description" content="Live-style Gold (GOLD) price, performance, daily activity, market analysis and trading conditions. Illustrative prototype content.">
+<link rel="canonical" href="https://www.xmtrading.com/markets/metals/gold">
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<script type="application/ld+json" id="ld">
+{"@context":"https://schema.org","@graph":[{"@type":"FinancialProduct","name":"Gold CFD","alternateName":"GOLD","category":"Contract for Difference (Metals)","description":"Illustrative prototype content: Gold CFD price page with performance, daily activity, analysis and trading conditions.","url":"https://www.xmtrading.com/markets/metals/gold","provider":{"@type":"Organization","name":"XMTrading","url":"https://www.xmtrading.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Markets","item":"https://www.xmtrading.com/markets"},{"@type":"ListItem","position":2,"name":"Metals","item":"https://www.xmtrading.com/markets/metals"},{"@type":"ListItem","position":3,"name":"Gold"}]}]}
+</script>
+<style>
+/* =====================================================================
+   IDEA 11 · Programmatic instrument page (Kraken price page + Bybit instrument page, in XM style)
+   One template, driven by XM.INSTR. All numbers are illustrative and deterministic per symbol.
+   ===================================================================== */
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+button { border: 0; background: none; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+.xm-hdr { background: rgba(245, 245, 245, .92); }
+.num { font-variant-numeric: tabular-nums; }
+.up { color: var(--up); } .dn { color: var(--dn); }
+main { padding-bottom: 70px; }
+
+/* ---------- switcher ---------- */
+.sw { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+.srch { position: relative; flex: none; width: 300px; }
+.srch input { width: 100%; height: 44px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; padding: 0 16px 0 42px; font-size: 14px; outline: 0; transition: .15s; }
+.srch input:focus { border-color: var(--g); box-shadow: 0 0 0 4px rgba(0, 132, 84, .12); }
+.srch > svg { position: absolute; left: 14px; top: 12px; width: 20px; height: 20px; color: var(--mut); pointer-events: none; }
+.res { position: absolute; left: 0; right: 0; top: calc(100% + 8px); background: #fff; border-radius: 16px; box-shadow: var(--sh-l), 0 0 0 1px var(--line); padding: 6px; z-index: 60; max-height: 340px; overflow: auto; display: none; }
+.res.open { display: block; animation: fadeUp .18s; }
+.res button { display: flex; width: 100%; align-items: center; gap: 12px; text-align: left; padding: 9px 10px; border-radius: 10px; }
+.res button:hover, .res button.hl { background: var(--soft); }
+.res b { display: block; font-size: 14px; line-height: 1.2; } .res small { color: var(--mut); font-size: 12px; }
+.res .rp { margin-left: auto; text-align: right; font-size: 13px; font-weight: 500; }
+.res .none { padding: 14px; color: var(--mut); font-size: 13.5px; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px; flex: 1; min-width: 0; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { flex: none; padding: 9px 16px; border-radius: 999px; background: #fff; border: 1.5px solid var(--line); font-weight: 600; font-size: 13.5px; transition: .15s; display: inline-flex; gap: 8px; align-items: center; }
+.chips button:hover { border-color: var(--line-2); transform: translateY(-1px); }
+.chips button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.chips button .chg { font-size: 11.5px; font-weight: 600; }
+.chips button.on .chg { color: #7dedb8; } .chips button.on .chg.dn { color: #ff8a90; }
+
+.nf { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 16px; border-radius: 14px; background: var(--amber-l); color: #7a4a00; font-size: 14px; line-height: 1.45; border: 1px solid rgba(240, 138, 36, .3); }
+.nf svg { width: 18px; height: 18px; flex: none; }
+.nf button { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; font-size: 20px; line-height: 1; color: #7a4a00; flex: none; } .nf button:hover { background: rgba(0, 0, 0, .06); }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--g); outline-offset: 2px; }
+
+/* ---------- title card ---------- */
+.bc { display: flex; align-items: center; gap: 8px; margin: 22px 0 14px; font-size: 13px; color: var(--mut); flex-wrap: wrap; }
+.bc a { color: var(--ink-2); } .bc a:hover { color: var(--g); text-decoration: underline; }
+.bc svg { width: 12px; height: 12px; transform: rotate(-90deg); opacity: .6; }
+.bc b { color: var(--ink); font-weight: 500; }
+.ttl { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 24px 28px 20px; box-shadow: var(--sh-s); }
+.ttl-r1 { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ttl-id { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.ttl-id h1 { font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+.ttl-id .meta { display: flex; align-items: center; gap: 8px; margin-top: 7px; flex-wrap: wrap; }
+.ttl-px { margin-left: auto; text-align: right; }
+.ttl-px .p { font-size: clamp(32px, 4vw, 46px); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; border-radius: 8px; padding: 0 6px; margin: 0 -6px; display: inline-block; }
+.ttl-px .c { margin-top: 4px; font-size: 14.5px; font-weight: 600; display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.ttl-px .c .mut { font-weight: 400; font-size: 13px; }
+.live { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--mut); }
+.stats5 { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.stats5 div { padding: 0 18px; border-left: 1px solid var(--line); } .stats5 div:first-child { padding-left: 0; border-left: 0; }
+.stats5 small { display: block; color: var(--mut); font-size: 12px; } .stats5 b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- performance tiles ---------- */
+.perf { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 14px; }
+.pt { border-radius: 16px; padding: 12px 14px; text-align: left; border: 1.5px solid transparent; transition: .15s; background: #fff; box-shadow: var(--sh-s); position: relative; }
+.pt small { display: block; font-size: 12px; font-weight: 600; color: var(--mut); letter-spacing: .02em; }
+.pt b { font-size: 18px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.pt.u { background: rgba(18, 165, 106, .09); } .pt.u b { color: var(--up); }
+.pt.d { background: rgba(229, 55, 63, .08); } .pt.d b { color: var(--dn); }
+.pt:hover { transform: translateY(-2px); box-shadow: var(--sh-m); }
+.pt.on { border-color: var(--ink); }
+
+/* ---------- main grid ---------- */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 372px; grid-template-areas: "chart tk" "tabs tk"; gap: 18px 22px; margin-top: 18px; align-items: start; }
+.chart-c { grid-area: chart; } .tabs-c { grid-area: tabs; } .tk-c { grid-area: tk; position: sticky; top: 88px; }
+.card2 { background: #fff; border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--sh-s); }
+.chart-c { padding: 18px 18px 12px 22px; }
+.ch-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ch-h .pill-tabs { background: var(--soft); border-color: transparent; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.ch-h .pill-tabs::-webkit-scrollbar { display: none; }
+.ch-h .pill-tabs button { padding: 7px 14px; font-size: 13px; }
+.ch-h .pill-tabs button.on { background: #fff; box-shadow: var(--sh-s); }
+.ch-h .rt { margin-left: auto; }
+.cv-w { position: relative; height: clamp(280px, 34vw, 400px); margin-top: 10px; }
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: pan-y; }
+.tip { position: absolute; z-index: 4; pointer-events: none; background: #fff; border-radius: 12px; padding: 9px 12px; box-shadow: 0 10px 30px rgba(16, 24, 40, .18), 0 0 0 1px var(--line); font-size: 12px; color: var(--mut); opacity: 0; transition: opacity .12s; white-space: nowrap; }
+.tip b { display: block; font-size: 16px; color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.tip.on { opacity: 1; }
+.ch-f { display: flex; justify-content: space-between; gap: 12px; margin-top: 4px; font-size: 11.5px; color: var(--mut); flex-wrap: wrap; }
+
+/* ---------- ticket ---------- */
+.tk-c { padding: 20px; border-radius: 24px; }
+.tk-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.tk-h b { font-size: 16px; font-weight: 600; display: block; line-height: 1.2; } .tk-h small { color: var(--mut); font-size: 12px; }
+.sd { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: var(--soft); border-radius: 14px; gap: 4px; }
+.sd button { padding: 10px 10px 9px; border-radius: 11px; text-align: center; transition: .15s; color: var(--ink-2); }
+.sd button small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .08em; opacity: .75; }
+.sd button b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sd button.b.on { background: #0a9a63; color: #fff; box-shadow: 0 6px 16px rgba(10, 154, 99, .32); }
+.sd button.s.on { background: var(--red); color: #fff; box-shadow: 0 6px 16px rgba(229, 55, 63, .3); }
+.mt { display: flex; gap: 20px; margin: 16px 2px 12px; border-bottom: 1px solid var(--line); }
+.mt button { padding: 0 0 10px; font-size: 14px; font-weight: 500; color: var(--mut); position: relative; }
+.mt button.on { color: var(--ink); font-weight: 600; }
+.mt button.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--g); border-radius: 2px; }
+.fl { display: block; margin-bottom: 12px; }
+.fl > span { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-2); font-weight: 500; margin-bottom: 6px; }
+.fl > span em { font-style: normal; color: var(--mut); font-size: 12px; font-weight: 400; }
+.fi { display: flex; align-items: center; height: 48px; border-radius: 12px; background: var(--bg); border: 1.5px solid transparent; transition: .15s; overflow: hidden; }
+.fi:focus-within { background: #fff; border-color: var(--g); box-shadow: 0 0 0 4px rgba(0, 132, 84, .12); }
+.fi.err { border-color: var(--red); background: var(--red-l); animation: shake .3s; }
+@keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.fi input { flex: 1; min-width: 0; width: 100%; height: 100%; background: transparent; border: 0; outline: 0; padding: 0 14px; font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.fi input::placeholder { color: #a3a9b1; font-weight: 400; }
+.fi .u { padding-right: 14px; color: var(--mut); font-size: 12.5px; font-weight: 500; }
+.fi button.st { width: 44px; height: 100%; font-size: 20px; color: var(--ink-2); }
+.fi button.st:hover { background: rgba(0, 0, 0, .05); }
+.sz { display: flex; gap: 6px; margin: -4px 0 14px; }
+.sz button { padding: 5px 12px; border-radius: 999px; background: var(--soft); font-size: 12px; font-weight: 600; color: var(--ink-2); } .sz button:hover { background: #e8eaed; }
+.sum { display: grid; gap: 8px; padding: 14px 0; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.sum div { display: flex; justify-content: space-between; gap: 10px; } .sum b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.cta { display: grid; gap: 10px; margin-top: 6px; }
+.cta .btn { padding: 14px; font-size: 15px; border-radius: 12px; }
+.wait { margin-top: 12px; display: flex; gap: 9px; align-items: flex-start; font-size: 12.5px; line-height: 1.45; color: var(--mut); padding: 10px 12px; border-radius: 12px; background: var(--bg); transition: .2s; }
+.wait svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.wait.on { background: var(--g-l); color: var(--g-d); font-weight: 500; }
+.tk-sug { margin-top: 14px; padding: 12px 14px; border-radius: 14px; border: 1.5px dashed var(--line-2); font-size: 12.5px; color: var(--ink-2); display: flex; gap: 10px; align-items: center; }
+.tk-sug b { color: var(--ink); } .tk-sug button { margin-left: auto; color: var(--g); font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+.fine { margin-top: 12px; font-size: 11.5px; line-height: 1.5; color: var(--mut); }
+
+/* ---------- tabs ---------- */
+.tabs-c { padding: 6px 26px 28px; }
+.tb { display: flex; gap: 6px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; margin: 0 -10px; padding: 0 10px; }
+.tb::-webkit-scrollbar { display: none; }
+.tb button { flex: none; padding: 16px 14px 14px; font-size: 14.5px; font-weight: 500; color: var(--mut); position: relative; }
+.tb button.on { color: var(--ink); font-weight: 600; }
+.tb button.on::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 3px; background: var(--g); border-radius: 3px 3px 0 0; }
+.panel { display: none; padding-top: 22px; animation: fadeIn .25s; } .panel.on { display: block; }
+.panel h3 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.panel h3 .tag { font-size: 11px; }
+.kf { display: grid; grid-template-columns: 1fr 1fr; gap: 0 36px; }
+.kf div { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.kf span { color: var(--mut); } .kf b { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.rng { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.rng h4 { font-size: 13px; font-weight: 600; margin-bottom: 14px; display: flex; justify-content: space-between; } .rng h4 span { color: var(--mut); font-weight: 400; }
+.bar { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #f3b8bb, #e7e9ec 45%, #b9e4d1); }
+.bar i { position: absolute; top: 50%; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 4px solid var(--ink); transform: translate(-50%, -50%); box-shadow: 0 2px 6px rgba(0, 0, 0, .25); transition: left .6s cubic-bezier(.2, .7, .2, 1); }
+.bar-l { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12.5px; font-variant-numeric: tabular-nums; } .bar-l small { display: block; color: var(--mut); font-size: 11px; }
+.about { margin-top: 26px; font-size: 14.5px; line-height: 1.7; color: var(--ink-2); max-width: 78ch; }
+.about h4 { color: var(--ink); font-size: 15px; margin-bottom: 6px; }
+
+.act { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.act .full { grid-column: 1 / -1; }
+.act h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; } .act p.s { color: var(--mut); font-size: 12.5px; margin-bottom: 14px; }
+.big { font-size: 30px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+.sent { display: flex; height: 14px; border-radius: 8px; overflow: hidden; background: var(--red); margin: 12px 0 8px; }
+.sent i { display: block; background: var(--up); transition: width .8s cubic-bezier(.2, .7, .2, 1); width: 0; }
+.sent-l { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; }
+.heat { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin-top: 8px; }
+.heat i { aspect-ratio: 1 / 1.35; border-radius: 5px; background: var(--g); display: block; min-width: 0; transition: opacity .6s; }
+.heat-l { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin-top: 6px; font-size: 10.5px; color: var(--mut); text-align: center; }
+.sess { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.sess span { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--soft); color: var(--ink-2); font-weight: 500; }
+
+.cm p { font-size: 15px; line-height: 1.75; color: var(--ink-2); margin-bottom: 12px; max-width: 78ch; }
+.idea { margin-top: 18px; border-radius: 20px; background: linear-gradient(135deg, #f6fbf8, #fff 60%); border: 1.5px solid #cfe8dc; padding: 20px 22px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+.idea .lab { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.idea h4 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.idea .lv { display: grid; grid-template-columns: repeat(4, auto); gap: 8px 26px; margin-top: 12px; justify-content: start; }
+.idea .lv small { display: block; color: var(--mut); font-size: 11.5px; } .idea .lv b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.idea .fn { grid-column: 1 / -1; font-size: 11.5px; color: var(--mut); }
+.news a { display: flex; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line); align-items: flex-start; transition: .15s; }
+.news a:hover b { color: var(--g); }
+.news a:hover { padding-left: 4px; }
+.news .tm { flex: none; width: 82px; font-size: 12.5px; color: var(--mut); padding-top: 2px; }
+.news b { display: block; font-size: 15px; font-weight: 600; line-height: 1.4; transition: color .15s; } .news small { color: var(--mut); font-size: 12px; }
+.fq { border-bottom: 1px solid var(--line); }
+.fq button { width: 100%; text-align: left; padding: 17px 2px; font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.fq button svg { width: 18px; height: 18px; flex: none; transition: transform .25s; color: var(--mut); }
+.fq.open button svg { transform: rotate(180deg); }
+.fq .a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s; } .fq.open .a { grid-template-rows: 1fr; }
+.fq .a > div { overflow: hidden; } .fq .a p { padding: 0 2px 18px; color: var(--ink-2); font-size: 14.5px; line-height: 1.65; max-width: 74ch; }
+
+/* ---------- related + gated + why ---------- */
+.sec { margin-top: 56px; }
+.sec h2 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 18px; display: flex; align-items: baseline; gap: 12px; }
+.sec h2 small { font-size: 13px; color: var(--mut); font-weight: 400; letter-spacing: 0; }
+.rel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.rc { display: flex; flex-direction: column; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 16px; transition: .2s; text-align: left; }
+.rc:hover { transform: translateY(-4px); box-shadow: var(--sh-m); border-color: var(--line-2); }
+.rc .h { display: flex; align-items: center; gap: 10px; } .rc .h b { display: block; font-size: 15px; line-height: 1.2; } .rc .h small { color: var(--mut); font-size: 12px; display: block; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rc .v { display: flex; justify-content: space-between; align-items: flex-end; } .rc .v b { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; } .rc .v span { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.gate { position: relative; border-radius: 28px; overflow: hidden; background: #090b0e; color: #fff; padding: 44px 48px; isolation: isolate; display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: center; }
+.gate::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 80% at 100% 0%, rgba(0, 190, 120, .3), transparent 70%), radial-gradient(50% 60% at 0% 100%, rgba(47, 98, 240, .2), transparent 70%); }
+.gate .lk { width: 52px; height: 52px; border-radius: 16px; background: rgba(255, 255, 255, .1); display: grid; place-items: center; margin-bottom: 18px; border: 1px solid rgba(255, 255, 255, .14); }
+.gate .lk svg { width: 24px; height: 24px; }
+.gate h2 { color: #fff; font-size: clamp(24px, 2.6vw, 34px); line-height: 1.12; margin-bottom: 10px; display: block; }
+.gate p { color: #a9b0ba; font-size: 15px; line-height: 1.6; max-width: 44ch; }
+.gate .steps { display: flex; gap: 8px; margin: 20px 0 24px; flex-wrap: wrap; }
+.gate .steps span { padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .08); font-size: 12.5px; font-weight: 500; color: #cfd5dc; }
+.gate .steps span.now { background: #fff; color: #000; font-weight: 600; }
+.gx { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gx div { position: relative; padding: 16px 16px 16px 16px; border-radius: 18px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .09); overflow: hidden; }
+.gx div b { display: block; font-size: 14.5px; font-weight: 600; margin-bottom: 4px; padding-right: 28px; } .gx div small { color: #8e97a3; font-size: 12.5px; line-height: 1.45; display: block; }
+.gx div svg { position: absolute; right: 14px; top: 14px; width: 16px; height: 16px; color: #8e97a3; }
+.gx .blur { filter: blur(4px); opacity: .7; margin-top: 10px; display: flex; gap: 4px; align-items: flex-end; height: 26px; }
+.gx .blur i { flex: 1; background: linear-gradient(180deg, #3ddc97, #008454); border-radius: 2px; display: block; }
+.why { margin-top: 26px; background: #fff; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.why summary { list-style: none; cursor: pointer; padding: 18px 22px; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 15px; }
+.why summary::-webkit-details-marker { display: none; }
+.why summary .tag { margin-left: 4px; }
+.why summary svg { width: 18px; height: 18px; color: var(--mut); }
+.why summary > span:last-child { margin-left: auto; display: inline-flex; transition: transform .25s; }
+.why[open] summary > span:last-child { transform: rotate(180deg); }
+.why .in { padding: 0 22px 22px; }
+.why .ck { display: flex; flex-wrap: wrap; gap: 8px; }
+.why .ck span { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px 7px 9px; border-radius: 999px; background: var(--g-l); color: var(--g-d); font-size: 13px; font-weight: 500; }
+.why .ck span svg { width: 14px; height: 14px; stroke-width: 2.4; }
+.why ul { margin: 16px 0 0 18px; padding: 0; list-style: disc; color: var(--ink-2); font-size: 14px; line-height: 1.7; }
+.why .jb { margin-top: 14px; }
+.why pre { margin: 12px 0 0; padding: 16px; border-radius: 14px; background: #0f1216; color: #b8c2cf; font-size: 11.5px; line-height: 1.55; max-height: 280px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+.disc { margin-top: 22px; font-size: 12px; color: var(--mut); line-height: 1.6; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: minmax(0, 1fr) 330px; }
+  .perf { grid-template-columns: repeat(4, 1fr); }
+  .rel { grid-template-columns: repeat(3, 1fr); }
+  .gate { grid-template-columns: 1fr; padding: 36px 32px; }
+}
+@media (max-width: 900px) {
+  .wrap { padding: 0 16px; }
+  .grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "chart" "tk" "tabs"; }
+  .tk-c { position: static; }
+  .sw { flex-direction: column; align-items: stretch; gap: 10px; } .srch { width: 100%; }
+  .ttl { padding: 18px 18px 16px; border-radius: 20px; }
+  .ttl-px { margin-left: 0; text-align: left; width: 100%; } .ttl-px .c { justify-content: flex-start; }
+  .stats5 { grid-template-columns: repeat(3, 1fr); row-gap: 14px; } .stats5 div { padding: 0 12px; } .stats5 div:nth-child(4) { padding-left: 0; border-left: 0; }
+  .kf { grid-template-columns: 1fr; } .rng { grid-template-columns: 1fr; } .act { grid-template-columns: 1fr; }
+  .tabs-c { padding: 4px 16px 22px; border-radius: 20px; } .chart-c { padding: 14px 12px 10px 14px; border-radius: 20px; }
+  .idea { grid-template-columns: 1fr; } .idea .lv { grid-template-columns: repeat(2, auto); }
+}
+@media (max-width: 900px) {
+  .ch-h .pill-tabs button, .mt button, .sz button, .tk-sug button, .why .jb { min-height: 40px; }
+  .ch-h .pill-tabs button { min-width: 40px; } .tk-sug button { min-width: 44px; }
+  .mt button { padding: 0 2px 4px; }
+  .sz { gap: 8px; } .sz button { padding: 5px 14px; }
+  .tk-sug button { padding: 0 6px; }
+  .bc a { display: inline-flex; align-items: center; min-height: 32px; }
+}
+@media (max-width: 600px) {
+  .perf { grid-template-columns: repeat(4, 1fr); gap: 8px; } .pt { padding: 10px 8px; border-radius: 14px; } .pt b { font-size: 14.5px; }
+  .rel { grid-template-columns: repeat(2, 1fr); gap: 10px; } .rc { padding: 12px; } .rc .h small { display: none; }
+  .gate { padding: 28px 20px; border-radius: 22px; } .gx { grid-template-columns: 1fr; }
+  .news .tm { width: 66px; }
+  .sec { margin-top: 44px; }
+  .ch-h .pill-tabs button { padding: 6px 9px; font-size: 12.5px; } .ch-h .rt { display: none; }
+  .xm-lang, .xm-hdr [data-login] { display: none; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Trading"></div>
+
+<main>
+  <div class="wrap">
+    <!-- instrument switcher -->
+    <div class="sw" role="search">
+      <div class="srch">
+        <span data-i="search"></span>
+        <input id="q" type="search" placeholder="Search instruments (e.g. gold, tsla)" autocomplete="off" aria-label="Search instruments" role="combobox" aria-expanded="false" aria-controls="res">
+        <div class="res" id="res" role="listbox"></div>
+      </div>
+      <div class="chips" id="chips" aria-label="Popular instruments"></div>
+    </div>
+
+    <div class="nf" id="nf" role="status" hidden><span id="nfI"></span><span id="nfT"></span><button type="button" id="nfX" aria-label="Dismiss">&times;</button></div>
+
+    <nav class="bc" id="bc" aria-label="Breadcrumb"></nav>
+
+    <!-- title -->
+    <section class="ttl" id="ttl">
+      <div class="ttl-r1">
+        <div class="ttl-id"><span id="ttlChip"></span><div><h1 id="ttlName">Gold</h1><div class="meta" id="ttlMeta"></div></div></div>
+        <div class="ttl-px"><span class="p num" id="px">-</span><div class="c num" id="pxc"></div></div>
+      </div>
+      <div class="stats5" id="st5"></div>
+    </section>
+
+    <!-- performance -->
+    <div class="perf" id="perf" role="tablist" aria-label="Performance"></div>
+
+    <div class="grid">
+      <!-- chart -->
+      <section class="card2 chart-c">
+        <div class="ch-h">
+          <div class="pill-tabs" id="tfs" role="tablist" aria-label="Chart timeframe"></div>
+          <span class="live rt"><span class="dot live"></span><span>Simulated live price &middot; illustrative</span></span>
+        </div>
+        <div class="cv-w" id="cvw"><canvas id="cv" aria-label="Price chart"></canvas><div class="tip" id="tip"><b>-</b><span>-</span></div></div>
+        <div class="ch-f"><span id="chNote">Hover or drag across the chart to read prices.</span><span>All figures are illustrative placeholders.</span></div>
+      </section>
+
+      <!-- ticket -->
+      <aside class="card2 tk-c" aria-label="Order ticket">
+        <div class="tk-h"><span id="tkChip"></span><div><b id="tkSym">GOLD</b><small>Order ticket &middot; sign up to trade</small></div></div>
+        <div class="sd" id="sd"><button type="button" class="b on" data-side="buy"><small>BUY</small><b id="pB">-</b></button><button type="button" class="s" data-side="sell"><small>SELL</small><b id="pS">-</b></button></div>
+        <div class="mt" id="mt"><button type="button" class="on" data-type="market">Market</button><button type="button" data-type="limit">Limit</button></div>
+        <label class="fl" id="limW" hidden><span>Limit price <em id="limHint"></em></span><div class="fi" id="fiLim"><input id="lim" inputmode="decimal" autocomplete="off" placeholder="Enter price"></div></label>
+        <label class="fl"><span>Size <em id="unitHint">lots</em></span><div class="fi" id="fiSz"><button class="st" type="button" data-st="-1" aria-label="Decrease size">&minus;</button><input id="sz" inputmode="decimal" autocomplete="off" placeholder="0.00" style="text-align:center"><button class="st" type="button" data-st="1" aria-label="Increase size">+</button></div></label>
+        <div class="sz" id="szc"><button type="button" data-v="0.01">0.01</button><button type="button" data-v="0.1">0.10</button><button type="button" data-v="0.5">0.50</button><button type="button" data-v="1">1.00</button></div>
+        <div class="sum"><div><span>Estimated margin</span><b id="mg">-</b></div><div><span>Spread</span><b id="spd">-</b></div><div><span>Leverage</span><b id="lev">-</b></div></div>
+        <div class="cta"><button class="btn btn-primary" type="button" id="signup">Sign up to trade</button><button class="btn btn-outline" type="button" id="login">Log in</button></div>
+        <div class="wait" id="wait"><span data-i="lock"></span><span id="waitT">Enter a size and we will keep your order ready for after you register.</span></div>
+        <div class="tk-sug" id="sug"></div>
+        <p class="fine">Indicative prices. Register to place real orders. CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage.</p>
+      </aside>
+
+      <!-- tabs -->
+      <section class="card2 tabs-c">
+        <div class="tb" id="tb" role="tablist">
+          <button type="button" class="on" data-tab="ov" role="tab">Overview</button><button type="button" data-tab="ac" role="tab">Today's activity</button><button type="button" data-tab="an" role="tab">Analysis</button><button type="button" data-tab="nw" role="tab">News</button><button type="button" data-tab="fq" role="tab">FAQ</button>
+        </div>
+
+        <div class="panel on" id="p-ov" role="tabpanel">
+          <h3>Key facts <span class="tag grey">Illustrative</span></h3>
+          <div class="kf" id="kf"></div>
+          <div class="rng">
+            <div><h4>Day range <span id="drT"></span></h4><div class="bar"><i id="drK"></i></div><div class="bar-l"><div><small>Low</small><span id="drL">-</span></div><div style="text-align:right"><small>High</small><span id="drH">-</span></div></div></div>
+            <div><h4>52-week range <span id="wrT"></span></h4><div class="bar"><i id="wrK"></i></div><div class="bar-l"><div><small>Low</small><span id="wrL">-</span></div><div style="text-align:right"><small>High</small><span id="wrH">-</span></div></div></div>
+          </div>
+          <div class="about" id="about"></div>
+        </div>
+
+        <div class="panel" id="p-ac" role="tabpanel">
+          <h3>Today's activity <span class="tag grey">Illustrative</span></h3>
+          <div class="act">
+            <div><h4>Traders' sentiment</h4><p class="s">Share of open client positions, illustrative.</p><div class="big num" id="sentBig">-</div><div class="sent"><i id="sentBar"></i></div><div class="sent-l"><span class="up" id="sentL">-</span><span class="dn" id="sentS">-</span></div></div>
+            <div><h4>Volume, last 30 days</h4><p class="s">Daily traded volume index, illustrative.</p><div id="vol"></div><div class="mut" style="font-size:12.5px;margin-top:6px" id="volT"></div></div>
+            <div class="full"><h4>Most active hours (UTC)</h4><p class="s" id="heatS">-</p><div class="heat" id="heat"></div><div class="heat-l" id="heatL"></div><div class="sess"><span>Tokyo 00:00&ndash;08:00</span><span>London 07:00&ndash;16:00</span><span>New York 13:00&ndash;22:00</span></div></div>
+          </div>
+        </div>
+
+        <div class="panel cm" id="p-an" role="tabpanel">
+          <h3>Market analysis <span class="tag grey">Illustrative commentary</span></h3>
+          <div id="anText"></div>
+          <div class="idea" id="idea"></div>
+        </div>
+
+        <div class="panel news" id="p-nw" role="tabpanel"><h3>Latest news <span class="tag grey">Illustrative headlines</span></h3><div id="newsL"></div></div>
+
+        <div class="panel" id="p-fq" role="tabpanel"><h3>Frequently asked questions</h3><div id="faq"></div></div>
+      </section>
+    </div>
+
+    <!-- related -->
+    <section class="sec"><h2>Related instruments <small>Internal links help visitors and search engines move around the markets</small></h2><div class="rel" id="rel"></div></section>
+
+    <!-- gated -->
+    <section class="sec"><div class="gate" id="gate">
+      <div>
+        <div class="lk" data-i="lock"></div>
+        <h2 id="gateT">More for GOLD after you register and verify</h2>
+        <p>Browsing is free and public. Trading tools unlock once you have an account and have completed identity verification (KYC).</p>
+        <div class="steps"><span class="now">1 Register</span><span>2 Verify (KYC)</span><span>3 Unlock</span></div>
+        <button class="btn btn-primary btn-lg" type="button" id="gateBtn">Create free account</button>
+      </div>
+      <div class="gx" id="gx"></div>
+    </div></section>
+
+    <!-- why -->
+    <details class="why" id="why">
+      <summary>Why this converts <span class="tag">Strategy</span><span data-i="chev"></span></summary>
+      <div class="in">
+        <div class="ck" id="ck"></div>
+        <ul>
+          <li><b>One template, 1,400+ pages.</b> Every instrument gets its own indexable URL, unique numbers and copy, so each one can rank for "{name} price" and "trade {name}" searches.</li>
+          <li><b>Intent is captured, not lost.</b> The order ticket keeps instrument, side and size, then hands them to registration, so the visitor lands in the Portal with the trade ready.</li>
+          <li><b>Content that earns trust.</b> Day range, 52-week range, sentiment, news and FAQ answer the questions people ask before they open an account.</li>
+        </ul>
+        <button class="btn btn-outline btn-sm jb" type="button" id="jsonBtn">View structured data (JSON-LD)</button>
+        <pre id="jsonPre" hidden></pre>
+      </div>
+    </details>
+    <p class="disc">All prices, performance figures, ranges, sentiment, news and analysis on this page are illustrative placeholders generated for a strategy prototype. They are not live market data, not investment advice and not an offer.</p>
+  </div>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var $ = XM.$, $$ = XM.$$, esc = XM.esc, fmt = XM.fmt, I = XM.INSTR;
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SITE = 'https://www.xmtrading.com/markets/';
+  function ico(root) { $$('[data-i]', root).forEach(function (e) { var n = e.getAttribute('data-i'); e.removeAttribute('data-i'); e.innerHTML = XM.icon(n, e.classList.contains('lk') ? '' : 'w20'); if (!e.className) e.style.display = 'inline-flex'; }); }
+  ico(document);
+  $$('.srch > span').forEach(function (e) { e.outerHTML = e.innerHTML; });
+
+  /* ---------------- helpers ---------------- */
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function lbl(s) { return s.replace(/Cash$/, ''); }
+  function subj(i) { return i.cls === 'Forex' ? lbl(i.s) : i.n.split(' vs ')[0].replace(/ Index Cash$/, ' index').replace(/ Cash$/, ''); }
+  function find(q) {
+    q = (q || '').toUpperCase().replace(/\s/g, ''); if (!q) return null;
+    for (var k = 0; k < I.length; k++) { if (I[k].s.toUpperCase() === q || lbl(I[k].s).toUpperCase() === q) return I[k].s; }
+    return null;
+  }
+  function pct(v, p) { return (v >= 0 ? '+' : '-') + Math.abs(v * 100).toFixed(p == null ? 2 : p) + '%'; }
+  var VOLA = { Forex: .06, Metals: .25, Indices: .2, Energies: .35, Stocks: .45, Crypto: .55 };
+  var VT = { Forex: .00022, Metals: .0004, Indices: .0004, Energies: .0005, Stocks: .0007, Crypto: .0009 };
+  var CSZ = { Forex: 100000, Metals: 100, Crypto: 1, Indices: 1, Energies: 1000, Stocks: 100 };
+  var LEV = { Forex: 500, Metals: 200, Indices: 100, Energies: 100, Crypto: 20, Stocks: 20 };
+  var HRS = { Forex: 'Mon 00:05 to Fri 23:55 (server time)', Metals: 'Sun 23:00 to Fri 22:00, daily break 22:00 to 23:00', Indices: 'Mon to Fri, about 23 hours a day', Energies: 'Sun 23:00 to Fri 22:00, daily break 22:00 to 23:00', Stocks: 'Mon to Fri 16:30 to 23:00 (server time)', Crypto: '24 hours a day, 7 days a week' };
+  var UNIT = { Forex: 'units per lot', Metals: 'oz per lot', Indices: 'x index per lot', Energies: 'barrels per lot', Stocks: 'shares per lot', Crypto: 'coin per lot' };
+  var TFS = [{ k: '1D', ty: 1 / 365, n: 96, ms: 864e5 }, { k: '1W', ty: .0192, n: 126, ms: 7 * 864e5 }, { k: '1M', ty: .083, n: 120, ms: 30 * 864e5 }, { k: '3M', ty: .25, n: 130, ms: 91 * 864e5 }, { k: '6M', ty: .5, n: 150, ms: 182 * 864e5 }, { k: 'YTD', ty: .85, n: 150, ms: 0 }, { k: '1Y', ty: 1, n: 180, ms: 365 * 864e5 }];
+  var NOW = new Date(); TFS[5].ms = NOW - new Date(NOW.getFullYear(), 0, 1);
+  function usd(v) { return '$' + fmt(Math.abs(v), 2); }
+  function cs(s) { return s === 'SILVER' ? 5000 : CSZ[S[s].i.cls]; }
+  function marginOf(s, lots, p) { var u = p; if (s === 'USDJPY') u = 1; else if (s === 'GBPJPY') u = S.GBPUSD.p; return lots * cs(s) * u / LEV[S[s].i.cls]; }
+  function pipSize(s) { return /JPY/.test(s) ? .01 : .0001; }
+  function spreadLbl(s) { var i = S[s].i; return i.cls === 'Forex' ? (i.sp / pipSize(s)).toFixed(1) + ' pips' : fmt(i.sp, Math.min(i.d, 3)) + ' pts'; }
+
+  /* ---------------- market state ---------------- */
+  var S = {}, P = {}, SER = {};
+  I.forEach(function (i) { S[i.s] = { i: i, p: i.p, anchor: i.p, open: i.p / (1 + i.chg / 100), dr: 0, up: 0 }; });
+  function prof(sym) {
+    if (P[sym]) return P[sym];
+    var o = S[sym], i = o.i, r = rng(hash('xm11-' + sym)), vol = VOLA[i.cls];
+    var z = function () { return Math.max(-1.5, Math.min(1.5, (r() + r() + r() - 1.5) * 2)); };
+    var cl = function (v) { return Math.max(-.8, Math.min(.9, v)); };
+    var perf = { '1D': i.chg / 100, '1W': cl(vol * Math.sqrt(.0192) * z() * 1.1), '1M': cl(vol * Math.sqrt(.083) * z()), '3M': cl(vol * .5 * z()), '6M': cl(vol * .707 * z()), 'YTD': cl(vol * .92 * z()), '1Y': cl(vol * z()) };
+    var base = {}; TFS.forEach(function (t) { base[t.k] = i.p / (1 + perf[t.k]); });
+    var p = { r: r, perf: perf, base: base, vol: vol };
+    p.dh = Math.max(o.open, i.p) * (1 + vol * .02 * (.4 + r())); p.dl = Math.min(o.open, i.p) * (1 - vol * .02 * (.4 + r()));
+    p.long = 30 + Math.floor(r() * 46);
+    p.pc = o.open * (1 + (r() - .5) * vol * .02);
+    p.swL = -(.5 + r() * 7); p.swS = r() * 2.4 - .7;
+    p.trades = 8000 + Math.floor(r() * 24000);
+    p.volBars = []; for (var k = 0; k < 30; k++) p.volBars.push(.35 + r() * .65 * (1 + (k % 7 === 5 || k % 7 === 6 ? -.35 : .1)));
+    var peak = { Forex: [[7, 10], [13, 17]], Metals: [[7, 11], [13, 17]], Indices: [[7, 10], [13, 20]], Energies: [[13, 19], [8, 11]], Stocks: [[14, 21], [14, 21]], Crypto: [[12, 20], [1, 4]] }[i.cls], hz = [];
+    for (k = 0; k < 24; k++) { var b = .12; peak.forEach(function (w, wi) { if (k >= w[0] && k < w[1]) b = Math.max(b, wi ? .85 : .65); else if (k === w[0] - 1 || k === w[1]) b = Math.max(b, .32); }); hz.push(Math.min(1, b + r() * .22)); }
+    p.heat = hz; var best = 0, bi = 0; for (k = 0; k < 22; k++) { var sum = hz[k] + hz[k + 1] + hz[k + 2]; if (sum > best) { best = sum; bi = k; } } p.hot = bi;
+    return (P[sym] = p);
+  }
+  function series(sym, tfk) {
+    var key = sym + tfk; if (SER[key]) return SER[key];
+    var t = TFS.filter(function (x) { return x.k === tfk; })[0], pr = prof(sym), i = S[sym].i, r = rng(hash(key)), n = t.n, w = [0], v = [], k;
+    var base = pr.base[tfk], end = i.p, A = i.p * pr.vol * Math.sqrt(Math.max(t.ty, .004)) * .5;
+    var g = function () { return (r() + r() + r() - 1.5) * 2; };
+    for (k = 1; k < n; k++) w.push(w[k - 1] + g() / Math.sqrt(n) * 1.6);
+    var wn = w[n - 1];
+    for (k = 0; k < n; k++) { var tt = k / (n - 1); v.push(Math.max(i.p * .15, base + (end - base) * tt + A * (w[k] - tt * wn))); }
+    v[0] = base; v[n - 1] = end;
+    return (SER[key] = v);
+  }
+
+  /* ---------------- state ---------------- */
+  var cur = null, tf = '1M', side = 'buy', type = 'market', hov = null, raf = 0, idea = null;
+  var chipList = ['EURUSD', 'GOLD', 'BTCUSD', 'US100Cash', 'TSLA', 'NVDA', 'GBPUSD', 'USDJPY', 'ETHUSD', 'SILVER', 'AAPL', 'OILCash'];
+  var RAWQ = (XM.qs('s') || '').trim(), START = find(RAWQ) || 'GOLD';
+  var FEAT = [];
+  function dp() { return S[cur].i.d; }
+  function px(v) { return fmt(v, dp()); }
+
+  /* ---------------- render: switcher ---------------- */
+  function renderChips() {
+    var l = chipList.slice(); if (l.indexOf(cur) < 0) { l.pop(); l.push(cur); }
+    $('#chips').innerHTML = l.map(function (s) { var c = S[s].p / S[s].open - 1; return '<button type="button" data-s="' + s + '" class="' + (s === cur ? 'on' : '') + '" aria-pressed="' + (s === cur) + '">' + esc(lbl(s)) + '<span class="chg num ' + (c >= 0 ? 'up' : 'dn') + '" data-cc="' + s + '">' + pct(c, 1) + '</span></button>'; }).join('');
+  }
+  $('#chips').addEventListener('click', function (e) { var b = e.target.closest('[data-s]'); if (b) setSym(b.getAttribute('data-s')); });
+  var q = $('#q'), res = $('#res'), hl = -1, hits = [];
+  function renderRes() {
+    var v = q.value.trim().toLowerCase();
+    hits = I.filter(function (i) { return !v || (i.s + ' ' + i.n + ' ' + i.cls).toLowerCase().indexOf(v) >= 0; }).slice(0, 8); hl = hits.length && v ? 0 : -1;
+    res.innerHTML = hits.length ? hits.map(function (i, n) { var c = S[i.s].p / S[i.s].open - 1; return '<button type="button" role="option" data-r="' + i.s + '" class="' + (n === hl ? 'hl' : '') + '">' + XM.logoChip(i, 32) + '<span><b>' + esc(lbl(i.s)) + '</b><small>' + esc(i.n) + ' &middot; ' + i.cls + '</small></span><span class="rp num">' + fmt(S[i.s].p, i.d) + '<br><span class="' + (c >= 0 ? 'up' : 'dn') + '" style="font-size:12px">' + pct(c) + '</span></span></button>'; }).join('') : '<div class="none">No instruments match "' + esc(q.value) + '".</div>';
+    res.classList.add('open'); q.setAttribute('aria-expanded', 'true');
+  }
+  function closeRes() { res.classList.remove('open'); q.setAttribute('aria-expanded', 'false'); }
+  q.addEventListener('focus', renderRes); q.addEventListener('input', renderRes);
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!hits.length) return; hl = (hl + (e.key === 'ArrowDown' ? 1 : -1) + hits.length) % hits.length; $$('#res [data-r]').forEach(function (b, n) { b.classList.toggle('hl', n === hl); }); }
+    else if (e.key === 'Enter') { var t = hits[Math.max(hl, 0)]; if (t) { setSym(t.s); q.value = ''; q.blur(); closeRes(); } }
+    else if (e.key === 'Escape') { closeRes(); q.blur(); }
+  });
+  res.addEventListener('mousedown', function (e) { var b = e.target.closest('[data-r]'); if (b) { e.preventDefault(); setSym(b.getAttribute('data-r')); q.value = ''; q.blur(); closeRes(); } });
+  document.addEventListener('click', function (e) { if (!e.target.closest('.srch')) closeRes(); });
+
+  /* ---------------- render: header ---------------- */
+  function renderHead() {
+    var o = S[cur], i = o.i, c = o.p / o.open - 1;
+    $('#bc').innerHTML = '<a href="#">Markets</a>' + XM.icon('chev') + '<a href="#">' + i.cls + '</a>' + XM.icon('chev') + '<b>' + esc(i.n.replace(/ Cash$/, '')) + '</b>';
+    $('#ttlChip').innerHTML = XM.logoChip(i, 56); $('#tkChip').innerHTML = XM.logoChip(i, 38);
+    $('#ttlName').textContent = i.n.replace(/ Cash$/, '');
+    $('#ttlMeta').innerHTML = '<span class="tag dark">' + esc(lbl(i.s)) + '</span><span class="tag grey">' + i.cls + ' CFD</span><span class="live"><span class="dot live"></span>Simulated live</span>';
+    $('#tkSym').textContent = lbl(i.s);
+  }
+  function paintLive() {
+    var o = S[cur], i = o.i, pr = prof(cur), c = o.p / o.open - 1, d = o.p - o.open, pe = $('#px');
+    var t = px(o.p); if (pe.textContent !== t) { pe.textContent = t; if (!RM && pe.animate) pe.animate([{ backgroundColor: o.up > 0 ? 'rgba(18,200,130,.25)' : 'rgba(240,84,91,.22)' }, { backgroundColor: 'transparent' }], { duration: 900, easing: 'ease-out' }); }
+    $('#pxc').innerHTML = '<span class="' + (c >= 0 ? 'up' : 'dn') + '">' + (d >= 0 ? '+' : '-') + fmt(Math.abs(d), i.d) + ' (' + pct(c) + ')</span><span class="mut">Today</span>';
+    if (o.p > pr.dh) pr.dh = o.p; if (o.p < pr.dl) pr.dl = o.p;
+    $('#st5').innerHTML = [['Open', px(o.open)], ['Day high', px(pr.dh)], ['Day low', px(pr.dl)], ['Prev. close', px(pr.pc)], ['Trades today', fmt(pr.trades + Math.floor((Date.now() / 1000) % 600), 0)]].map(function (x) { return '<div><small>' + x[0] + '</small><b>' + x[1] + '</b></div>'; }).join('');
+    TFS.forEach(function (t) { var v = o.p / pr.base[t.k] - 1, b = $('[data-pf="' + t.k + '"]'); if (!b) return; b.className = 'pt ' + (v >= 0 ? 'u' : 'd') + (t.k === tf ? ' on' : ''); b.querySelector('b').textContent = pct(v); });
+    $('#pB').textContent = px(o.p + i.sp / 2); $('#pS').textContent = px(o.p - i.sp / 2);
+    $$('[data-cc]').forEach(function (e) { var s = e.getAttribute('data-cc'), cc = S[s].p / S[s].open - 1; e.textContent = pct(cc, 1); e.className = 'chg num ' + (cc >= 0 ? 'up' : 'dn'); });
+    $$('[data-rp]').forEach(function (e) { var s = e.getAttribute('data-rp'); e.textContent = fmt(S[s].p, S[s].i.d); });
+    $$('[data-rc]').forEach(function (e) { var s = e.getAttribute('data-rc'), cc = S[s].p / S[s].open - 1; e.textContent = pct(cc); e.className = cc >= 0 ? 'up' : 'dn'; });
+    ranges(); calc();
+    var sr = SER[cur + tf]; if (sr) sr[sr.length - 1] = o.p;
+    sched();
+  }
+  function renderPerf() {
+    $('#perf').innerHTML = TFS.map(function (t) { return '<button type="button" class="pt" data-pf="' + t.k + '" role="tab"><small>' + t.k + '</small><b class="num">-</b></button>'; }).join('');
+  }
+  $('#perf').addEventListener('click', function (e) { var b = e.target.closest('[data-pf]'); if (b) setTf(b.getAttribute('data-pf')); });
+  function renderTfs() { $('#tfs').innerHTML = TFS.map(function (t) { return '<button type="button" role="tab" data-tf="' + t.k + '" class="' + (t.k === tf ? 'on' : '') + '">' + t.k + '</button>'; }).join(''); }
+  $('#tfs').addEventListener('click', function (e) { var b = e.target.closest('[data-tf]'); if (b) setTf(b.getAttribute('data-tf')); });
+  function setTf(k) { tf = k; renderTfs(); hov = null; $('#tip').classList.remove('on'); paintLive(); }
+
+  /* ---------------- chart ---------------- */
+  var cv = $('#cv'), ctx = cv.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var tmo = 0;
+  function run() { if (!raf) return; cancelAnimationFrame(raf); clearTimeout(tmo); draw(); }
+  function sched() { if (raf) return; raf = requestAnimationFrame(run); tmo = setTimeout(run, 120); }
+  function tfo() { return TFS.filter(function (t) { return t.k === tf; })[0]; }
+  function when(idx, long) {
+    var t = tfo(), n = t.n, d = new Date(Date.now() - t.ms * (1 - idx / (n - 1)));
+    if (tf === '1D') return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    if (long) return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return tf === '1Y' || tf === '6M' || tf === 'YTD' ? d.toLocaleDateString('en-US', { month: 'short' }) + (tf === '1Y' ? " '" + String(d.getFullYear()).slice(2) : '') : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  var geo = {};
+  function draw() {
+    raf = 0; var w = cv.clientWidth, h = cv.clientHeight; if (!w || !h || !cur) return;
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    var v = series(cur, tf), n = v.length, pr = prof(cur), base = pr.base[tf], up = v[n - 1] >= base, col = up ? '#12a56a' : '#e5373f';
+    var L = 4, R = w < 520 ? 54 : 68, T = 14, B = 26, pw = w - L - R, ph = h - T - B, lo = Infinity, hi = -Infinity, k;
+    for (k = 0; k < n; k++) { if (v[k] < lo) lo = v[k]; if (v[k] > hi) hi = v[k]; }
+    lo = Math.min(lo, base); hi = Math.max(hi, base); var pad = (hi - lo) * .12 || hi * .002; lo -= pad; hi += pad;
+    function X(i) { return L + i / (n - 1) * pw; } function Y(p) { return T + (hi - p) / (hi - lo) * ph; }
+    geo = { L: L, pw: pw, n: n, X: X, Y: Y, T: T, ph: ph, v: v, hi: hi, lo: lo };
+    ctx.font = '11px Poppins, Inter, sans-serif'; ctx.textBaseline = 'middle';
+    var steps = 5, d = S[cur].i.d;
+    ctx.strokeStyle = '#eceef0'; ctx.fillStyle = '#7b828b'; ctx.lineWidth = 1; ctx.textAlign = 'left';
+    for (k = 0; k <= steps; k++) { var gp = lo + (hi - lo) * k / steps, gy = Math.round(Y(gp)) + .5; ctx.beginPath(); ctx.moveTo(L, gy); ctx.lineTo(L + pw, gy); ctx.stroke(); if (Math.abs(gy - Y(v[n - 1])) < 14) continue; ctx.fillText(fmt(gp, d > 3 ? d : d > 0 && hi - lo < 50 ? Math.min(d, 2) : 0), L + pw + 10, gy); }
+    ctx.textAlign = 'center'; var nl = w < 520 ? 4 : 6;
+    for (k = 0; k < nl; k++) { var ii = Math.round(k / (nl - 1) * (n - 1)), xx = X(ii); ctx.textAlign = k === 0 ? 'left' : k === nl - 1 ? 'right' : 'center'; ctx.fillText(when(ii), k === 0 ? L : k === nl - 1 ? L + pw : xx, h - 10); }
+    /* baseline */
+    var by = Math.round(Y(base)) + .5; ctx.setLineDash([4, 4]); ctx.strokeStyle = '#b5bbc3'; ctx.beginPath(); ctx.moveTo(L, by); ctx.lineTo(L + pw, by); ctx.stroke(); ctx.setLineDash([]);
+    /* area */
+    var gr = ctx.createLinearGradient(0, T, 0, T + ph); gr.addColorStop(0, up ? 'rgba(18,165,106,.26)' : 'rgba(229,55,63,.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.moveTo(X(0), Y(v[0])); for (k = 1; k < n; k++) ctx.lineTo(X(k), Y(v[k])); ctx.lineTo(X(n - 1), T + ph); ctx.lineTo(X(0), T + ph); ctx.closePath(); ctx.fillStyle = gr; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(X(0), Y(v[0])); for (k = 1; k < n; k++) ctx.lineTo(X(k), Y(v[k])); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+    /* last dot */
+    var lx = X(n - 1), ly = Y(v[n - 1]); ctx.fillStyle = col; ctx.globalAlpha = .18; ctx.beginPath(); ctx.arc(lx, ly, 9, 0, 7); ctx.fill(); ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(lx, ly, 4.2, 0, 7); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    /* last label */
+    var tx = fmt(v[n - 1], d); ctx.font = '600 11px Poppins, sans-serif'; ctx.fillStyle = col; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(L + pw + 4, ly - 10, R - 6, 20, 5); else ctx.rect(L + pw + 4, ly - 10, R - 6, 20); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.fillText(tx, L + pw + 9, ly + .5);
+    /* crosshair + tooltip */
+    var tip = $('#tip');
+    if (hov && hov.x >= L && hov.x <= L + pw) {
+      var idx = Math.round((hov.x - L) / pw * (n - 1)), hx = X(idx), hy = Y(v[idx]);
+      ctx.strokeStyle = '#6b727b'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(Math.round(hx) + .5, T); ctx.lineTo(Math.round(hx) + .5, T + ph); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = col; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.arc(hx, hy, 5, 0, 7); ctx.fill(); ctx.stroke();
+      var chg = v[idx] / base - 1;
+      tip.innerHTML = '<b>' + fmt(v[idx], d) + '</b><span class="' + (chg >= 0 ? 'up' : 'dn') + '" style="font-weight:600">' + pct(chg) + '</span> &middot; ' + when(idx, true);
+      var tw = tip.offsetWidth, th = tip.offsetHeight, tl = hx + 14; if (tl + tw > w - 4) tl = hx - tw - 14; tip.style.left = Math.max(4, tl) + 'px'; tip.style.top = Math.max(4, Math.min(h - th - 30, hy - th - 14)) + 'px'; tip.classList.add('on');
+    } else tip.classList.remove('on');
+    var cn = $('#chNote'); if (cn) { var tp = v[n - 1] / base - 1; cn.innerHTML = tf + ' change <b class="' + (tp >= 0 ? 'up' : 'dn') + '">' + pct(tp) + '</b> &middot; hover or drag across the chart to read prices'; }
+  }
+  cv.addEventListener('pointermove', function (e) { var r = cv.getBoundingClientRect(); hov = { x: e.clientX - r.left, y: e.clientY - r.top }; sched(); });
+  cv.addEventListener('pointerleave', function () { hov = null; sched(); });
+  if (window.ResizeObserver) new ResizeObserver(sched).observe($('#cvw')); else window.addEventListener('resize', sched);
+
+  /* ---------------- ticket ---------------- */
+  function sizeVal() { var v = parseFloat($('#sz').value); return isNaN(v) || v <= 0 ? 0 : v; }
+  function calc() {
+    if (!cur) return; var o = S[cur], i = o.i, sz = sizeVal(), e = side === 'buy' ? o.p + i.sp / 2 : o.p - i.sp / 2, l = parseFloat($('#lim').value);
+    if (type === 'limit' && !isNaN(l)) e = l;
+    $('#mg').textContent = sz ? usd(marginOf(cur, sz, e)) : '-';
+    $('#spd').textContent = spreadLbl(cur); $('#lev').textContent = '1:' + LEV[i.cls] + ' (illustrative)';
+    $('#unitHint').innerHTML = 'lots &middot; 1 lot = ' + fmt(cs(cur), 0) + ' ' + UNIT[i.cls].split(' per')[0];
+    $('#limHint').textContent = side === 'buy' ? '(below ' + px(o.p + i.sp / 2) + ')' : '(above ' + px(o.p - i.sp / 2) + ')';
+    var w = $('#wait'), on = sz > 0;
+    w.classList.toggle('on', on);
+    $('#waitT').textContent = on ? 'Your ' + lbl(cur) + ' ' + side + ' order will be waiting for you' + (sz ? ' (' + sz.toFixed(2) + ' lots)' : '') + '.' : 'Enter a size and we will keep your order ready for after you register.';
+  }
+  $('#sd').addEventListener('click', function (e) { var b = e.target.closest('[data-side]'); if (!b) return; side = b.getAttribute('data-side'); $$('#sd button').forEach(function (x) { x.classList.toggle('on', x === b); }); calc(); });
+  $('#mt').addEventListener('click', function (e) { var b = e.target.closest('[data-type]'); if (!b) return; type = b.getAttribute('data-type'); $$('#mt button').forEach(function (x) { x.classList.toggle('on', x === b); }); $('#limW').hidden = type !== 'limit'; calc(); });
+  $('#szc').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) { $('#sz').value = (+b.getAttribute('data-v')).toFixed(2); calc(); } });
+  $('#fiSz').addEventListener('click', function (e) { var b = e.target.closest('[data-st]'); if (!b) return; var v = Math.max(0, Math.round((sizeVal() + (+b.getAttribute('data-st')) * .01) * 100) / 100); $('#sz').value = v ? v.toFixed(2) : ''; calc(); });
+  $('#sz').addEventListener('input', function () { $('#fiSz').classList.remove('err'); calc(); }); $('#lim').addEventListener('input', calc);
+  function regUrl(extra) {
+    var em = (XM.flow.get().email || '').trim();
+    return XM.url('ideas/02-hero-email/register.html') + '?src=organic&persona=instrument' + (em ? '&email=' + encodeURIComponent(em) : '') + (extra || '');
+  }
+  function signup() {
+    var sz = sizeVal(), raw = $('#sz').value.trim();
+    if (raw && !sz) { var f = $('#fiSz'); f.classList.remove('err'); void f.offsetWidth; f.classList.add('err'); $('#sz').focus(); return; }
+    var o = { instrument: lbl(cur), side: side, size: sz || null, persona: 'instrument', src: 'organic' };
+    if (type === 'limit' && parseFloat($('#lim').value)) o.limit = parseFloat($('#lim').value);
+    if (idea && idea.sym === cur && idea.used) { o.tp = idea.tp; o.sl = idea.sl; }
+    XM.flow.set(o); location.href = regUrl();
+  }
+  $('#signup').addEventListener('click', signup);
+  $('#login').addEventListener('click', function () { XM.toast('Log in is not part of this prototype. Sign up to see the registration flow.'); });
+  $('#gateBtn').addEventListener('click', function () { XM.flow.set({ instrument: lbl(cur), side: side, persona: 'instrument', src: 'organic' }); location.href = regUrl(); });
+
+  /* ---------------- tabs content ---------------- */
+  function ranges() {
+    var o = S[cur], pr = prof(cur), i = o.i, v1 = series(cur, '1Y'), lo = Math.min.apply(0, v1) * (1 - pr.vol * .01), hi = Math.max.apply(0, v1) * (1 + pr.vol * .01);
+    pr.wl = Math.min(pr.wl || lo, lo, o.p); pr.wh = Math.max(pr.wh || hi, hi, o.p);
+    $('#drL').textContent = px(pr.dl); $('#drH').textContent = px(pr.dh); $('#drK').style.left = Math.max(2, Math.min(98, (o.p - pr.dl) / (pr.dh - pr.dl || 1) * 100)) + '%';
+    $('#wrL').textContent = px(pr.wl); $('#wrH').textContent = px(pr.wh); $('#wrK').style.left = Math.max(2, Math.min(98, (o.p - pr.wl) / (pr.wh - pr.wl || 1) * 100)) + '%';
+    $('#drT').textContent = ((pr.dh - pr.dl) / o.open * 100).toFixed(1) + '% wide'; $('#wrT').textContent = Math.round((o.p - pr.wl) / (pr.wh - pr.wl) * 100) + '% of range';
+  }
+  function renderOverview() {
+    var o = S[cur], i = o.i, pr = prof(cur), sg = side;
+    var kf = [['Spread (typical)', spreadLbl(cur)], ['Swap long / short', pr.swL.toFixed(2) + ' / ' + (pr.swS >= 0 ? '+' : '') + pr.swS.toFixed(2) + ' pts'], ['Trading hours', HRS[i.cls]], ['Maximum leverage', '1:' + LEV[i.cls]], ['Contract size', fmt(cs(cur), 0) + ' ' + UNIT[i.cls].replace(' per lot', '')], ['Min / max size', '0.01 / 50 lots'], ['Margin per 1 lot', usd(marginOf(cur, 1, o.p))], ['Price decimals', String(i.d)]];
+    $('#kf').innerHTML = kf.map(function (x) { return '<div><span>' + x[0] + '</span><b>' + esc(x[1]) + '</b></div>'; }).join('');
+    var s = subj(i), p1 = pr.perf['1M'], cl = i.cls;
+    var by = { Forex: 'Forex pairs trade over the counter around the clock on weekdays, and are quoted as the price of one currency in terms of another.', Metals: 'Precious metals are traded as CFDs, so you can speculate on price moves without owning the physical metal.', Crypto: 'Crypto CFDs let you speculate on price moves of digital assets without holding the coins, and can be traded outside normal market hours.', Indices: 'Index CFDs track a basket of leading companies, giving broad market exposure through a single instrument.', Energies: 'Energy CFDs follow benchmark crude oil prices, which react quickly to supply headlines and inventory data.', Stocks: 'Stock CFDs follow the share price of a listed company, so you can take a view without owning the shares.' }[cl];
+    $('#about').innerHTML = '<h4>About ' + esc(s) + ' CFD trading</h4><p>' + esc(by) + ' Over the past month ' + esc(s) + ' is ' + (p1 >= 0 ? 'up ' : 'down ') + Math.abs(p1 * 100).toFixed(1) + '% on this page\'s illustrative data. Typical spread is ' + esc(spreadLbl(cur)) + '. Trading hours: ' + esc(HRS[cl]) + '.</p>';
+    ranges();
+  }
+  function renderActivity() {
+    var pr = prof(cur), i = S[cur].i, v = pr.volBars;
+    $('#sentBig').textContent = pr.long + '% of traders are long'; $('#sentL').textContent = 'Long ' + pr.long + '%'; $('#sentS').textContent = 'Short ' + (100 - pr.long) + '%';
+    var sb = $('#sentBar'); sb.style.width = '0'; setTimeout(function () { sb.style.width = pr.long + '%'; }, 60);
+    var w = 360, h = 72, bw = w / v.length;
+    $('#vol').innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '" preserveAspectRatio="none" role="img" aria-label="Volume last 30 days">' + v.map(function (x, k) { return '<rect x="' + (k * bw + 1).toFixed(1) + '" y="' + (h - x * h).toFixed(1) + '" width="' + (bw - 2).toFixed(1) + '" height="' + (x * h).toFixed(1) + '" rx="1.5" fill="' + (k === v.length - 1 ? '#008454' : '#b9dccb') + '"/>'; }).join('') + '</svg>';
+    $('#volT').textContent = 'Today so far: ' + fmt(pr.trades, 0) + ' trades (illustrative)';
+    $('#heat').innerHTML = pr.heat.map(function (x, k) { return '<i title="' + ('0' + k).slice(-2) + ':00 UTC" style="opacity:' + (.12 + x * .88).toFixed(2) + '"></i>'; }).join('');
+    $('#heatL').innerHTML = pr.heat.map(function (x, k) { return '<span>' + (k % 6 === 0 ? ('0' + k).slice(-2) : '') + '</span>'; }).join('');
+    $('#heatS').textContent = 'Busiest window: ' + ('0' + pr.hot).slice(-2) + ':00 to ' + ('0' + (pr.hot + 3) % 24).slice(-2) + ':00 UTC. Darker means more trading activity.';
+  }
+  function renderAnalysis() {
+    var o = S[cur], i = o.i, pr = prof(cur), s = subj(i), c = o.p / o.open - 1, p1 = pr.perf['1M'], k = pr.vol;
+    var tpP = k * .05, slP = k * .028, e = o.p, tp = e * (1 + tpP), sl = e * (1 - slP);
+    idea = { sym: cur, entry: +e.toFixed(i.d), tp: +tp.toFixed(i.d), sl: +sl.toFixed(i.d), rr: (tpP / slP).toFixed(1) };
+    $('#anText').innerHTML = '<p>' + esc(s) + ' is trading ' + (c >= 0 ? 'higher' : 'lower') + ' by ' + Math.abs(c * 100).toFixed(2) + '% on the day at ' + px(o.p) + ', after a ' + (p1 >= 0 ? 'gain' : 'decline') + ' of ' + Math.abs(p1 * 100).toFixed(1) + '% over the past month. Momentum is ' + (c * p1 >= 0 ? 'in line with the monthly trend' : 'pulling against the monthly trend') + ', which often leads to a period of consolidation before the next directional move.</p><p>Short-term traders may watch the day low near ' + px(pr.dl) + ' as first support and the day high near ' + px(pr.dh) + ' as first resistance. A sustained break of either level would shift near-term momentum.</p>';
+    $('#idea').innerHTML = '<div><div class="lab"><span class="tag">Suggested idea</span><span class="tag amber">Illustrative</span></div><h4>Buy near ' + px(idea.entry) + ', target ' + px(idea.tp) + ', stop ' + px(idea.sl) + '</h4><div class="lv"><div><small>Entry</small><b>' + px(idea.entry) + '</b></div><div><small>Target</small><b class="up">' + px(idea.tp) + '</b></div><div><small>Stop</small><b class="dn">' + px(idea.sl) + '</b></div><div><small>Reward : risk</small><b>' + idea.rr + ' : 1</b></div></div></div><button class="btn btn-primary" type="button" id="useIdea">Pre-fill my ticket</button><p class="fn">Example scenario for the prototype only, generated from this page\'s illustrative data. Not investment advice and not a prediction.</p>';
+    $('#sug').innerHTML = '<span>Suggested idea: <b>Buy near ' + px(idea.entry) + '</b></span><button type="button" id="sugBtn">Use</button>';
+    var use = function () { idea.used = true; side = 'buy'; $$('#sd button').forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-side') === 'buy'); }); if (!sizeVal()) $('#sz').value = '0.10'; calc(); XM.toast('Ticket pre-filled: Buy ' + lbl(cur) + ' 0.10 lots'); if (window.innerWidth <= 900) $('.tk-c').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); };
+    $('#useIdea').onclick = use; $('#sugBtn').onclick = use;
+  }
+  function ago(k) { return ['18 min ago', '1 hour ago', '3 hours ago', '6 hours ago', 'Yesterday'][k]; }
+  function renderNews() {
+    var o = S[cur], i = o.i, s = subj(i), c = o.p / o.open - 1, pr = prof(cur), p1 = pr.perf['1M'];
+    var cl = { Forex: 'Central bank commentary keeps ' + s + ' in focus', Metals: 'Yields and safe-haven demand steer ' + s + ' into the new session', Crypto: 'Risk appetite and fund flows set the tone for ' + s, Indices: 'Earnings and rate expectations drive ' + s + ' sentiment', Energies: 'Supply headlines and inventory data move ' + s, Stocks: s + ' in focus after analyst notes and sector rotation' }[i.cls];
+    var h = [s + ' ' + (c >= 0 ? 'edges higher' : 'slips') + ' as traders look ahead to this week\'s data', s + ' technical view: key levels traders are watching', cl, 'Volatility check: ' + s + ' is ' + (p1 >= 0 ? 'up ' : 'down ') + Math.abs(p1 * 100).toFixed(1) + '% over the past month', 'Weekly outlook: what could move ' + s + ' next'];
+    $('#newsL').innerHTML = h.map(function (t, k) { return '<a href="#"><span class="tm">' + ago(k) + '</span><span><b>' + esc(t) + '</b><small>XM Research &middot; illustrative</small></span></a>'; }).join('');
+  }
+  function renderFaq() {
+    var o = S[cur], i = o.i, s = subj(i), cl = i.cls;
+    var drv = { Forex: 'interest-rate expectations, central bank decisions, economic data and risk sentiment', Metals: 'real yields, the US dollar, safe-haven demand and central bank buying', Crypto: 'adoption news, regulation, liquidity, fund flows and overall risk appetite', Indices: 'company earnings, interest-rate expectations and economic growth data', Energies: 'supply decisions, inventory reports, demand outlooks and geopolitical events', Stocks: 'earnings, guidance, analyst views and wider market sentiment' }[cl];
+    var qa = [
+      ['What moves the price of ' + s + '?', 'Common drivers include ' + drv + '. This is general, illustrative information and not a forecast.'],
+      ['What is the spread on ' + lbl(i.s) + '?', 'The typical spread shown on this page is ' + spreadLbl(cur) + '. Real spreads vary with market conditions and account type. Figures here are illustrative.'],
+      ['When can I trade ' + s + '?', 'Illustrative trading hours: ' + HRS[cl] + '. Hours can change around holidays and corporate or exchange events.'],
+      ['How much leverage is available?', 'This page shows up to 1:' + LEV[cl] + ' as an illustration. Available leverage depends on your country, account type and verification level, and leverage magnifies both gains and losses.'],
+      ['Do I need an account to see ' + s + ' prices?', 'No. Prices, charts and analysis here are public. A free account is needed to place trades; any order you set up on this page is saved and pre-filled after you register.'],
+      ['Is trading ' + s + ' CFDs risky?', 'Yes. CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. Only trade with money you can afford to lose.']
+    ];
+    $('#faq').innerHTML = qa.map(function (x, k) { return '<div class="fq' + (k === 0 ? ' open' : '') + '"><button type="button" aria-expanded="' + (k === 0) + '">' + esc(x[0]) + XM.icon('chev') + '</button><div class="a"><div><p>' + esc(x[1]) + '</p></div></div></div>'; }).join('');
+    return qa;
+  }
+  $('#faq').addEventListener('click', function (e) { var b = e.target.closest('.fq button'); if (!b) return; var f = b.parentNode, o = f.classList.toggle('open'); b.setAttribute('aria-expanded', o); });
+  $('#tb').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tab]'); if (!b) return; var k = b.getAttribute('data-tab');
+    $$('#tb button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    $$('.panel').forEach(function (p) { p.classList.toggle('on', p.id === 'p-' + k); });
+    if (k === 'ac') renderActivity();
+  });
+
+  /* ---------------- related + gated + SEO ---------------- */
+  function renderRelated() {
+    var i = S[cur].i, same = I.filter(function (x) { return x.cls === i.cls && x.s !== cur; }), rest = I.filter(function (x) { return x.cls !== i.cls && x.s !== cur && ['EURUSD', 'GOLD', 'BTCUSD', 'US100Cash', 'TSLA', 'NVDA', 'OILCash'].indexOf(x.s) >= 0; });
+    var list = same.concat(rest).slice(0, 5);
+    $('#rel').innerHTML = list.map(function (x) {
+      var a = series(x.s, '1W'), c = S[x.s].p / S[x.s].open - 1;
+      return '<a class="rc" href="?s=' + encodeURIComponent(lbl(x.s)) + '" data-go="' + x.s + '"><div class="h">' + XM.logoChip(x, 34) + '<div><b>' + esc(lbl(x.s)) + '</b><small>' + esc(x.n) + '</small></div></div>' + XM.sparkline(a.filter(function (_, k) { return k % 4 === 0; }), 150, 38, a[a.length - 1] >= a[0] ? '#12a56a' : '#e5373f').replace('<svg ', '<svg style="width:100%;height:38px" preserveAspectRatio="none" ') + '<div class="v"><b data-rp="' + x.s + '" class="num">' + fmt(S[x.s].p, x.d) + '</b><span data-rc="' + x.s + '" class="num ' + (c >= 0 ? 'up' : 'dn') + '">' + pct(c) + '</span></div></a>';
+    }).join('');
+  }
+  $('#rel').addEventListener('click', function (e) { var a = e.target.closest('[data-go]'); if (a) { e.preventDefault(); setSym(a.getAttribute('data-go')); window.scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' }); } });
+  function renderGate() {
+    var s = lbl(cur);
+    $('#gateT').textContent = 'More for ' + s + ' after you register and verify';
+    var bl = '<div class="blur" aria-hidden="true">' + [30, 55, 40, 70, 50, 85, 60, 45, 75].map(function (h) { return '<i style="height:' + h + '%"></i>'; }).join('') + '</div>';
+    $('#gx').innerHTML = [['Live order book and depth', 'See where liquidity sits around the price.', bl], ['Price alerts on ' + s, 'Get notified when ' + s + ' reaches your level.', ''], ['Trade Ideas for ' + s, 'Entry, target and stop on every idea, in the Portal.', ''], ['Sentiment history', 'Track how trader positioning has shifted over time.', bl]].map(function (x) { return '<div>' + XM.icon('lock') + '<b>' + x[0] + '</b><small>' + x[1] + '</small>' + x[2] + '</div>'; }).join('');
+  }
+  function renderCk() {
+    $('#ck').innerHTML = ['Unique content per instrument', 'Structured data (JSON-LD)', 'Internal links to related instruments', 'Crawlable URL per instrument', 'FAQ for rich results', 'Fast, text-first page'].map(function (t) { return '<span>' + XM.icon('check') + t + '</span>'; }).join('');
+  }
+  $('#jsonBtn').addEventListener('click', function () { var p = $('#jsonPre'); p.hidden = !p.hidden; this.textContent = p.hidden ? 'View structured data (JSON-LD)' : 'Hide structured data'; });
+
+  /* ---------------- SEO: title, meta, canonical, JSON-LD ---------------- */
+  function seo(qa) {
+    var i = S[cur].i, s = subj(i), name = i.n.replace(/ Cash$/, ''), slug = lbl(cur).toLowerCase(), url = SITE + i.cls.toLowerCase() + '/' + slug;
+    document.title = name + ' (' + lbl(cur) + ') price, chart and trading conditions · XMTrading';
+    var md = $('meta[name=description]'); if (md) md.setAttribute('content', 'Live-style ' + name + ' price, performance, daily activity, market analysis and trading conditions. Illustrative prototype content.');
+    var cn = $('link[rel=canonical]'); if (cn) cn.setAttribute('href', url);
+    var ld = { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'FinancialProduct', name: name + ' CFD', alternateName: lbl(cur), category: 'Contract for Difference (' + i.cls + ')', description: 'Illustrative prototype content: ' + name + ' CFD price page with performance, daily activity, analysis and trading conditions.', url: url, provider: { '@type': 'Organization', name: 'XMTrading', url: 'https://www.xmtrading.com/' }, additionalProperty: [{ '@type': 'PropertyValue', name: 'Typical spread (illustrative)', value: spreadLbl(cur) }, { '@type': 'PropertyValue', name: 'Maximum leverage (illustrative)', value: '1:' + LEV[i.cls] }] },
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Markets', item: SITE.slice(0, -1) }, { '@type': 'ListItem', position: 2, name: i.cls, item: SITE + i.cls.toLowerCase() }, { '@type': 'ListItem', position: 3, name: name }] },
+      { '@type': 'FAQPage', mainEntity: qa.map(function (x) { return { '@type': 'Question', name: x[0], acceptedAnswer: { '@type': 'Answer', text: x[1] } }; }) }
+    ] };
+    var j = JSON.stringify(ld, null, 2); $('#ld').textContent = j; $('#jsonPre').textContent = j;
+  }
+
+  /* ---------------- switch instrument ---------------- */
+  function setSym(s, init) {
+    if (!S[s]) return; cur = s; hov = null; $('#tip').classList.remove('on'); idea = null;
+    var pr = new URLSearchParams(location.search); pr.set('s', lbl(s));
+    if (!init) { try { history.replaceState(null, '', location.pathname + '?' + pr.toString()); } catch (e) {} }
+    renderHead(); renderChips(); renderOverview(); renderActivity(); renderAnalysis(); renderNews(); var qa = renderFaq(); renderRelated(); renderGate(); seo(qa);
+    $('#sz').value = '0.10'; $('#lim').value = ''; paintLive(); calc();
+    if (!init && window.innerWidth <= 900) { var ch = $('#chips .on'); if (ch) ch.scrollIntoView({ inline: 'center', block: 'nearest' }); }
+  }
+
+  /* ---------------- engine ---------------- */
+  function tickAll() {
+    I.forEach(function (i) {
+      var o = S[i.s], v = VT[i.cls], prev = o.p;
+      o.dr = o.dr * .9 + (Math.random() - .5) * v * .35;
+      o.p += o.p * ((Math.random() - .5) * v + o.dr) + (o.anchor - o.p) * .004; o.up = o.p >= prev ? 1 : -1;
+    });
+    paintLive();
+  }
+
+  renderPerf(); renderTfs(); renderCk();
+  setSym(START, true);
+  if (RAWQ && !find(RAWQ)) {
+    $('#nfI').innerHTML = XM.icon('warn');
+    $('#nfT').textContent = 'We could not find "' + RAWQ.slice(0, 24) + '". Showing ' + subj(S[START].i) + ' instead. Use the search above to pick another instrument.';
+    $('#nf').hidden = false;
+    $('#nfX').addEventListener('click', function () { $('#nf').hidden = true; });
+  }
+  document.addEventListener('click', function (e) { var a = e.target.closest('main a[href="#"]'); if (a) e.preventDefault(); });
+  setInterval(tickAll, 1000);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(sched);
+
+  XM.notes({
+    title: 'Idea 11 · Instrument page template',
+    today: 'The public site has product pages but no per-instrument pages with data, so searches like "gold price" or "TSLA CFD" land on competitors.',
+    proposed: 'One programmatic template that gives every instrument its own page: live-style price, performance, chart, activity, analysis, news and FAQ, with a sticky ticket that carries the visitor\'s order into registration.',
+    why: 'Matches how Kraken and Bybit win search intent, builds trust with real content, and captures the exact instrument, side and size the visitor wanted.',
+    metric: 'Organic sessions on instrument pages, ticket-interaction rate, sign-up click rate, registrations with a pre-filled order, funded rate vs. homepage signups.'
+  });
+});
+</script>
+<script src="../../assets/js/review.js" data-idea="11"></script>
+</body>
+</html>

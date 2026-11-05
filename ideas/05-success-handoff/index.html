@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register success hand-off · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 05 · Register success as one designed asset (verification -> PWA hand-off)
+   ===================================================================== */
+:root { --gl: #00c27c; --ui-ln: rgba(255, 255, 255, .09); --ui-mut: #8b94a1; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 72px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+[data-ic] { display: inline-flex; }
+[data-ic] svg { width: 16px; height: 16px; }
+
+/* ---------- progress crumbs ---------- */
+.crumbs { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 26px 0 22px; font-size: 13px; font-weight: 500; color: var(--mut); animation: fadeUp .6s both; flex-wrap: wrap; }
+.crumbs .c { display: inline-flex; align-items: center; gap: 8px; }
+.crumbs .c i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--g); color: #fff; font-style: normal; font-size: 11px; font-weight: 700; }
+.crumbs .c i svg { width: 12px; height: 12px; stroke-width: 3; }
+.crumbs .c.now { color: var(--ink); font-weight: 600; }
+.crumbs .c.now i { background: #fff; color: var(--g); box-shadow: 0 0 0 2px var(--g) inset; }
+.crumbs .ln { width: 36px; height: 2px; background: var(--g); border-radius: 2px; opacity: .5; }
+.crumbs .ln.off { background: var(--line-2); opacity: 1; }
+
+/* ---------- layout ---------- */
+.grid { display: block; max-width: 760px; margin: 0 auto; }
+.screen { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 44px 44px 30px; box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 30px 70px -40px rgba(16, 24, 40, .28); position: relative; overflow: hidden; animation: fadeUp .7s .05s both; display: flex; flex-direction: column; }
+.screen::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 280px; pointer-events: none; background: radial-gradient(60% 100% at 50% -10%, rgba(0, 194, 124, .16), transparent 72%); }
+.screen > * { position: relative; }
+
+/* animated check */
+.ok { width: 96px; height: 96px; margin: 0 auto; position: relative; }
+.ok svg { width: 96px; height: 96px; overflow: visible; }
+.ok .halo { fill: #e6f3ed; transform-origin: 48px 48px; transform: scale(.2); opacity: 0; }
+.ok .ring { fill: none; stroke: var(--g); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 264; stroke-dashoffset: 264; transform: rotate(-90deg); transform-origin: 48px 48px; }
+.ok .tick { fill: none; stroke: var(--g); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 52; stroke-dashoffset: 52; }
+.ok.go .halo { animation: pop .5s .05s cubic-bezier(.2, 1.4, .4, 1) forwards; }
+.ok.go .ring { animation: draw .7s .15s cubic-bezier(.5, 0, .2, 1) forwards; }
+.ok.go .tick { animation: draw .4s .72s ease-out forwards; }
+.ok .pulse { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--g); opacity: 0; }
+.ok.go .pulse { animation: ripple 1.6s 1s ease-out 2; }
+.ok .bit { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: var(--c, var(--g)); opacity: 0; }
+.ok.go .bit { animation: burst .9s .95s cubic-bezier(.1, .7, .3, 1) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .ok .halo { opacity: 1; transform: none; } .ok .ring, .ok .tick { stroke-dashoffset: 0; }
+}
+@keyframes pop { to { transform: scale(1); opacity: 1; } }
+@keyframes ripple { 0% { transform: scale(.9); opacity: .55; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes burst { 0% { opacity: 1; transform: rotate(var(--a)) translateY(-34px) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-70px) scale(.3); } }
+
+.screen h1 { text-align: center; margin-top: 22px; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.1; letter-spacing: -.03em; font-weight: 700; }
+.screen .sub { text-align: center; margin: 10px auto 0; color: var(--ink-2); font-size: 15.5px; max-width: 46ch; }
+.mailchip { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px 4px 9px; border-radius: 999px; background: var(--soft); font-size: 13.5px; font-weight: 600; color: var(--ink); vertical-align: 1px; }
+.mailchip svg { width: 15px; height: 15px; color: var(--g); }
+.ask { margin: 30px 0 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ask h2 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.ask small { color: var(--mut); font-size: 12.5px; }
+
+/* primary PWA card */
+.prime { margin-top: 28px; padding: 22px 22px 18px; border-radius: 24px; border: 1.5px solid var(--g); background: linear-gradient(180deg, #eef8f3, #fff 70%); box-shadow: 0 22px 44px -26px rgba(0, 132, 84, .55); }
+.pr-hd { display: flex; gap: 16px; align-items: flex-start; }
+.pr-ic { width: 52px; height: 52px; border-radius: 16px; flex: none; display: grid !important; place-items: center; background: linear-gradient(180deg, #00a064, #007a4d); color: #fff; box-shadow: 0 10px 22px -10px rgba(0, 132, 84, .8); }
+.pr-ic svg { width: 26px; height: 26px; }
+.pr-tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--g); background: var(--g-l); padding: 2px 9px; border-radius: 999px; }
+.pr-hd h2 { margin-top: 6px; font-size: 20px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+.pr-hd p { margin-top: 4px; color: var(--ink-2); font-size: 13.5px; line-height: 1.5; }
+.prime .cta { margin-top: 18px; }
+.prime .cta-note { margin: 10px 0 0; }
+.pr-pk { list-style: none; margin: 14px 0 0; padding: 12px 0 0; border-top: 1px dashed #cfe5d9; display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center; font-size: 12px; color: var(--ink-2); font-weight: 500; }
+.pr-pk li { display: inline-flex; align-items: center; gap: 6px; }
+.pr-pk svg { width: 14px; height: 14px; color: var(--g); }
+
+/* option cards (secondary destinations) */
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.opt { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 14px 14px 13px; border: 1.5px solid var(--line); border-radius: 16px; background: #fff; cursor: pointer; transition: border-color .15s, box-shadow .2s, transform .15s, background .15s; text-align: left; font: inherit; color: inherit; }
+.opt:focus-visible { outline: 0; box-shadow: 0 0 0 4px rgba(0, 132, 84, .2); }
+.opt:hover { border-color: #b9dccb; box-shadow: 0 10px 28px -16px rgba(0, 100, 64, .35); transform: translateY(-2px); }
+.opt input { position: absolute; opacity: 0; pointer-events: none; }
+.opt:focus-within { box-shadow: 0 0 0 4px rgba(0, 132, 84, .15); }
+.opt .ic { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: var(--soft); color: var(--ink-2); transition: background .2s, color .2s; }
+.opt .ic svg { width: 18px; height: 18px; }
+.opt b { display: block; font-size: 13.5px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
+.opt .d { display: block; color: var(--mut); font-size: 12px; line-height: 1.45; margin-top: 3px; }
+.opt .go { position: absolute; right: 12px; top: 14px; width: 28px; height: 28px; border-radius: 50%; background: var(--soft); color: var(--ink-2); display: grid; place-items: center; transition: background .18s, color .18s, transform .18s; }
+.opt .go svg { width: 15px; height: 15px; stroke-width: 2.4; }
+.opt:hover .go { background: var(--g); color: #fff; transform: translateX(2px); }
+.opt:active { transform: translateY(0) scale(.98); }
+.opt.sel { border-color: var(--g); background: linear-gradient(180deg, #f3faf6, #fff); box-shadow: 0 0 0 1px var(--g) inset, 0 14px 34px -18px rgba(0, 132, 84, .5); }
+.opt.sel .ic { background: var(--g); color: #fff; }
+.opt.sel .go { background: var(--g); color: #fff; }
+.opt .tg { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--amber-l); color: var(--amber); }
+
+/* deep link pill + CTA */
+.dl-row { margin: 20px 0 26px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.dl-cap { font-size: 12px; color: var(--mut); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.dl-cap svg { width: 13px; height: 13px; }
+.dl { display: inline-flex; align-items: center; gap: 10px; max-width: 100%; padding: 9px 10px 9px 16px; border-radius: 999px; background: #0f1216; color: #cfd6de; border: 0; font-size: 13px; cursor: pointer; transition: transform .12s, box-shadow .2s; box-shadow: 0 6px 18px -8px rgba(0, 0, 0, .5); }
+.dl:hover { box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .6); }
+.dl:active { transform: scale(.98); }
+.dl .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dl .t b { color: #3ddc97; font-weight: 600; display: inline-block; }
+.dl .t b.flip { animation: flip .45s; }
+.dl .cp { width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, .1); display: grid; place-items: center; flex: none; transition: background .2s; }
+.dl .cp svg { width: 14px; height: 14px; }
+.dl.copied .cp { background: var(--g); color: #fff; }
+@keyframes flip { 0% { transform: translateY(8px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.cta { margin-top: 20px; height: 58px; font-size: 16.5px; border-radius: 14px; gap: 10px; background: linear-gradient(180deg, #00a064, #008454); box-shadow: 0 12px 30px -10px rgba(0, 132, 84, .6), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.cta:hover { background: linear-gradient(180deg, #00b06d, #007a4d); transform: translateY(-1px); }
+.cta svg { width: 19px; height: 19px; transition: transform .2s; }
+.cta:hover svg { transform: translateX(3px); }
+.cta.busy { pointer-events: none; opacity: .9; }
+.cta.done { background: #e6f3ed; color: var(--g); box-shadow: none; }
+.cta .spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: rot .7s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.cta-note { text-align: center; color: var(--mut); font-size: 12.5px; margin: 12px 0 24px; line-height: 1.5; }
+.links { margin-top: auto; padding-top: 22px; display: flex; justify-content: space-between; border-top: 1px solid var(--line); font-size: 13px; }
+.links button { background: none; border: 0; color: var(--ink-2); font-weight: 500; font-size: 13px; padding: 6px 2px; display: inline-flex; gap: 6px; align-items: center; }
+.links button:hover, .links a:hover { color: var(--g); }
+.links a { color: var(--ink-2); font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 6px 2px; }
+.links svg { width: 14px; height: 14px; }
+
+/* ---------- second row ---------- */
+.row2 { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); gap: 22px; margin-top: 22px; }
+.pane { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 28px 32px; box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 24px 60px -40px rgba(16, 24, 40, .25); }
+.pane .eb { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--g); }
+.pane h3 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; margin-top: 6px; }
+.pane .pn { color: var(--mut); font-size: 13px; margin-top: 4px; line-height: 1.5; }
+.tgl { display: grid; margin-top: 14px; }
+.tr { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.tr .ic { width: 38px; height: 38px; border-radius: 11px; background: var(--soft); color: var(--ink-2); display: grid; place-items: center; flex: none; transition: all .2s; }
+.tr .ic svg { width: 19px; height: 19px; }
+.tr .tx { flex: 1; min-width: 0; }
+.tr .tx b { display: block; font-size: 14px; font-weight: 600; }
+.tr .tx span { display: block; color: var(--mut); font-size: 12.5px; }
+.sw { position: relative; width: 46px; height: 28px; flex: none; }
+.sw input { position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; width: 100%; height: 100%; z-index: 2; }
+.sw i { position: absolute; inset: 0; border-radius: 999px; background: #d3d7dd; transition: background .2s; }
+.sw i::after { content: ''; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .22s cubic-bezier(.3, 1.4, .5, 1); }
+.sw input:checked + i { background: var(--g); }
+.sw input:checked + i::after { transform: translateX(18px); }
+.sw input:focus-visible + i { box-shadow: 0 0 0 4px rgba(0, 132, 84, .22); }
+.tr.on .ic { background: var(--g-l); color: var(--g); }
+.opt-note { margin-top: 4px; padding: 11px 14px; border-radius: 12px; background: var(--soft); color: var(--ink-2); font-size: 12.5px; line-height: 1.5; display: flex; gap: 10px; }
+.opt-note svg { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--g); }
+.opt-note b { font-weight: 600; }
+
+.mt { display: flex; flex-direction: column; }
+.mt .hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.mt .delta { flex: none; background: var(--g-l); color: var(--g); font-weight: 700; font-size: 13px; border-radius: 999px; padding: 6px 12px; display: inline-flex; gap: 6px; align-items: center; opacity: 0; transform: scale(.8); transition: all .5s 1.2s cubic-bezier(.2, 1.4, .4, 1); }
+.mt.go .delta { opacity: 1; transform: none; }
+.bars { margin-top: 22px; display: grid; gap: 16px; }
+.br { display: grid; grid-template-columns: 112px 1fr 52px; align-items: center; gap: 14px; font-size: 13px; }
+.br .lb { font-weight: 500; color: var(--ink-2); }
+.br .tr2 { height: 26px; border-radius: 9px; background: var(--soft); overflow: hidden; position: relative; }
+.br .tr2 i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 9px; background: #b8bec6; transition: width 1.3s cubic-bezier(.2, .8, .2, 1); }
+.br.nw .tr2 i { background: linear-gradient(90deg, #00a064, #00c27c); transition-delay: .35s; }
+.mt.go .br .tr2 i { width: var(--w); }
+.br .v { font-weight: 700; font-size: 17px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-align: right; }
+.mt .ft { margin-top: 18px; font-size: 12px; color: var(--mut); display: flex; align-items: center; gap: 8px; }
+.mt .ft .tag { font-size: 11px; padding: 2px 8px; }
+
+@media (max-width: 1100px) {
+  .row2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .xm-hdr .in { padding: 0 14px; } .xm-lang, .hdr-login { display: none; }
+  .wrap { padding: 0 12px; }
+  .screen { padding: 30px 18px 22px; border-radius: 24px; }
+  .opts { grid-template-columns: 1fr; }
+  .ask small { display: none; }
+  .opt { flex-direction: row; align-items: flex-start; gap: 14px; padding-right: 52px; }
+  .opt .go { top: 50%; margin-top: -14px; } .opt:hover .go { transform: translateX(2px); }
+  .prime { padding: 18px 16px 14px; border-radius: 20px; }
+  .pr-ic { width: 44px; height: 44px; border-radius: 14px; }
+  .pr-hd h2 { font-size: 18px; }
+  .pane { padding: 22px 18px; border-radius: 24px; }
+  .br { grid-template-columns: 86px 1fr 44px; gap: 10px; }
+  .crumbs { gap: 6px; font-size: 12px; } .crumbs .ln { width: 14px; }
+  .links { flex-wrap: wrap; }
+  .links a, .links button { min-height: 40px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main class="wrap">
+  <div class="crumbs" aria-label="Progress">
+    <span class="c"><i><span data-ic="check"></span></i>Register</span><span class="ln"></span>
+    <span class="c"><i><span data-ic="check"></span></i>Verify email</span><span class="ln"></span>
+    <span class="c now"><i>3</i>Get started</span>
+  </div>
+
+  <div class="grid">
+    <!-- ============ designed success screen ============ -->
+    <section class="screen" id="screen" aria-labelledby="ttl">
+      <div class="ok" id="ok" aria-hidden="true">
+        <div class="pulse"></div>
+        <svg viewBox="0 0 96 96"><circle class="halo" cx="48" cy="48" r="46"/><circle class="ring" cx="48" cy="48" r="42"/><path class="tick" d="M30 49 l13 13 l24 -27"/></svg>
+        <span class="bit" style="--a:0deg"></span><span class="bit" style="--a:45deg;--c:#f5aa28"></span><span class="bit" style="--a:90deg"></span><span class="bit" style="--a:135deg;--c:#2f62f0"></span><span class="bit" style="--a:180deg"></span><span class="bit" style="--a:225deg;--c:#f5aa28"></span><span class="bit" style="--a:270deg"></span><span class="bit" style="--a:315deg;--c:#2f62f0"></span>
+      </div>
+      <h1 id="ttl">Your email is verified</h1>
+      <p class="sub" id="sub"></p>
+
+      <div class="prime" id="prime">
+        <div class="pr-hd">
+          <span class="pr-ic" data-ic="home"></span>
+          <div><h2>Continue to your XMTrading portal</h2><p>Your account is ready. We sign you in, so there is nothing to type.</p></div>
+        </div>
+        <button class="btn btn-primary btn-block cta" id="cta" type="button"><span id="ctal">Continue to the portal</span><span id="ctai" data-ic="arrow"></span></button>
+        <p class="cta-note" id="ctan">Opens in this window. Email already filled in, no password to type.</p>
+        <ul class="pr-pk"><li><span data-ic="bolt"></span>One-tap sign-in</li><li><span data-ic="shield"></span>Single-use, device-bound token</li><li><span data-ic="user"></span>Finish your profile next</li></ul>
+      </div>
+
+      <div class="ask"><h2>Or take me straight to</h2><small>One tap signs you in and opens it</small></div>
+      <div class="opts" role="group" aria-label="Open the portal to" id="opts"></div>
+
+      <div class="dl-row">
+        <span class="dl-cap"><span data-ic="arrow"></span>Deep link for this choice</span>
+        <button class="dl mono" id="dl" type="button" title="Copy link"><span class="t" id="dlt"></span><span class="cp" id="dlc"></span></button>
+      </div>
+
+      <div class="links">
+        <a href="#" id="back"><span data-ic="arrow" style="transform:scaleX(-1)"></span>Back to verification</a>
+        <button type="button" id="restart">Restart this screen</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="row2">
+    <section class="pane" aria-labelledby="fb">
+      <span class="eb">Optional</span>
+      <h3 id="fb">Stay in the loop</h3>
+      <p class="pn">Three opt-ins, asked once, at the moment of highest intent.</p>
+      <div class="tgl" id="tgl"></div>
+      <div class="opt-note"><span data-ic="shield"></span><span><b>Nothing is pre-ticked.</b> Choices travel with the token and appear in the app's Settings, so they can be changed in one tap.</span></div>
+    </section>
+
+    <section class="pane mt" id="mt" aria-labelledby="mtt">
+      <div class="hd">
+        <div><span class="eb">Metric</span><h3 id="mtt">Register success to first PWA login</h3><p class="pn">Verified users who sign in to the app within 24 hours.</p></div>
+        <span class="delta"><span data-ic="arrow" style="transform:rotate(-45deg)"></span>+16 pts</span>
+      </div>
+      <div class="bars">
+        <div class="br"><span class="lb">Today</span><div class="tr2"><i style="--w:38%"></i></div><span class="v num" data-to="38">0%</span></div>
+        <div class="br nw"><span class="lb">With hand-off</span><div class="tr2"><i style="--w:54%"></i></div><span class="v num" data-to="54">0%</span></div>
+      </div>
+      <div class="ft"><span class="tag amber">Illustrative</span>Target to validate with an A/B test, not a forecast.</div>
+    </section>
+  </div>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$;
+  var flow = XM.flow.get();
+  var email = XM.qs('email') || flow.email || 'alex@example.com';
+  var name = XM.qs('name') || flow.name || '';
+  var first = name ? name.split(' ')[0] : (email.split('@')[0] || 'Alex');
+  first = first.charAt(0).toUpperCase() + first.slice(1);
+  XM.flow.set({ email: email, verified: true });
+
+  // inject icons
+  $$('[data-ic]').forEach(function (n) { n.innerHTML = XM.icon(n.getAttribute('data-ic')); });
+
+  // header: Login / Register stays; update copy
+  $('#sub').innerHTML = (name ? 'Welcome aboard, ' + XM.esc(first) + '. ' : '') + '<span class="mailchip">' + XM.icon('mail') + XM.esc(email) + '</span> is confirmed and your XMTrading account is ready.';
+
+  /* ---------- options ---------- */
+  var OPTS = [
+    { k: 'home', t: 'Account home', next: 'Account home', hide: true },
+    { k: 'deposit', ic: 'wallet', t: 'Make a first deposit', d: 'Fund your account right after sign-in.', next: 'Deposit' },
+    { k: 'learn', ic: 'book', t: 'Learn the basics', d: 'A short getting-started path.', next: 'Getting started' },
+    { k: 'install', ic: 'phone', t: 'Get the app', d: 'Add to your Home Screen for one-tap access.', next: 'Install prompt' }
+  ];
+  var sel = 'home';
+  var optsEl = $('#opts');
+  optsEl.innerHTML = OPTS.filter(function (o) { return !o.hide; }).map(function (o) {
+    return '<button type="button" class="opt" data-k="' + o.k + '"><span class="ic">' + XM.icon(o.ic) + '</span><span><b>' + o.t + '</b><span class="d">' + o.d + '</span></span><span class="go" aria-hidden="true">' + XM.icon('arrow') + '</span></button>';
+  }).join('');
+  function opt(k) { return OPTS.filter(function (o) { return o.k === k; })[0]; }
+
+  function link() { return 'my.xmtrading.com/login?next=' + sel; }
+
+  function setSel(k, silent) {
+    sel = k;
+    $$('.opt', optsEl).forEach(function (l) { var on = l.getAttribute('data-k') === k; l.classList.toggle('sel', on); });
+    var b = document.createElement('b'); b.textContent = k; b.className = 'flip';
+    $('#dlt').innerHTML = 'my.xmtrading.com/login?next='; $('#dlt').appendChild(b);
+    XM.flow.set({ startAt: k });
+  }
+  optsEl.addEventListener('click', function (e) { var b = e.target.closest('.opt'); if (!b) return; if (done) resetHand(true); setSel(b.getAttribute('data-k')); handoff(); });
+
+  /* ---------- hand-off ---------- */
+  var done = false, loading;
+  function handoff() {
+    if (done) { resetHand(); return; }
+    var cta = $('#cta');
+    if (cta.classList.contains('busy')) return;
+    cta.classList.add('busy');
+    $('#ctal').textContent = 'Signing you in'; $('#ctai').innerHTML = '<i class="spin"></i>';
+    clearTimeout(loading);
+    loading = setTimeout(function () {
+      done = true; cta.classList.remove('busy'); cta.classList.add('done');
+      $('#ctal').textContent = 'Opened in the portal. Replay';
+      $('#ctai').innerHTML = XM.icon('check');
+      $('#ctan').textContent = 'Signed in with a one-time token. The portal now continues with its own onboarding.';
+      XM.toast('Opened ' + link() + ' (illustrative)');
+      XM.flow.set({ handoff: true, startAt: sel });
+    }, 1100);
+  }
+  function resetHand(keepSel) {
+    clearTimeout(loading); done = false;
+    var cta = $('#cta'); cta.classList.remove('done', 'busy');
+    $('#ctal').textContent = 'Continue to the portal'; $('#ctai').innerHTML = XM.icon('arrow');
+    $('#ctan').textContent = 'Opens in this window. Email already filled in, no password to type.';
+    if (!keepSel) setSel('home');
+  }
+
+  $('#cta').addEventListener('click', function () { if (!done && !$('#cta').classList.contains('busy')) setSel('home'); handoff(); });
+
+  /* ---------- copy ---------- */
+  $('#dlc').innerHTML = XM.icon('copy');
+  $('#dl').addEventListener('click', function () {
+    var txt = 'https://' + link(), btn = this;
+    function ok() { btn.classList.add('copied'); $('#dlc').innerHTML = XM.icon('check'); XM.toast('Link copied'); setTimeout(function () { btn.classList.remove('copied'); $('#dlc').innerHTML = XM.icon('copy'); }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, ok); else {
+      var t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); ok();
+    }
+  });
+
+  /* ---------- links ---------- */
+  $('#back').href = XM.url('ideas/03-verification/index.html' + (XM.embedded ? '?embed=1' : ''));
+  $('#back').addEventListener('click', function (e) { /* real link */ });
+  $('#restart').addEventListener('click', function () { replay(); resetHand(); setSel('home'); $$('#tgl input').forEach(function (i) { i.checked = false; i.dispatchEvent(new Event('change', { bubbles: true })); }); });
+
+  function replay() { var ok = $('#ok'); ok.classList.remove('go'); void ok.offsetWidth; ok.classList.add('go'); }
+
+  /* ---------- opt-in bundle ---------- */
+  var BUNDLE = [
+    { k: 'brief', ic: 'mail', t: 'Market brief', d: 'One short email each morning with what moves the markets.' },
+    { k: 'webinar', ic: 'users', t: 'Webinar invites', d: 'Live sessions with analysts, a few times a month.' },
+    { k: 'alerts', ic: 'bell', t: 'Price alerts', d: 'App notifications when your watched instruments move.' }
+  ];
+  var saved = (flow.optins) || {};
+  $('#tgl').innerHTML = BUNDLE.map(function (b) {
+    return '<label class="tr' + (saved[b.k] ? ' on' : '') + '" data-k="' + b.k + '"><span class="ic">' + XM.icon(b.ic) + '</span><span class="tx"><b>' + b.t + '</b><span>' + b.d + '</span></span><span class="sw"><input type="checkbox" ' + (saved[b.k] ? 'checked' : '') + ' aria-label="' + b.t + '"><i></i></span></label>';
+  }).join('');
+  $('#tgl').addEventListener('change', function (e) {
+    var row = e.target.closest('.tr'); if (!row) return;
+    row.classList.toggle('on', e.target.checked);
+    var o = {}; $$('#tgl input').forEach(function (i) { o[i.closest('.tr').getAttribute('data-k')] = i.checked; });
+    XM.flow.set({ optins: o });
+  });
+
+  /* ---------- metric count-up ---------- */
+  var mt = $('#mt');
+  function go() {
+    mt.classList.add('go');
+    $$('.v[data-to]', mt).forEach(function (v, n) {
+      var to = +v.getAttribute('data-to'), t0 = performance.now() + (n ? 350 : 0), D = 1300;
+      (function f(t) { var p = Math.max(0, Math.min(1, (t - t0) / D)); v.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))) + '%'; if (p < 1) requestAnimationFrame(f); })(performance.now());
+    });
+  }
+  if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { go(); io.disconnect(); } }, { threshold: .35 }); io.observe(mt); } else go();
+
+  /* ---------- boot ---------- */
+  setSel('home', true);
+  setTimeout(function () { $('#ok').classList.add('go'); }, 120);
+  $('#ctai').innerHTML = XM.icon('arrow');
+
+  XM.notes({
+    title: 'Register success as one designed asset',
+    today: 'Confirming the email drops people on the PWA initial screen. They re-enter their email and some never log in.',
+    proposed: 'One branded success page in the same window. The primary action signs the user into the portal (the PWA) with a one-time token. Optional destinations, deposit, learn and getting the app, ride along as a deep link. The PWA keeps its own onboarding.',
+    why: 'Intent is highest at the moment of confirmation. A chosen destination and a pre-filled login remove the dead end.',
+    metric: 'Register success to first PWA login rate, and time to first login.'
+  });
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="05"></script>
+</body>
+</html>

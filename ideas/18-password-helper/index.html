@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Password generator helper · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 18 · Password generator helper
+   A one-click, rule-compliant password generator. Lives in the recovery email and on a hosted fallback page.
+   ===================================================================== */
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+[data-ic] { display: inline-flex; } [data-ic] svg { width: 16px; height: 16px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 72px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+.sec { margin-top: 56px; }
+.sh { max-width: 720px; margin-bottom: 26px; }
+.sh .h-l { margin-top: 10px; font-size: clamp(26px, 3vw, 36px); }
+.sh .lead { margin-top: 10px; }
+
+/* ---------- header ---------- */
+.hd { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; align-items: center; padding: 32px 0 0; }
+.hd h1 { font-size: clamp(28px, 3.4vw, 42px); line-height: 1.08; font-weight: 700; letter-spacing: -.03em; margin-top: 10px; max-width: 18ch; animation: fadeUp .7s both; }
+.hd .lead { margin-top: 12px; max-width: 50ch; animation: fadeUp .7s .08s both; }
+.hd .eyebrow { animation: fadeUp .6s both; }
+.how { margin-top: 18px; display: grid; gap: 8px; animation: fadeUp .7s .16s both; }
+.how li { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; color: var(--ink-2); }
+.how li b { color: var(--ink); font-weight: 600; }
+.how li i { width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-style: normal; font-size: 12px; font-weight: 700; display: grid; place-items: center; flex: none; margin-top: 1px; }
+.hostc { animation: fadeUp .8s .12s both; }
+.hostc .cap { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-size: 12.5px; color: var(--mut); }
+
+/* ---------- the widget ---------- */
+.pg { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 24px; box-shadow: 0 24px 60px -36px rgba(16, 24, 40, .3); }
+.pg.in-mail { border-radius: 18px; padding: 18px; box-shadow: none; background: #fafafa; }
+.pg-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pg-h b { font-size: 13px; font-weight: 600; }
+.pg-str { font-size: 12px; font-weight: 600; color: var(--g); background: var(--g-l); border-radius: 999px; padding: 3px 10px; }
+.pg-out { display: flex; align-items: center; gap: 6px; margin-top: 12px; padding: 6px 6px 6px 18px; min-height: 66px; border-radius: 16px; background: var(--bg); border: 1.5px solid transparent; transition: border-color .2s, background .2s; }
+.pg-out:focus-within, .pg-out.flash { border-color: var(--g); background: #fff; }
+.pg-val { flex: 1; min-width: 0; font-size: clamp(20px, 2.4vw, 26px); font-weight: 600; letter-spacing: .02em; word-break: break-all; line-height: 1.25; padding: 6px 0; user-select: all; }
+.pg-val .d { color: var(--g); } .pg-val .s { color: var(--blue); }
+.pg-ib { width: 42px; height: 42px; border: 0; border-radius: 12px; background: none; display: grid; place-items: center; color: #6a717b; flex: none; transition: background .15s, color .15s; }
+.pg-ib:hover { background: rgba(0, 0, 0, .06); color: var(--ink); }
+.pg-ib svg { width: 20px; height: 20px; }
+.pg-rules { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 14px; }
+.pg-rules span { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
+.pg-rules svg { width: 15px; height: 15px; color: var(--g); stroke-width: 3; }
+.pg-ctl { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--soft); border-radius: 10px; }
+.seg button { border: 0; background: none; padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--mut); }
+.seg button.on { background: #fff; color: var(--ink); font-weight: 600; box-shadow: var(--sh-s); }
+.pg-act { display: grid; grid-template-columns: 1fr 1.25fr; gap: 10px; margin-top: 16px; }
+.pg-act .btn { padding: 13px 18px; font-size: 14.5px; border-radius: 12px; }
+.pg-act .btn svg { width: 18px; height: 18px; }
+.pg-foot { margin-top: 14px; display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: var(--mut); line-height: 1.5; }
+.pg-foot svg { width: 14px; height: 14px; flex: none; margin-top: 2px; color: var(--g); }
+
+/* ---------- storyboard ---------- */
+.tabs-row { margin-bottom: 22px; }
+.pill-tabs { max-width: 100%; box-shadow: 0 1px 2px rgba(16, 24, 40, .05); overflow-x: auto; }
+.pill-tabs button { display: inline-flex; align-items: center; gap: 8px; transition: all .2s; white-space: nowrap; }
+.pill-tabs button i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; background: var(--soft); color: var(--mut); font-size: 11px; font-weight: 700; display: grid; place-items: center; transition: all .2s; }
+.pill-tabs button.on { background: var(--ink); color: #fff; }
+.pill-tabs button.on i { background: var(--g); color: #fff; }
+.pill-tabs button:not(.on):hover { color: var(--ink); background: var(--soft); }
+.scene { animation: fadeUp .45s both; }
+.sgrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 28px; box-shadow: 0 24px 60px -40px rgba(16, 24, 40, .25); }
+.panel .eb { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--g); }
+.panel h3 { font-size: 21px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
+.panel .pn { color: var(--mut); font-size: 13.5px; margin-top: 6px; line-height: 1.55; }
+.rules { display: grid; margin-top: 16px; }
+.rl { display: flex; gap: 14px; padding: 13px 0; border-top: 1px solid var(--line); align-items: flex-start; }
+.rl .ic { width: 36px; height: 36px; border-radius: 11px; background: var(--soft); color: var(--ink-2); display: grid; place-items: center; flex: none; }
+.rl .ic svg { width: 18px; height: 18px; }
+.rl b { display: block; font-size: 14px; font-weight: 600; }
+.rl span { display: block; color: var(--mut); font-size: 12.8px; line-height: 1.5; margin-top: 1px; }
+.trig { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--g-l); color: #0b5a3a; font-size: 13px; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
+.trig svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+.pbtns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.btn-xl { padding: 13px 22px; font-size: 14.5px; border-radius: 12px; }
+
+/* registration form mock */
+.reg { max-width: 460px; margin: 0 auto; background: #fff; border: 1px solid var(--line-2); border-radius: 20px; padding: 28px; box-shadow: var(--sh-m); }
+.reg h4 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 18px; }
+.reg .field { margin-bottom: 14px; }
+.reg .inp[readonly] { color: var(--ink-2); }
+.reg .ok-ic { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--g); display: grid; }
+.reg .ok-ic svg { width: 18px; height: 18px; stroke-width: 3; }
+.pwf { position: relative; }
+.pwf .inp { padding-right: 48px; }
+.pwf .pg-ib { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; }
+.rk { display: grid; gap: 6px; margin: 10px 0 4px; }
+.rk li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--mut); transition: color .15s; }
+.rk li i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-2); display: grid; place-items: center; color: #fff; transition: all .15s; flex: none; }
+.rk li i svg { width: 10px; height: 10px; stroke-width: 4; opacity: 0; }
+.rk li.ok { color: var(--ink); } .rk li.ok i { background: var(--g); border-color: var(--g); } .rk li.ok i svg { opacity: 1; }
+.eg { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 2px; font-size: 12.5px; color: var(--mut); }
+.eg button { border: 1px solid var(--line-2); background: #fff; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; color: var(--ink-2); }
+.eg button:hover { border-color: var(--g); color: var(--g); }
+.meter { display: flex; gap: 4px; margin-top: 8px; } .meter i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); transition: background .2s; }
+.meter[data-s="1"] i:nth-child(1) { background: var(--red); }
+.meter[data-s="2"] i:nth-child(-n+2) { background: #e8a317; }
+.meter[data-s="3"] i { background: var(--g); }
+.reg .err-msg { display: flex; gap: 6px; align-items: flex-start; }
+.reg .err-msg svg { width: 14px; height: 14px; margin-top: 2px; flex: none; }
+.reg.shake { animation: shake .38s; }
+@keyframes shake { 20% { transform: translateX(-8px); } 45% { transform: translateX(7px); } 70% { transform: translateX(-4px); } 90% { transform: translateX(2px); } }
+.leave { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--mut); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.leave:hover { color: var(--ink); }
+
+/* email client mock */
+.sgrid.wide { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); }
+/* Gmail-style client around the real XM email layout (black rounded header, white body, green button) */
+.gm { background: #fff; border: 1px solid var(--line-2); border-radius: 20px; box-shadow: var(--sh-m); overflow: hidden; }
+.gm-top { display: flex; align-items: center; gap: 12px; padding: 12px 18px; font-size: 13px; color: #5f6368; border-bottom: 1px solid #eef0f2; }
+.gm-top .gm-back svg { transform: scaleX(-1); width: 18px; height: 18px; }
+.gm-n { margin-left: auto; }
+.gm-sub { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 18px 22px 4px 74px; }
+.gm-sub h4 { font-size: 20px; font-weight: 400; letter-spacing: -.005em; line-height: 1.3; color: #1f1f1f; }
+.gm-chip { font-size: 12px; background: #e8eaed; color: #444; border-radius: 6px; padding: 2px 8px; }
+.gm-from { display: flex; align-items: flex-start; gap: 12px; padding: 14px 22px 16px; font-size: 13.5px; }
+.gm-from .av { width: 40px; height: 40px; border-radius: 50%; background: #000; color: #fff; font-size: 13px; font-weight: 800; font-style: italic; display: grid; place-items: center; flex: none; }
+.gm-from .who { min-width: 0; line-height: 1.5; } .gm-from .who b { font-weight: 600; font-size: 14px; } .gm-from .who span { color: #5f6368; word-break: break-all; } .gm-from small { font-size: 12.5px; color: #5f6368; }
+.gm-from .tm { margin-left: auto; color: #5f6368; font-size: 12px; text-align: right; flex: none; max-width: 150px; }
+.gm-body { background: #f0f0f0; padding: 34px 18px 40px; }
+.mcard { max-width: 650px; margin: 0 auto; background: #fff; border-radius: 18px 18px 0 0; overflow: hidden; font-family: Arial, Helvetica, sans-serif; color: #111; }
+.mcard .bar { background: #000; padding: 26px 0; display: grid; place-items: center; }
+.mcard .bar svg { height: 38px; width: auto; }
+.mcard .in { padding: 36px 34px 30px; }
+.mcard p { font-size: 15.5px; line-height: 1.65; color: #1d2024; margin: 0 0 16px; }
+.mcard p.lg { font-size: 19px; margin-bottom: 20px; }
+.mcard .pg { margin: 22px 0 22px; font-family: Arial, Helvetica, sans-serif; }
+.mcard .pg .pg-val { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+.mcard .ctar { text-align: center; margin: 26px 0 16px; }
+.mcard .cta { display: inline-block; text-align: center; padding: 18px 36px; border-radius: 10px; background: #3f9460; color: #fff; font-weight: 700; font-size: 17px; letter-spacing: .01em; text-transform: uppercase; transition: background .15s; }
+.mcard .cta:hover { background: var(--g-d); }
+.mcard .cta.ol { background: none; color: #1d2024; border: 2px solid #1d2024; padding: 12px 26px; font-size: 14px; }
+.mcard .cta.ol:hover { background: #1d2024; color: #fff; }
+.mcard .note { text-align: center; font-size: 14px; margin-bottom: 8px; }
+.mcard .note.sm { font-size: 12.5px; color: #5f6368; }
+.mcard .alt2 { margin-top: 26px; padding: 20px 22px 16px; border-radius: 14px; background: #f3f8f5; border: 1px solid #d5e8de; text-align: left; }
+.mcard .alt2 h6 { margin: 0; font-size: 16px; font-weight: 700; color: #1d2024; }
+.mcard .alt2 > p { font-size: 13.5px; line-height: 1.5; color: #4a5058; margin: 4px 0 0; }
+.mcard .alt2 .pg.mini { margin: 14px 0 10px; padding: 12px; background: #fff; border: 1px solid #d5e8de; border-radius: 12px; box-shadow: none; }
+.mcard .alt2 .pg.mini .pg-h, .mcard .alt2 .pg.mini .pg-ctl, .mcard .alt2 .pg.mini .pg-foot { display: none; }
+.mcard .alt2 .pg.mini .pg-out { min-height: 50px; padding: 4px 4px 4px 14px; border-radius: 10px; margin-top: 0; }
+.mcard .alt2 .pg.mini .pg-val { font-size: 18px; padding: 3px 0; }
+.mcard .alt2 .pg.mini .pg-ib { width: 36px; height: 36px; }
+.mcard .alt2 .pg.mini .pg-rules { margin-top: 10px; gap: 4px 12px; } .mcard .alt2 .pg.mini .pg-rules span { font-size: 11.5px; } .mcard .alt2 .pg.mini .pg-rules svg { width: 13px; height: 13px; }
+.mcard .alt2 .pg.mini .pg-act { margin-top: 10px; gap: 8px; }
+.mcard .alt2 .pg.mini .pg-act .btn { padding: 10px 12px; font-size: 13px; border-radius: 9px; } .mcard .alt2 .pg.mini .pg-act .btn svg { width: 16px; height: 16px; }
+.mcard .alt2 .note { margin: 0; text-align: left; }
+.mcard .note a { color: #008454; text-decoration: underline; text-underline-offset: 2px; }
+.mcard .sig { margin-top: 28px; display: grid; gap: 12px; font-size: 16px; }
+.mcard hr { border: 0; border-top: 1px solid #d6d9de; margin: 30px 0 28px; }
+.mcard .app { text-align: center; }
+.mcard .app h5 { font-size: 24px; line-height: 1.25; font-weight: 700; margin: 0 0 14px; }
+.mcard .app p { margin-bottom: 20px; }
+.mcard .ft { background: #fafafa; border-top: 1px solid #ececec; padding: 18px 28px 22px; text-align: center; font-size: 11.5px; line-height: 1.6; color: #6a727b; }
+.mcard .ft a { text-decoration: underline; }
+
+/* guardrails */
+.gr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.gc { background: #fff; border: 1px solid var(--line); border-radius: var(--r-l); padding: 22px; }
+.gc .ic { width: 40px; height: 40px; border-radius: 12px; background: var(--g-l); color: var(--g); display: grid; place-items: center; }
+.gc .ic svg { width: 20px; height: 20px; }
+.gc b { display: block; margin-top: 14px; font-size: 15px; font-weight: 600; }
+.gc p { margin-top: 6px; font-size: 13px; line-height: 1.55; color: var(--mut); }
+
+@media (max-width: 1000px) {
+  .hd { grid-template-columns: 1fr; gap: 28px; padding-top: 28px; }
+  .sgrid, .sgrid.wide { grid-template-columns: 1fr; }
+  .gr { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 0 16px; }
+  .panel { padding: 22px 20px; } .pg { padding: 18px; } .reg { padding: 22px 18px; }
+  .mcard .in { padding: 24px 18px 22px; } .mcard .bar { padding: 18px 0; } .mcard .bar svg { height: 28px; } .gm-body { padding: 18px 8px 24px; }
+  .gm-sub { padding-left: 22px; } .gm-sub h4 { font-size: 17px; } .gm-from .tm { display: none; }
+  .mcard .cta { padding: 15px 22px; font-size: 15px; } .mcard .app h5 { font-size: 20px; }
+  .pg-act { grid-template-columns: 1fr; }
+  .gr { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main class="wrap">
+  <!-- ================= HEADER + HOSTED WIDGET ================= -->
+  <section class="hd">
+    <div>
+      <span class="eyebrow">Wave 1 &middot; Registration</span>
+      <h1>A password that always passes, in one click</h1>
+      <p class="lead">Registration stalls on the password rules. A follow-up email carries a generator that only makes passwords our form accepts.</p>
+      <ul class="how">
+        <li><i>1</i><span><b>They stall on the password.</b> The email is already captured.</span></li>
+        <li><i>2</i><span><b>An automatic email arrives</b> with a Continue button and a generator.</span></li>
+        <li><i>3</i><span><b>They paste it and finish.</b> The resume link pre-fills the email.</span></li>
+      </ul>
+    </div>
+    <div class="hostc">
+      <div class="cap"><span class="tag"><span data-ic="bolt"></span>Try it</span><span>Hosted page version, same widget as in the email</span></div>
+      <div class="pg" id="wHost"></div>
+    </div>
+  </section>
+
+  <!-- ================= STORYBOARD ================= -->
+  <section class="sec" id="story">
+    <div class="sh">
+      <span class="eyebrow">The journey</span>
+      <h2 class="h-l">From a rejected password to a finished form</h2>
+      <p class="lead">Click through the three moments. Everything is live, including the generator.</p>
+    </div>
+    <div class="tabs-row"><div class="pill-tabs" role="tablist" aria-label="Journey steps" id="tabs">
+      <button role="tab" data-i="1" class="on"><i>1</i>The form rejects it</button>
+      <button role="tab" data-i="2"><i>2</i>The email</button>
+      <button role="tab" data-i="3"><i>3</i>Paste and finish</button>
+    </div></div>
+
+    <!-- 1 -->
+    <div class="scene sgrid" data-s="1">
+      <div class="reg" id="reg1">
+        <h4>Let&rsquo;s get you registered!</h4>
+        <label class="field"><span>Email<i>*</i></span><div class="inp-wrap"><input class="inp" id="e1" type="email" readonly><span class="ok-ic" data-ic="check"></span></div></label>
+        <label class="field" style="margin-bottom:0"><span>Password<i>*</i></span>
+          <div class="pwf"><input class="inp" id="p1" type="text" autocomplete="off" placeholder="Enter password" aria-describedby="r1 r1e"><button class="pg-ib" type="button" id="eye1" aria-label="Show or hide password"></button></div>
+        </label>
+        <ul class="rk" id="r1"><li data-k="len"><i data-ic="check"></i>At least 8 characters</li><li data-k="let"><i data-ic="check"></i>Contains letters</li><li data-k="num"><i data-ic="check"></i>Contains numbers</li></ul>
+        <div class="err-msg" id="r1e" role="alert" hidden></div>
+        <button class="btn btn-primary btn-lg btn-block" type="button" id="create1" style="margin-top:16px">Create account</button>
+        <button class="leave" type="button" id="leave">Give up and close the tab</button>
+      </div>
+      <div class="panel">
+        <span class="eb">Where it breaks</span>
+        <h3>The rule only shows up after the failure</h3>
+        <p class="pn">The visitor has already given us their email. The password step is what stops them.</p>
+        <div class="rules">
+          <div class="rl"><span class="ic" data-ic="warn"></span><div><b>Rules are learned by failing</b><span>Eight characters, letters and numbers. Most first attempts miss one of them.</span></div></div>
+          <div class="rl"><span class="ic" data-ic="phone"></span><div><b>Retrying is costly</b><span>On a phone, each failed attempt means retyping, and many will not.</span></div></div>
+          <div class="rl"><span class="ic" data-ic="mail"></span><div><b>But we hold their email</b><span>That is enough to help them finish later.</span></div></div>
+        </div>
+        <div class="trig"><span data-ic="bolt"></span><span><b>Trigger:</b> email entered, no registration after 10 minutes. Press &ldquo;Give up&rdquo; to see what they receive.</span></div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="scene sgrid wide" data-s="2" hidden>
+      <div class="gm">
+        <div class="gm-top"><span class="gm-back" data-ic="arrow"></span><span>Inbox</span><span class="gm-n">1 of 24</span></div>
+        <div class="gm-sub"><h4>Finish creating your XMTrading account</h4><span class="gm-chip">Inbox &times;</span></div>
+        <div class="gm-from">
+          <span class="av">XM</span>
+          <div class="who"><b>XMTrading</b> <span>&lt;site@xmtrading.com&gt;</span><br><small>to <span id="mTo">alex@example.com</span></small></div>
+          <span class="tm">10:12 AM (10 minutes after you left)</span>
+        </div>
+        <div class="gm-body">
+          <div class="mcard">
+            <div class="bar" id="mLogo"></div>
+            <div class="in">
+              <p class="lg">Welcome to XMTrading</p>
+              <p>You started creating your XMTrading account but did not finish. Your email is saved, so you can pick up right where you left off.</p>
+              <div class="ctar"><a class="cta" href="#" id="mCta">Continue registration</a></div>
+              <p class="note">To protect your account, this link is only valid for 7 days.</p>
+              <div class="alt2">
+                <h6>Stuck on the password rules?</h6>
+                <p>Use one we generate. It always meets every requirement.</p>
+                <div class="pg in-mail mini" id="wMail"></div>
+                <p class="note sm">Copy it, then use the button above to continue. Can&rsquo;t see this? <a href="#" id="mHost">Open it in your browser</a>.</p>
+              </div>
+              <div class="sig"><b>Kind Regards,</b><b>The XMTrading Team</b></div>
+              <hr>
+              <div class="app">
+                <h5>Download the XMTD TraderPro App</h5>
+                <p>Trade on the go with the XMTD TraderPro, our new mobile app designed for faster, more convenient trading.</p>
+                <a class="cta ol" href="#" data-mock>Download the app</a>
+              </div>
+            </div>
+            <div class="ft">Forex and derivative trading involves significant risk and can result in the loss of your invested capital.<br>You received this email because you started registering at xmtrading.com. <a href="#" data-mock>Unsubscribe</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <span class="eb">The email</span>
+        <h3>One button first, help second</h3>
+        <p class="pn">The email&rsquo;s main job is to bring people back to the form. The generator is a small helper for those who stalled on the password. Try it in the email.</p>
+        <div class="rules">
+          <div class="rl"><span class="ic" data-ic="shield"></span><div><b>Compliant by construction</b><span>Always 12 to 20 characters with upper and lower case letters, numbers and symbols, so it passes any rule set we use.</span></div></div>
+          <div class="rl"><span class="ic" data-ic="bolt"></span><div><b>Unique every time</b><span>Built from the browser&rsquo;s secure random generator. Nothing is reused.</span></div></div>
+          <div class="rl"><span class="ic" data-ic="mail"></span><div><b>Works where email scripting does not</b><span>Interactive in clients that support AMP for Email. Elsewhere the button opens the hosted page with the same widget.</span></div></div>
+        </div>
+        <div class="pbtns"><button class="btn btn-dark btn-xl" type="button" id="toS3">Continue registration</button></div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="scene sgrid" data-s="3" hidden>
+      <div class="reg" id="reg3">
+        <h4>Let&rsquo;s get you registered!</h4>
+        <label class="field"><span>Email<i>*</i></span><div class="inp-wrap"><input class="inp" id="e3" type="email" readonly><span class="ok-ic" data-ic="check"></span></div></label>
+        <label class="field" style="margin-bottom:0"><span>Password<i>*</i></span>
+          <div class="pwf"><input class="inp" id="p3" type="password" autocomplete="new-password" placeholder="Enter password" aria-describedby="r3"><button class="pg-ib" type="button" id="eye3" aria-label="Show or hide password"></button></div>
+        </label>
+        <div class="meter" id="m3" data-s="0"><i></i><i></i><i></i></div>
+        <ul class="rk" id="r3"><li data-k="len"><i data-ic="check"></i>At least 8 characters</li><li data-k="let"><i data-ic="check"></i>Contains letters</li><li data-k="num"><i data-ic="check"></i>Contains numbers</li></ul>
+        <div class="eg"><button type="button" id="paste" style="font-family:inherit;background:var(--ink);color:#fff;border-color:var(--ink)">Paste the generated password</button><span>or press Ctrl/Cmd+V if you copied it</span></div>
+        <button class="btn btn-primary btn-lg btn-block" type="button" id="create3" style="margin-top:16px">Create account</button>
+      </div>
+      <div class="panel">
+        <span class="eb">Paste and finish</span>
+        <h3>The form accepts it first time</h3>
+        <p class="pn">The resume link brings the visitor back with their email filled in. Only the password is left: they type their own, or paste one from the generator in the email.</p>
+        <div class="rules">
+          <div class="rl"><span class="ic" data-ic="check"></span><div><b>No failed attempt</b><span>The password already satisfies the rule checklist, so there is no error to recover from.</span></div></div>
+          <div class="rl"><span class="ic" data-ic="lock"></span><div><b>The password never travels in the link</b><span>It is not placed in the URL, in analytics or in our systems. It reaches XM only when the form is submitted.</span></div></div>
+        </div>
+        <div class="pbtns"><a class="btn btn-outline btn-xl" id="openReg" href="#">Open the real registration form</a><button class="btn btn-ghost" type="button" id="again">Replay from the start</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GUARDRAILS ================= -->
+  <section class="sec" id="guard">
+    <div class="sh">
+      <span class="eyebrow">Guardrails</span>
+      <h2 class="h-l">Built so it is safe to send in an email</h2>
+    </div>
+    <div class="gr">
+      <div class="gc"><span class="ic" data-ic="shield"></span><b>Generated on the device</b><p>Passwords are created in the recipient&rsquo;s browser with a secure random source. XM never sees or stores them.</p></div>
+      <div class="gc"><span class="ic" data-ic="lock"></span><b>Nothing sensitive in the email</b><p>The message holds a link and the widget, not a ready-made password. The link carries the email only, and expires.</p></div>
+      <div class="gc"><span class="ic" data-ic="mail"></span><b>Graceful fallback</b><p>AMP for Email in supporting clients, a hosted page everywhere else. One widget, two surfaces.</p></div>
+      <div class="gc"><span class="ic" data-ic="user"></span><b>Password manager friendly</b><p>The field uses the new-password hint, so managers can offer to save it after the first use.</p></div>
+    </div>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var $ = XM.$, $$ = XM.$$, esc = XM.esc;
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var email = XM.qs('email') || (XM.flow.get() || {}).email || 'alex@example.com';
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 5.1A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.2 6.7C3.6 8.5 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.3-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  var REFRESH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.2L4 9M4 4v5h5M4 13a8 8 0 0 0 14.5 4.2L20 15M20 20v-5h-5"/></svg>';
+
+  function icons(root) { $$('[data-ic]', root).forEach(function (e) { e.innerHTML = XM.icon(e.getAttribute('data-ic')); }); }
+  icons(document);
+  $('#mLogo').innerHTML = XM.logo(true);
+  $('#mTo').textContent = email; $('#e1').value = email; $('#e3').value = email;
+
+  /* ---------- password generator ---------- */
+  var LOW = 'abcdefghjkmnpqrstuvwxyz', UP = 'ABCDEFGHJKLMNPQRSTUVWXYZ', DIG = '23456789', SYM = '!@#$%^&*?-_+=';
+  function rnd(n) { var a = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n; do { crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % n; }
+  function pick(s) { return s.charAt(rnd(s.length)); }
+  function pool(sym) { return LOW + UP + DIG + (sym ? SYM : ''); }
+  function gen(len, sym) {
+    var sets = [LOW, UP, DIG].concat(sym ? [SYM] : []), all = pool(sym), out = [], i, j, t;
+    sets.forEach(function (s) { out.push(pick(s)); });
+    while (out.length < len) out.push(pick(all));
+    for (i = out.length - 1; i > 0; i--) { j = rnd(i + 1); t = out[i]; out[i] = out[j]; out[j] = t; }
+    return out.join('');
+  }
+  function bits(len, sym) { return Math.round(len * Math.log(pool(sym).length) / Math.LN2); }
+  function paint(s) {
+    return s.split('').map(function (c) { var k = /\d/.test(c) ? 'd' : /[A-Za-z]/.test(c) ? '' : 's'; return k ? '<span class="' + k + '">' + esc(c) + '</span>' : esc(c); }).join('');
+  }
+  function copyText(t) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t).catch(function () { legacy(t); });
+    legacy(t); return Promise.resolve();
+  }
+  function legacy(t) { var a = document.createElement('textarea'); a.value = t; a.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch (e) {} a.remove(); }
+
+  function mount(root, o) {
+    o = o || {};
+    var len = 16, sym = true, val = '', hidden = true, timer = 0;
+    root.innerHTML =
+      '<div class="pg-h"><b>Your new password</b><span class="pg-str"></span></div>' +
+      '<div class="pg-out"><div class="pg-val mono" aria-live="polite"></div><button class="pg-ib" type="button" data-a="eye" aria-label="Show password">' + EYE_OFF + '</button></div>' +
+      '<div class="pg-rules"><span>' + XM.icon('check') + '8+ characters</span><span>' + XM.icon('check') + 'Letters</span><span>' + XM.icon('check') + 'Numbers</span><span class="rs">' + XM.icon('check') + 'Symbol</span></div>' +
+      '<div class="pg-ctl"><div class="seg" role="group" aria-label="Length"><button type="button" data-l="12">12</button><button type="button" data-l="16" class="on">16</button><button type="button" data-l="20">20</button></div></div>' +
+      '<div class="pg-act"><button class="btn btn-outline" type="button" data-a="gen">' + REFRESH + 'Generate another</button><button class="btn btn-primary" type="button" data-a="copy">' + XM.icon('copy') + '<span>Copy password</span></button></div>' +
+      '<div class="pg-foot">' + XM.icon('shield') + '<span>Created in your browser. Never stored or sent to XM. Look-alike characters such as 0, O, 1 and l are left out.</span></div>';
+    var out = $('.pg-val', root), box = $('.pg-out', root), st = $('.pg-str', root), cp = $('[data-a=copy] span', root), eye = $('[data-a=eye]', root), rs = $('.rs', root);
+    function label() {
+      var b = bits(len, sym);
+      st.textContent = (b >= 90 ? 'Excellent' : 'Strong') + ' \u00b7 ' + b + ' bits';
+      rs.style.display = sym ? '' : 'none';
+    }
+    function show() { out.innerHTML = hidden ? '\u2022'.repeat(val.length) : paint(val); }
+    function set(v) { val = v; show(); label(); cp.textContent = 'Copy password'; if (o.onChange) o.onChange(val); }
+    function regen() {
+      var final = gen(len, sym), all = pool(sym), n = 0, steps = 9;
+      clearInterval(timer);
+      box.classList.add('flash'); setTimeout(function () { box.classList.remove('flash'); }, 500);
+      if (RM) { set(final); return; }
+      timer = setInterval(function () {
+        n++;
+        var shown = final.split('').map(function (c, i) { return i < n * len / steps ? c : pick(all); }).join('');
+        val = shown; show();
+        if (n >= steps) { clearInterval(timer); set(final); }
+      }, 32);
+    }
+    root.addEventListener('click', function (e) {
+      var l = e.target.closest('[data-l]'), a = e.target.closest('[data-a]');
+      if (l) { len = +l.getAttribute('data-l'); $$('[data-l]', root).forEach(function (x) { x.classList.toggle('on', x === l); }); regen(); return; }
+      if (!a) return;
+      var k = a.getAttribute('data-a');
+      if (k === 'gen') regen();
+      if (k === 'eye') { hidden = !hidden; eye.innerHTML = hidden ? EYE_OFF : EYE; eye.setAttribute('aria-label', hidden ? 'Show password' : 'Hide password'); show(); }
+      if (k === 'copy') { copyText(val).then(function () { cp.textContent = 'Copied'; XM.toast('Password copied. Paste it into the form.'); if (o.onCopy) o.onCopy(val); }); }
+    });
+    set(gen(len, sym));
+    return { get: function () { return val; }, regen: regen };
+  }
+
+  var host = mount($('#wHost'));
+  var mailW = mount($('#wMail'), { onCopy: function () { copied = true; } });
+  var copied = false;
+
+  /* ---------- scene 1 and 3: the registration form ---------- */
+  function rules(v) { return { len: v.length >= 8, let: /[A-Za-z]/.test(v), num: /\d/.test(v) }; }
+  function check(list, v) { var r = rules(v); $$('li', list).forEach(function (li) { li.classList.toggle('ok', !!r[li.getAttribute('data-k')]); }); return r.len && r.let && r.num; }
+  function score(v) { var s = 0; if (v.length >= 8) s++; if (/[A-Za-z]/.test(v) && /\d/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v) || v.length >= 12) s++; return v ? s : 0; }
+  function wireEye(btn, inp, startHidden) {
+    var h = startHidden; btn.innerHTML = h ? EYE_OFF : EYE;
+    btn.addEventListener('click', function () { h = !h; inp.type = h ? 'password' : 'text'; btn.innerHTML = h ? EYE_OFF : EYE; });
+  }
+  var p1 = $('#p1'), p3 = $('#p3'), r1e = $('#r1e');
+  wireEye($('#eye1'), p1, false); wireEye($('#eye3'), p3, true);
+  p1.addEventListener('input', function () { check($('#r1'), p1.value); r1e.hidden = true; p1.classList.remove('err'); });
+  $('#create1').addEventListener('click', function () {
+    var v = p1.value;
+    if (!v) { fail('Please create a password.'); return; }
+    if (!check($('#r1'), v)) { fail('Use 8 or more characters with letters and numbers.'); return; }
+    XM.toast('That one passes. The helper is for the attempts that do not.');
+  });
+  function fail(msg) {
+    var f = $('#reg1'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake');
+    p1.classList.add('err'); r1e.innerHTML = XM.icon('warn') + esc(msg); r1e.hidden = false;
+  }
+  p3.addEventListener('input', function () { check($('#r3'), p3.value); $('#m3').setAttribute('data-s', score(p3.value)); });
+  $('#paste').addEventListener('click', function () {
+    p3.value = mailW.get(); p3.dispatchEvent(new Event('input')); p3.focus();
+  });
+  $('#create3').addEventListener('click', function () {
+    if (!check($('#r3'), p3.value)) { XM.toast('Paste the generated password first.'); return; }
+    XM.toast('Prototype: the account would be created here.');
+  });
+
+  /* ---------- storyboard ---------- */
+  function go(n) {
+    $$('.scene').forEach(function (s) { s.hidden = s.getAttribute('data-s') !== String(n); });
+    $$('#tabs button').forEach(function (b) { var on = b.getAttribute('data-i') === String(n); b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    if (n === 3 && !p3.value) { $('#paste').classList.add('pulse'); }
+    var s = $('#story'); if (s.getBoundingClientRect().top < 0) s.scrollIntoView({ block: 'start' });
+  }
+  $('#tabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) go(+b.getAttribute('data-i')); });
+  $('#leave').addEventListener('click', function () { XM.toast('Abandoned. The email is queued for 10 minutes later.'); go(2); });
+  $('#toS3').addEventListener('click', function () { go(3); });
+  $('#mCta').addEventListener('click', function (e) { e.preventDefault(); go(3); });
+  $('#mHost').addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); XM.toast('The hosted page opens with the same widget'); });
+  document.addEventListener('click', function (e) { var a = e.target.closest('a[data-mock]'); if (a) { e.preventDefault(); XM.toast('Not part of this prototype'); } });
+  $('#again').addEventListener('click', function () { p1.value = ''; p3.value = ''; check($('#r1'), ''); check($('#r3'), ''); $('#m3').setAttribute('data-s', 0); r1e.hidden = true; p1.classList.remove('err'); go(1); });
+  $('#openReg').href = XM.url('ideas/02-hero-email/register.html?email=' + encodeURIComponent(email).replace('%40', '@') + '&src=crm&resume=1');
+
+  var P = /[?&]present=1/.test(location.search) ? 'present=1' : (XM.embedded ? 'embed=1' : '');
+  if (P) $('#openReg').href += '&' + P;
+
+  XM.notes({
+    title: 'Password generator helper',
+    today: 'People who enter an email and then fail the password rules abandon the form. Today nothing helps them with that step.',
+    proposed: 'A one-click generator that only produces passwords the form accepts. It is embedded in the abandoned-registration email, with a hosted page as the fallback.',
+    why: 'The email is already captured, so the follow-up can remove the one step that stopped them.',
+    metric: 'Recovery-email click-through, form completion after the email, and password-error rate on the form.'
+  });
+});
+</script>
+<script src="../../assets/js/review.js" data-idea="18"></script>
+</body>
+</html>

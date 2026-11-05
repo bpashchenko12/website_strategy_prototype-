@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Segmentation lab · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 04 · Segmentation lab
+   Left: controls (affiliate page -> cookie -> rules). Right: live preview rendered from a persona config.
+   ===================================================================== */
+@property --acc  { syntax: '<color>'; inherits: true; initial-value: #00c27c; }
+@property --acc2 { syntax: '<color>'; inherits: true; initial-value: #008454; }
+:root { --gl: #00c27c; --gl2: #3ddc97; --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 96px; margin-top: 72px; }
+
+/* ---------- intro ---------- */
+.intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding: 34px 0 26px; }
+.intro h1 { font-size: clamp(34px, 4.4vw, 56px); line-height: 1.04; letter-spacing: -.035em; font-weight: 700; margin-top: 10px; }
+.intro .lead { max-width: 640px; margin-top: 14px; font-size: 16px; }
+.pers { display: flex; align-items: flex-start; gap: 12px; margin-top: 18px; max-width: 720px; }
+.pers-l { flex: none; padding-top: 7px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); }
+.pers-c { display: flex; flex-wrap: wrap; gap: 8px; }
+.pchip { --c: var(--g); display: inline-flex; align-items: center; gap: 8px; padding: 5px 13px 5px 5px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+.pchip i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 13%, #fff); }
+.pchip i svg { width: 14px; height: 14px; }
+.pers-n { display: flex; gap: 8px; max-width: 720px; margin-top: 12px; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+.pers-n svg { width: 15px; height: 15px; color: var(--g); flex: none; margin-top: 3px; }
+.facts { display: flex; gap: 0; flex: none; }
+.facts div { padding: 0 26px; border-left: 1px solid var(--line-2); }
+.facts div:first-child { border-left: 0; }
+.facts b { display: block; font-size: 38px; line-height: 1.1; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.facts span { font-size: 13px; color: var(--mut); }
+
+/* ---------- lab grid ---------- */
+.lab { display: grid; grid-template-columns: 410px minmax(0, 1fr); grid-template-areas: 'one pv' 'two pv'; gap: 20px 24px; align-items: start; }
+.s1 { grid-area: one; } .s2 { grid-area: two; display: grid; gap: 20px; }
+.pv { grid-area: pv; position: sticky; top: 82px; }
+.step { padding: 22px 22px 22px; border-radius: 24px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 24px 50px -34px rgba(16, 24, 40, .25); }
+.sh { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; }
+.sh .n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+.sh h2 { font-size: 19px; line-height: 1.25; font-weight: 700; letter-spacing: -.015em; }
+.sh p { color: var(--mut); font-size: 13.5px; margin-top: 3px; line-height: 1.5; }
+
+/* ---------- step 1 · source cards ---------- */
+.src-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.src { --c: var(--g); position: relative; text-align: left; display: flex; flex-direction: column; gap: 8px; padding: 13px; border-radius: 16px; border: 1.5px solid var(--line); background: #fff; transition: transform .18s, box-shadow .18s, border-color .18s, background .18s; }
+.src .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--c); background: color-mix(in srgb, var(--c) 12%, #fff); transition: background .2s, color .2s; }
+.src .ic svg { width: 19px; height: 19px; }
+.src b { font-size: 13.5px; font-weight: 600; line-height: 1.25; }
+.src small { font-size: 11.5px; color: var(--mut); line-height: 1.35; margin-top: -4px; }
+.src:hover { transform: translateY(-2px); box-shadow: var(--sh-m); border-color: var(--line-2); }
+.src:focus-visible, .btn:focus-visible, .seg2 button:focus-visible, .tabs button:focus-visible { outline: 3px solid rgba(0, 132, 84, .35); outline-offset: 2px; }
+.src.on { border-color: var(--c); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 7%, #fff), #fff); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 14%, transparent); }
+.src.on .ic { background: var(--c); color: #fff; }
+.src .ck { position: absolute; right: 10px; top: 10px; width: 20px; height: 20px; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; transform: scale(0); transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.src .ck svg { width: 12px; height: 12px; stroke-width: 3; }
+.src.on .ck { transform: scale(1); }
+.src.client { border-style: dashed; grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 12px; } .src.client small { margin-top: 0; margin-left: auto; padding-right: 26px; }
+.tour { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 12.5px; color: var(--mut); } .tour .btn { gap: 6px; display: inline-flex; align-items: center; flex: none; } .tour .btn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.score.low .trk i { background: linear-gradient(90deg, #f5a623, #ffd36b); } .score.low .big { color: #b26200; }
+
+.aff { margin-top: 14px; border-radius: 16px; overflow: hidden; border: 1px solid var(--line-2); background: #fff; }
+.aff-bar { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; background: #eceef1; border-bottom: 1px solid var(--line); }
+.aff-bar i { width: 9px; height: 9px; border-radius: 50%; background: #c9ccd1; }
+.aff-bar i:nth-child(1) { background: #ff5f57; } .aff-bar i:nth-child(2) { background: #febc2e; } .aff-bar i:nth-child(3) { background: #28c840; }
+.aff-url { flex: 1; min-width: 0; margin-left: 8px; height: 20px; border-radius: 6px; background: #fff; font-size: 11px; color: var(--ink-2); display: flex; align-items: center; padding: 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .25s; }
+.aff-body { position: relative; height: 164px; overflow: hidden; }
+.aff-art { padding: 16px 28px 0 16px; transition: transform .1s linear; }
+.aff-tag { display: inline-block; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--mut); background: var(--soft); border-radius: 6px; padding: 2px 8px; }
+.aff-art h4 { font-size: 16px; line-height: 1.25; font-weight: 700; margin-top: 8px; letter-spacing: -.01em; }
+.skl { display: grid; gap: 6px; margin: 12px 0; } .skl i { display: block; height: 7px; border-radius: 4px; background: #eceef1; }
+.skl i:nth-child(1) { width: 96%; } .skl i:nth-child(2) { width: 88%; } .skl i:nth-child(3) { width: 62%; }
+.aff-hl { font-size: 12px; line-height: 1.5; color: var(--ink); padding: 8px 10px; border-radius: 8px; background: #fff7d6; border-left: 3px solid #f5b400; }
+.aff-btn { display: inline-block; margin: 14px 0 60px; font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 8px; background: var(--g); color: #fff; transition: box-shadow .3s, transform .3s; }
+.aff-btn.hit { animation: hit .9s; }
+@keyframes hit { 0% { box-shadow: 0 0 0 0 rgba(0, 132, 84, .6); transform: scale(1); } 25% { transform: scale(.94); } 60% { box-shadow: 0 0 0 12px rgba(0, 132, 84, 0); transform: scale(1.02); } 100% { transform: none; } }
+.aff-sc { position: absolute; right: 6px; top: 8px; bottom: 8px; width: 5px; border-radius: 3px; background: #eceef1; }
+.aff-sc b { position: absolute; left: 0; right: 0; top: 0; height: 36px; border-radius: 3px; background: #aab2bc; transition: background .3s; }
+.aff.busy .aff-sc b { background: var(--g); }
+.aff-ft { display: flex; justify-content: space-between; gap: 8px; padding: 9px 14px; border-top: 1px solid var(--line); background: #fafafa; font-size: 11.5px; color: var(--mut); }
+.aff-ft b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.aff.empty .aff-art > * { opacity: .45; }
+
+/* ---------- step 2 · cookie inspector (DevTools look) ---------- */
+.dt { border-radius: 14px; background: #0f1216; color: #d6dbe1; border: 1px solid #232932; overflow: hidden; font-family: var(--mono); font-size: 12px; }
+.dt-top { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #181d24; border-bottom: 1px solid #232932; font-size: 11.5px; color: #98a2ad; }
+.dt-top .ckie { width: 18px; height: 18px; color: #e8b268; flex: none; }
+.dt-top .ckie.drop { animation: drop .9s cubic-bezier(.3, 1.5, .5, 1); }
+@keyframes drop { 0% { transform: translateY(-14px) scale(.6) rotate(-30deg); opacity: 0; } 55% { transform: translateY(0) scale(1.2) rotate(8deg); opacity: 1; } 100% { transform: none; } }
+.dt-top .dom { margin-left: auto; color: #6f7885; }
+.dt-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 92px 50px; gap: 10px; padding: 7px 12px; font-size: 11.5px; border-bottom: 1px solid #1d232b; align-items: center; }
+.dt-row > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dt-row.hd { color: #6f7885; background: #12161c; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; }
+.dt-row.sel { background: rgba(47, 98, 240, .22); color: #fff; }
+.dt-row.flash { animation: rowflash 1.1s; }
+@keyframes rowflash { 0% { background: rgba(0, 194, 124, .5); } 100% { background: rgba(47, 98, 240, .22); } }
+.dt-code { margin: 0; padding: 12px 0; font-size: 12.5px; line-height: 1.75; min-height: 214px; overflow-x: auto; }
+.ln { display: flex; gap: 14px; padding: 0 14px 0 10px; animation: lnIn .35s both; animation-delay: calc(var(--i, 0) * 70ms); white-space: pre; }
+@keyframes lnIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+.ln .g { width: 14px; text-align: right; color: #48515c; flex: none; user-select: none; }
+.k { color: #8ec7ff; } .s { color: #9be3b0; } .n { color: #ffb86b; } .p { color: #7d8794; } .c { color: #5c6671; font-style: italic; }
+.chg { background: rgba(0, 194, 124, .22); border-radius: 4px; box-shadow: 0 0 0 2px rgba(0, 194, 124, .22); animation: chg 1.8s .4s both; }
+@keyframes chg { 0%, 60% { background: rgba(0, 194, 124, .4); } 100% { background: transparent; box-shadow: none; } }
+.caret { display: inline-block; width: 7px; height: 14px; background: #9be3b0; vertical-align: -2px; animation: caret 1s steps(2) infinite; margin-left: 2px; }
+@keyframes caret { 50% { opacity: 0; } }
+.dt-raw { padding: 9px 14px; border-top: 1px solid #232932; background: #12161c; color: #6f7885; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dt-raw b { color: #98a2ad; font-weight: 500; }
+.dt-foot { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.dt-st { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); flex: 1; min-width: 160px; }
+.sd { width: 9px; height: 9px; border-radius: 50%; background: #c6cbd1; flex: none; transition: background .3s; }
+.sd.live { background: var(--up); animation: pulse 1.8s infinite; } .sd.wait { background: #f5a623; animation: pulse 1s infinite; }
+.privacy { margin-top: 12px; font-size: 12px; color: var(--mut); display: flex; gap: 8px; line-height: 1.5; }
+.privacy svg { width: 15px; height: 15px; color: var(--g); flex: none; margin-top: 2px; }
+
+/* ---------- rules ---------- */
+.rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: r; }
+.rule { display: grid; grid-template-columns: 26px 1fr; gap: 12px; padding: 13px 14px; border-radius: 14px; border: 1.5px solid var(--line); transition: border-color .25s, background .25s, opacity .25s; opacity: .62; }
+.rule.on { opacity: 1; border-color: var(--g); background: linear-gradient(180deg, #f4fbf7, #fff); }
+.rn { width: 26px; height: 26px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--ink-2); transition: .25s; }
+.rule.on .rn { background: var(--g); color: #fff; }
+.rule b { font-size: 14px; font-weight: 600; } .rule > div > small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--mut); line-height: 1.5; }
+.rule code { font-family: var(--mono); font-size: 11.5px; background: var(--soft); padding: 1px 6px; border-radius: 5px; color: var(--ink); }
+.sig { display: grid; gap: 9px; margin: 12px 0 4px; }
+.sg { display: grid; grid-template-columns: minmax(0, 1fr) 38px 74px 44px; gap: 10px; align-items: center; font-size: 12.5px; }
+.sg-n b { display: block; font-size: 12.5px; font-weight: 600; } .sg-n small { display: block; color: var(--mut); font-size: 11.5px; line-height: 1.35; }
+.sg-w { color: var(--mut); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+.sg-b { height: 7px; border-radius: 4px; background: var(--soft); overflow: hidden; }
+.sg-b i { display: block; height: 100%; width: var(--w, 0%); border-radius: 4px; background: linear-gradient(90deg, #00a064, #3ddc97); transition: width .8s cubic-bezier(.3, .7, .2, 1); }
+.sg-v { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.score { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+.score .big { font-size: 30px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; min-width: 66px; line-height: 1; }
+.score .trk { position: relative; flex: 1; height: 9px; border-radius: 5px; background: var(--soft); }
+.score .trk i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; width: var(--w, 0%); background: linear-gradient(90deg, #00a064, #3ddc97); transition: width .9s cubic-bezier(.3, .7, .2, 1); }
+.score .trk u { position: absolute; left: 60%; top: -5px; bottom: -5px; width: 2px; background: var(--ink); border-radius: 1px; }
+.score .trk u::after { content: '0.60'; position: absolute; top: -17px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; text-decoration: none; }
+.score .verdict { font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+/* ---------- preview panel ---------- */
+.pv { padding: 14px; border-radius: 28px; --sh: clamp(450px, calc(100vh - 306px), 640px); }
+.pv::before { background: radial-gradient(70% 50% at 50% 0%, rgba(0, 190, 120, .22), transparent 70%), radial-gradient(60% 40% at 100% 100%, rgba(47, 98, 240, .16), transparent 70%); }
+.pv-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.tabs { position: relative; display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .09); }
+.tabs button { position: relative; z-index: 1; border: 0; background: none; color: #aab2bc; padding: 8px 17px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: color .2s; white-space: nowrap; }
+.tabs button.on { color: #0b0d10; } .tabs button:not(.on):hover { color: #fff; }
+.tab-ind { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: 90px; border-radius: 999px; background: #fff; transition: left .35s cubic-bezier(.3, .8, .2, 1), width .35s cubic-bezier(.3, .8, .2, 1); }
+.pv-ctl { display: flex; gap: 8px; align-items: center; }
+.seg2 { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .09); }
+.seg2 button { border: 0; background: none; color: #aab2bc; padding: 6px 13px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: background .2s, color .2s; white-space: nowrap; }
+.seg2 button small { font-size: 11px; font-weight: 500; opacity: .7; }
+.seg2 button.on { background: rgba(255, 255, 255, .95); color: #0b0d10; }
+.seg2 button.on.ctl { background: #ffd98a; }
+.seg2 button svg { width: 16px; height: 16px; }
+.seg2.dev button { padding: 6px 10px; }
+.strip { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 2px 12px; font-family: var(--mono); font-size: 11.5px; color: #8e97a3; min-height: 20px; }
+.strip .l { display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.strip b { color: #e7ebef; font-weight: 500; } .strip .ok { color: #3ddc97; } .strip .am { color: #ffd98a; }
+.strip .r { white-space: nowrap; color: #6f7885; }
+.pv-stage { display: flex; justify-content: center; height: var(--sh); }
+.frame { width: 100%; height: 100%; border-radius: 16px; background: #fff; border: 1px solid rgba(255, 255, 255, .12); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0, 0, 0, .45); transition: width .6s cubic-bezier(.3, .8, .2, 1), padding .45s, border-radius .45s, background .45s, border-color .45s; }
+.fr-bar { display: flex; align-items: center; gap: 8px; height: 36px; flex: none; padding: 0 14px; background: #eceef1; border-bottom: 1px solid var(--line); transition: height .4s, opacity .3s, padding .4s; overflow: hidden; }
+.fr-bar i { width: 10px; height: 10px; border-radius: 50%; background: #c9ccd1; }
+.fr-bar i:nth-child(1) { background: #ff5f57; } .fr-bar i:nth-child(2) { background: #febc2e; } .fr-bar i:nth-child(3) { background: #28c840; }
+.fr-url { flex: 1; max-width: 360px; margin: 0 auto; height: 22px; border-radius: 7px; background: #fff; font-size: 11.5px; color: var(--ink-2); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.fr-url svg { width: 11px; height: 11px; color: var(--g); }
+.fr-in { flex: 1; min-height: 0; display: flex; flex-direction: column; background: #f5f5f5; overflow: hidden; border-radius: 0; transition: border-radius .45s; }
+.fr-stat { height: 0; overflow: hidden; display: flex; justify-content: space-between; align-items: center; padding: 0 22px; font-size: 11.5px; font-weight: 600; background: #f5f5f5; transition: height .4s; flex: none; }
+.frame.m { width: 344px; padding: 9px; border-radius: 46px; background: #07090b; border-color: #343a43; box-shadow: 0 0 0 1.5px #1c2027, 0 40px 80px rgba(0, 0, 0, .55), 0 0 90px rgba(0, 190, 130, .12); }
+.frame.m .fr-bar { height: 0; opacity: 0; padding: 0; border: 0; }
+.frame.m .fr-in { border-radius: 38px; }
+.frame.m .fr-stat { height: 30px; }
+.vp { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; scrollbar-width: thin; }
+
+/* ---------- inside the preview: the "XM site" ---------- */
+.site { color: var(--ink); container-type: inline-size; container-name: site; min-height: 100%; font-size: 14px; display: flex; flex-direction: column; }
+.s-hdr { position: sticky; top: 0; z-index: 6; display: flex; align-items: center; gap: 16px; height: 56px; flex: none; padding: 0 18px; background: rgba(245, 245, 245, .92); backdrop-filter: blur(10px); }
+.s-hdr > * { animation: fadeIn .45s both; }
+.s-hdr .xm-logo svg { height: 18px; }
+.s-nav { display: flex; gap: 0; flex: 1; justify-content: center; }
+.s-nav a { padding: 6px 10px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); border-radius: 8px; } .s-nav a:hover { background: rgba(0, 0, 0, .05); }
+.s-r { display: flex; gap: 8px; margin-left: auto; align-items: center; }
+.s-r .btn { padding: 7px 14px; font-size: 12.5px; border-radius: 9px; }
+.s-r .btn-outline { color: var(--ink); border-color: var(--line-2); }
+.s-sec { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--g); background: var(--g-l); padding: 6px 12px; border-radius: 999px; margin-left: auto; }
+.s-sec svg { width: 14px; height: 14px; }
+.s-view { padding: 0 10px 14px; flex: 1; transition: opacity .17s, transform .17s, filter .17s; }
+.out { opacity: 0; transform: translateY(8px); filter: blur(5px); }
+.st { animation: fadeUp .6s calc(var(--i, 0) * 75ms) both cubic-bezier(.2, .7, .2, 1); }
+
+.hero { --acc: #00c27c; --acc2: #008454; position: relative; overflow: hidden; isolation: isolate; border-radius: 24px; background: #0a0c0f; color: #fff; padding: 30px 28px 0; text-align: center; min-height: 500px; display: flex; flex-direction: column; transition: --acc .8s ease, --acc2 .8s ease; }
+.hero::before { content: ''; position: absolute; inset: 0; z-index: -2; background: radial-gradient(70% 60% at 50% -6%, color-mix(in srgb, var(--acc) 46%, transparent), color-mix(in srgb, var(--acc) 12%, transparent) 48%, transparent 72%), radial-gradient(60% 40% at 100% 100%, color-mix(in srgb, var(--acc2) 34%, transparent), transparent 70%); }
+.hero::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .08) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 55%); mask-image: linear-gradient(180deg, #000, transparent 55%); }
+.hero-in { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; transition: opacity .17s, transform .17s, filter .17s; }
+.hero h1 { margin-top: 2px; font-size: clamp(28px, 6.4cqw, 46px); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; max-width: 16ch; }
+.hero .sub { margin: 14px auto 24px; max-width: 470px; color: #b4bcc6; font-size: clamp(14px, 2.3cqw, 16.5px); line-height: 1.55; }
+.kick { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+.xmk { width: 26px; height: 26px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 10px; letter-spacing: -.5px; }
+.bdg { background: #fff; color: #0b0d10; font-weight: 700; font-size: 11px; letter-spacing: .08em; padding: 5px 10px; border-radius: 8px; }
+.pill { border-radius: 999px; }
+.btn-primary.glow { padding: 14px 30px; font-size: 15px; background: linear-gradient(180deg, #00a064, #008454); box-shadow: 0 10px 34px rgba(0, 132, 84, .45), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.btn-primary.glow:hover { background: linear-gradient(180deg, #00b06d, #007a4d); box-shadow: 0 14px 40px rgba(0, 150, 95, .6); transform: translateY(-1px); }
+.hcta { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.lnk { background: none; border: 0; color: #cfd5dc; font-size: 13.5px; font-weight: 500; padding: 4px 8px; border-radius: 8px; } .lnk:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.vis { margin-top: auto; padding-top: 26px; width: 100%; display: flex; justify-content: center; }
+.skd { background: linear-gradient(90deg, rgba(255, 255, 255, .06) 25%, rgba(255, 255, 255, .13) 37%, rgba(255, 255, 255, .06) 63%); background-size: 400% 100%; animation: sk 1.3s infinite; border-radius: 10px; }
+.hero-in.sk { justify-content: flex-start; gap: 0; }
+.hero-in.sk > .skd { flex: none; }
+
+/* promo ticket */
+.v-promo { position: relative; width: min(470px, 100%); }
+.v-promo .bk { position: absolute; left: 6%; right: 6%; top: -12px; height: 80px; border-radius: 22px 22px 0 0; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .14); }
+.v-promo .bk.b2 { left: 12%; right: 12%; top: -24px; background: rgba(255, 255, 255, .06); }
+.tk { position: relative; display: grid; grid-template-columns: 120px 1fr; border-radius: 22px 22px 0 0; background: #fff; color: var(--ink); overflow: hidden; text-align: left; box-shadow: 0 -10px 60px color-mix(in srgb, var(--acc) 40%, transparent), 0 30px 60px rgba(0, 0, 0, .5); }
+.tk-l { background: linear-gradient(160deg, #f5a623, #ffd36b); display: grid; place-items: center; min-height: 128px; }
+.tk-l svg { width: 78px; height: 78px; animation: bob 4s ease-in-out infinite alternate; }
+@keyframes bob { from { transform: translateY(-3px) rotate(-3deg); } to { transform: translateY(4px) rotate(3deg); } }
+.tk-r { padding: 16px 20px 12px; border-left: 2px dashed rgba(0, 0, 0, .14); }
+.tk-r small { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; color: var(--mut); }
+.tk-r b { display: block; font-size: 38px; line-height: 1.1; font-weight: 800; letter-spacing: -.03em; color: var(--g); }
+.tk-tg { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; } .tk-tg i { font-style: normal; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--g-l); color: var(--g); }
+.tk-f { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; padding: 11px 20px; border-top: 1px dashed var(--line-2); background: #fafafa; font-size: 12px; color: var(--ink-2); }
+.tk-f b { font-variant-numeric: tabular-nums; color: var(--ink); }
+.ldot { width: 8px; height: 8px; border-radius: 50%; background: var(--up); animation: pulse 1.8s infinite; flex: none; }
+.fine { font-size: 11px; color: #7d8794; }
+
+/* account comparison */
+.v-cmp { width: min(580px, 100%); border-radius: 20px 20px 0 0; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .13); border-bottom: 0; padding: 8px 10px 0; text-align: left; backdrop-filter: blur(8px); box-shadow: 0 -10px 60px color-mix(in srgb, var(--acc) 30%, transparent); }
+.cm { display: grid; grid-template-columns: 1fr 1.05fr 1.05fr 1.05fr; }
+.cm > * { padding: 11px 10px; border-top: 1px solid rgba(255, 255, 255, .08); font-size: 12.5px; display: flex; align-items: center; transition: background .2s; }
+.cm > .lb { color: #8e97a3; font-size: 11.5px; }
+.cm > .hd { border-top: 0; flex-direction: column; align-items: flex-start; gap: 4px; background: none; border: 0; color: #fff; font-weight: 700; font-size: 15px; text-align: left; padding-top: 12px; cursor: pointer; border-radius: 12px 12px 0 0; }
+.cm > .hd em { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .06em; padding: 2px 7px; border-radius: 999px; background: rgba(255, 255, 255, .12); color: #cfd5dc; text-transform: uppercase; }
+.cm > .hd:hover { background: rgba(255, 255, 255, .05); }
+.v-cmp[data-pick="1"] .c1, .v-cmp[data-pick="2"] .c2, .v-cmp[data-pick="3"] .c3 { background: rgba(0, 194, 124, .13); }
+.v-cmp[data-pick="1"] .hd.c1 em, .v-cmp[data-pick="2"] .hd.c2 em, .v-cmp[data-pick="3"] .hd.c3 em { background: #00c27c; color: #04130c; }
+.cm .c1, .cm .c2, .cm .c3 { font-weight: 500; font-variant-numeric: tabular-nums; }
+.cm-n { padding: 8px 10px 10px; font-size: 11px; color: #7d8794; }
+
+/* platforms */
+.v-plat { position: relative; width: min(580px, 100%); height: 232px; }
+.mt5 { position: absolute; left: 0; bottom: 0; width: 72%; height: 218px; border-radius: 12px 12px 0 0; background: #0b0e12; border: 1px solid rgba(255, 255, 255, .13); border-bottom: 0; overflow: hidden; text-align: left; box-shadow: 0 -10px 60px rgba(47, 98, 240, .35), 0 30px 60px rgba(0, 0, 0, .5); }
+.mt5-t { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; background: #1b2028; font-size: 10.5px; color: #c4ccd5; }
+.mt5-t i { width: 13px; height: 13px; border-radius: 3px; background: linear-gradient(135deg, #2f62f0, #00c27c); }
+.mt5-b { display: grid; grid-template-columns: 104px 1fr; height: calc(100% - 28px); }
+.mt5-w { border-right: 1px solid rgba(255, 255, 255, .07); font-size: 10px; color: #98a2ad; }
+.mt5-w div { display: flex; justify-content: space-between; padding: 6px 8px; border-bottom: 1px solid rgba(255, 255, 255, .04); font-variant-numeric: tabular-nums; } .mt5-w b { color: #e4e9ee; font-weight: 600; }
+.mt5-c { position: relative; } .mt5-c svg { width: 100%; height: 100%; }
+.phx { position: absolute; right: 1%; bottom: 0; width: 29%; min-width: 118px; height: 244px; border-radius: 28px 28px 0 0; padding: 6px 6px 0; background: #07090b; box-shadow: 0 0 0 1.5px #343a43, 0 30px 60px rgba(0, 0, 0, .6), 0 0 80px rgba(0, 190, 130, .16); }
+.phx-s { height: 100%; border-radius: 22px 22px 0 0; background: #0e1217; padding: 14px 10px; text-align: left; overflow: hidden; }
+.phx-s small { color: #7d8794; font-size: 9.5px; } .phx-s b { display: block; font-size: 17px; letter-spacing: -.02em; margin-top: 1px; font-variant-numeric: tabular-nums; }
+.phx-s .up { color: #2fe39a; font-size: 10px; font-weight: 600; }
+.phx-s svg { width: 100%; height: 52px; margin: 6px 0; }
+.phx-s .r { display: flex; justify-content: space-between; padding: 7px 0; border-top: 1px solid rgba(255, 255, 255, .06); font-size: 10px; font-variant-numeric: tabular-nums; } .phx-s .r b { font-size: 10px; margin: 0; display: inline; }
+.pl-chips { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); display: none; }
+
+/* learner */
+.v-learn { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; width: min(600px, 100%); align-items: end; }
+.lc { background: #fff; color: var(--ink); border-radius: 20px 20px 0 0; padding: 16px 16px 4px; text-align: left; box-shadow: 0 -10px 60px color-mix(in srgb, var(--acc) 40%, transparent), 0 30px 60px rgba(0, 0, 0, .5); }
+.lc-h { display: flex; align-items: center; gap: 12px; }
+.lc-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #8a3fd1, #5a2bb5); flex: none; } .lc-ic svg { width: 22px; height: 22px; }
+.lc-h b { display: block; font-size: 15px; font-weight: 700; } .lc-h small { color: var(--mut); font-size: 12px; }
+.lc-pr { height: 6px; border-radius: 3px; background: var(--soft); margin: 14px 0 6px; overflow: hidden; } .lc-pr i { display: block; height: 100%; width: 14%; border-radius: 3px; background: #8a3fd1; animation: grow 1.2s .5s both cubic-bezier(.3, .7, .2, 1); }
+@keyframes grow { from { width: 0; } }
+.lc-pl { font-size: 11px; color: var(--mut); display: flex; justify-content: space-between; }
+.lc ul { margin-top: 8px; } .lc li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13px; font-weight: 500; }
+.lc li span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--soft); color: var(--mut); flex: none; } .lc li span svg { width: 12px; height: 12px; }
+.lc li.done span { background: var(--g); color: #fff; } .lc li.now span { background: #8a3fd1; color: #fff; } .lc li.now { color: #6a37c9; }
+.lc li em { margin-left: auto; font-style: normal; font-size: 11.5px; color: var(--mut); font-weight: 400; }
+.dm { background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .13); border-radius: 20px 20px 0 0; padding: 16px; text-align: left; backdrop-filter: blur(8px); min-height: 190px; display: flex; flex-direction: column; }
+.dm small { color: #8e97a3; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.dm b { display: block; font-size: 26px; letter-spacing: -.03em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.dm p { font-size: 12.5px; color: #b4bcc6; line-height: 1.5; margin-top: 6px; }
+.dm .tag { margin-top: auto; align-self: flex-start; background: rgba(61, 220, 151, .14); color: #3ddc97; }
+
+/* support chat */
+.v-chat { width: min(420px, 100%); background: #fff; color: var(--ink); border-radius: 22px 22px 0 0; overflow: hidden; text-align: left; box-shadow: 0 -10px 60px color-mix(in srgb, var(--acc) 40%, transparent), 0 30px 60px rgba(0, 0, 0, .5); }
+.ch-h { display: flex; align-items: center; gap: 11px; padding: 13px 16px; background: #0b0d10; color: #fff; }
+.ch-h .a { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #00c27c, #008454); display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
+.ch-h b { display: block; font-size: 14px; } .ch-h small { color: #8e97a3; font-size: 11.5px; display: inline-flex; gap: 6px; align-items: center; }
+.ch-h .lg { margin-left: auto; display: flex; gap: 4px; } .ch-h .lg i { font-style: normal; font-size: 10.5px; padding: 2px 7px; border-radius: 6px; background: rgba(255, 255, 255, .1); color: #cfd5dc; }
+.ch-b { padding: 14px; display: grid; gap: 9px; background: #f7f8f9; min-height: 176px; align-content: start; }
+.msg { max-width: 84%; padding: 9px 13px; border-radius: 15px; font-size: 13px; line-height: 1.45; animation: fadeUp .45s both; }
+.msg small { display: block; font-size: 11px; opacity: .65; margin-top: 2px; }
+.msg.ag { justify-self: start; background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg.me { justify-self: end; background: var(--g); color: #fff; border-bottom-right-radius: 4px; }
+.m1 { animation-delay: .5s; } .m2 { animation-delay: 1.4s; } .m3 { animation-delay: 3.1s; }
+.ty { display: inline-flex; gap: 4px; padding: 13px; justify-self: start; background: #fff; border: 1px solid var(--line); border-radius: 15px; border-bottom-left-radius: 4px; animation: tyv 1.2s 2.1s both; opacity: 0; }
+@keyframes tyv { 0% { opacity: 0; } 10%, 90% { opacity: 1; } 100% { opacity: 0; } }
+.ty i { width: 6px; height: 6px; border-radius: 50%; background: #aab2bc; animation: blink 1s infinite; } .ty i:nth-child(2) { animation-delay: .15s; } .ty i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 60%, 100% { opacity: .3; transform: none; } 30% { opacity: 1; transform: translateY(-3px); } }
+.stk { display: grid; } .stk > * { grid-area: 1 / 1; }
+
+/* control hero visual */
+.v-ctrl { position: relative; width: min(500px, 100%); height: 190px; }
+.pcard { position: absolute; left: 8%; right: 8%; bottom: 0; border-radius: 20px 20px 0 0; background: #12161b; border: 1px solid rgba(255, 255, 255, .12); border-bottom: 0; padding: 16px 18px 0; text-align: left; height: 168px; overflow: hidden; box-shadow: 0 -10px 60px rgba(0, 190, 120, .2); }
+.pcard small { color: #8e97a3; font-size: 11.5px; } .pcard b { display: block; font-size: 28px; letter-spacing: -.03em; font-variant-numeric: tabular-nums; } .pcard .up { color: #2fe39a; font-size: 12px; font-weight: 600; margin-left: 6px; }
+.pcard svg { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 80px; }
+.fc { position: absolute; padding: 9px 13px; border-radius: 13px; background: rgba(20, 24, 29, .92); border: 1px solid rgba(255, 255, 255, .12); font-size: 12px; color: #cfd5dc; box-shadow: 0 14px 34px rgba(0, 0, 0, .45); animation: bob 5s ease-in-out infinite alternate; }
+.fc b { display: block; font-size: 14px; color: #fff; } .fc .dn { color: #ff6b72; } .fc .up { color: #2fe39a; }
+.fc.a { left: -1%; top: 92px; } .fc.b { right: 0; top: 34px; animation-delay: -2.5s; }
+
+/* returning client */
+.hero.ret { min-height: 500px; justify-content: center; padding-bottom: 28px; }
+.hero.ret .hero-in { justify-content: center; flex: none; }
+.av { position: relative; display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #1d2b25, #0f1714); border: 1px solid rgba(255, 255, 255, .16); font-size: 24px; font-weight: 700; box-shadow: 0 0 0 6px rgba(0, 194, 124, .1), 0 0 50px rgba(0, 194, 124, .25); margin-bottom: 18px; }
+.av i { position: absolute; right: -4px; bottom: -2px; width: 26px; height: 26px; border-radius: 50%; background: var(--g); border: 3px solid #0a0c0f; display: grid; place-items: center; } .av i svg { width: 12px; height: 12px; }
+.pk { display: flex; flex-direction: column; align-items: center; gap: 8px; width: min(340px, 100%); }
+.pkb { width: 100%; padding: 16px 24px; font-size: 16px; gap: 12px; position: relative; }
+.pkb svg { width: 22px; height: 22px; }
+.pkb .spn { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid rgba(255, 255, 255, .35); border-top-color: #fff; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.pkb.ok { background: linear-gradient(180deg, #14c488, #0a9a63); }
+.pk-mail { display: flex; gap: 8px; width: 100%; margin-top: 6px; animation: fadeUp .3s both; }
+.pk-mail input { flex: 1; min-width: 0; height: 46px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .22); background: rgba(255, 255, 255, .08); color: #fff; padding: 0 16px; font-size: 14px; outline: 0; }
+.pk-mail input:focus { border-color: #00c27c; box-shadow: 0 0 0 4px rgba(0, 194, 124, .2); }
+.pk-mail .btn { padding: 0 18px; }
+.ql { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(340px, 100%); margin-top: 22px; }
+.ql button { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 8px 12px; border-radius: 16px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); color: #e4e9ee; font-size: 12.5px; font-weight: 500; transition: background .2s, transform .2s, border-color .2s; }
+.ql button:hover { background: rgba(255, 255, 255, .12); transform: translateY(-2px); border-color: rgba(255, 255, 255, .25); }
+.ql button svg { width: 22px; height: 22px; color: var(--gl2); }
+.sec-line { margin-top: 22px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); font-size: 12.5px; color: #b4bcc6; }
+.sec-line svg { width: 14px; height: 14px; color: var(--gl2); } .sec-line b { color: #fff; font-weight: 600; }
+
+/* registration view */
+.reg { max-width: 480px; margin: 0 auto; padding: 24px 6px 10px; }
+.reg-copy { text-align: center; }
+.reg-copy h2 { font-size: clamp(24px, 5cqw, 32px); line-height: 1.12; font-weight: 700; letter-spacing: -.025em; margin-top: 8px; }
+.reg-copy p { color: var(--ink-2); font-size: 14.5px; line-height: 1.55; margin: 10px auto 0; max-width: 400px; }
+.perks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+.perks span { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); } .perks svg { width: 13px; height: 13px; color: var(--g); }
+.bn { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 13px 16px; border-radius: 16px; text-align: left; background: linear-gradient(110deg, #063d2b, #0a8658); color: #fff; box-shadow: 0 16px 36px -16px rgba(0, 132, 84, .7); position: relative; overflow: hidden; }
+.bn::after { content: ''; position: absolute; top: 0; bottom: 0; width: 60px; left: -80px; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .28), transparent); animation: shine 3.4s 1s infinite; }
+@keyframes shine { 0% { left: -80px; } 40%, 100% { left: 110%; } }
+.bn-ic { width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(135deg, #f5a623, #ffd36b); display: grid; place-items: center; color: #3b2500; flex: none; } .bn-ic svg { width: 20px; height: 20px; }
+.bn b { display: block; font-size: 14px; } .bn small { font-size: 12px; opacity: .8; } .bn .tag { margin-left: auto; background: rgba(255, 255, 255, .16); color: #fff; }
+.reg-card { margin-top: 16px; background: #fff; border-radius: 22px; border: 1px solid var(--line); padding: 22px 22px 18px; box-shadow: 0 24px 50px -30px rgba(16, 24, 40, .3); }
+.reg-card h3 { font-size: 20px; font-weight: 700; letter-spacing: -.015em; text-align: center; }
+.reg-card .al { text-align: center; font-size: 13px; color: var(--mut); margin: 4px 0 16px; } .reg-card .al a { color: var(--g-2); font-weight: 600; }
+.reg-card .field { margin-bottom: 12px; }
+.pcode { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--g-l); color: var(--g-d); font-size: 12.5px; margin-bottom: 14px; }
+.pcode svg { width: 16px; height: 16px; flex: none; } .pcode b { font-family: var(--mono); font-weight: 600; }
+.pcode small { display: block; color: var(--ink-2); font-size: 11.5px; }
+.reg-card .more { font-size: 12.5px; margin-bottom: 14px; color: var(--mut); } .reg-card .more a { color: var(--g-2); font-weight: 600; }
+.reg-card .fineprint { margin-top: 12px; font-size: 11px; color: var(--mut); text-align: center; line-height: 1.5; }
+.btn .spn2 { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: spin .7s linear infinite; }
+.reg-card.ret { text-align: center; padding: 26px 24px 22px; }
+.reg-card.ret p { color: var(--ink-2); font-size: 14px; line-height: 1.55; margin: 8px auto 18px; max-width: 340px; }
+.reg-card.ret .btn { margin-top: 8px; }
+.ok-ic { width: 52px; height: 52px; border-radius: 50%; background: var(--g-l); color: var(--g); display: grid; place-items: center; margin: 0 auto 12px; } .ok-ic svg { width: 24px; height: 24px; }
+
+/* next step view */
+.nx { padding: 24px 6px 8px; max-width: 760px; margin: 0 auto; }
+.stp { display: flex; justify-content: center; gap: 0; align-items: center; font-size: 12px; font-weight: 600; color: var(--mut); flex-wrap: wrap; }
+.stp span { display: inline-flex; align-items: center; gap: 7px; padding: 0 4px; } .stp span::before { content: ''; } .stp i { width: 22px; height: 22px; border-radius: 50%; background: var(--g); color: #fff; display: grid; place-items: center; font-style: normal; } .stp i svg { width: 12px; height: 12px; stroke-width: 3; }
+.stp u { width: 28px; height: 2px; background: var(--g); border-radius: 1px; margin: 0 4px; opacity: .5; }
+.stp .cur { color: var(--ink); } .stp .cur i { background: var(--ink); animation: pulse 2s infinite; font-size: 11px; }
+.nx h2 { text-align: center; font-size: clamp(24px, 5cqw, 34px); line-height: 1.1; font-weight: 700; letter-spacing: -.03em; margin-top: 18px; }
+.nx .sb { text-align: center; color: var(--ink-2); font-size: 14.5px; max-width: 460px; margin: 10px auto 0; line-height: 1.55; }
+.nx-g { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; margin-top: 24px; }
+.nx-main { position: relative; overflow: hidden; border-radius: 22px; padding: 22px; color: #fff; background: #0a0c0f; isolation: isolate; display: flex; flex-direction: column; gap: 12px; min-height: 230px; }
+.nx-main::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(80% 70% at 0% 0%, color-mix(in srgb, var(--acc) 50%, transparent), transparent 70%); }
+.nx-main .ti { width: 46px; height: 46px; border-radius: 14px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .16); display: grid; place-items: center; } .nx-main .ti svg { width: 24px; height: 24px; }
+.nx-main h3 { font-size: 20px; line-height: 1.2; font-weight: 700; letter-spacing: -.02em; }
+.nx-main p { color: #b4bcc6; font-size: 13.5px; line-height: 1.55; }
+.nx-main .btn { margin-top: auto; align-self: flex-start; }
+.nx-side { display: grid; gap: 12px; }
+.nx-c { display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 15px 16px; transition: transform .2s, box-shadow .2s; text-align: left; width: 100%; }
+.nx-c:hover { transform: translateY(-2px); box-shadow: var(--sh-m); }
+.nx-c .ti { width: 34px; height: 34px; border-radius: 10px; background: var(--g-l); color: var(--g); display: grid; place-items: center; flex: none; } .nx-c .ti svg { width: 18px; height: 18px; }
+.nx-c b { display: block; font-size: 13.5px; font-weight: 600; line-height: 1.3; } .nx-c small { color: var(--mut); font-size: 12px; line-height: 1.45; display: block; margin-top: 2px; }
+
+/* footer of preview */
+.pv-ft { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+.pv-ft .qs { font-family: var(--mono); font-size: 11.5px; color: #7d8794; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+.pv-ft .btn { background: #fff; color: #0b0d10; }
+.pv-ft .btn:hover { background: #e9edf1; }
+.pv-ft .btn svg { width: 16px; height: 16px; transition: transform .2s; } .pv-ft .btn:hover svg { transform: translateX(3px); }
+
+/* ---------- why: illustrative chart + how it ships ---------- */
+.why { margin-top: 24px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+.why .step { padding: 28px; }
+.why h3 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+.why .sb { color: var(--mut); font-size: 13.5px; margin-top: 6px; line-height: 1.5; }
+.bars { display: grid; gap: 10px; margin-top: 22px; }
+.bar { display: grid; grid-template-columns: 148px minmax(0, 1fr) 54px; gap: 14px; align-items: center; font-size: 13px; padding: 4px 8px; margin: 0 -8px; border-radius: 12px; transition: background .25s; }
+.bar b { font-weight: 600; display: block; line-height: 1.25; } .bar small { color: var(--mut); font-size: 11.5px; display: block; }
+.bar .tr { height: 22px; border-radius: 7px; background: var(--soft); overflow: hidden; }
+.bar .tr i { display: block; height: 100%; width: 0; border-radius: 7px; background: var(--c, var(--g)); transition: width 1.1s cubic-bezier(.3, .7, .2, 1); transition-delay: calc(var(--i) * 90ms); }
+.chart.go .bar .tr i { width: var(--w); }
+.bar .v { text-align: right; font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.bar.on { background: #f3faf6; } .bar.on b::after { content: ' · previewing'; color: var(--g); font-weight: 500; font-size: 11.5px; }
+.bar.ctrl .tr i { background: #aab2bc; }
+.cap { margin-top: 16px; font-size: 12px; color: var(--mut); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ship { margin-top: 18px; display: grid; gap: 4px; counter-reset: s; }
+.ship li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.ship li:first-child { border-top: 0; }
+.ship li::before { counter-increment: s; content: counter(s); width: 28px; height: 28px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-size: 12.5px; font-weight: 700; }
+.ship b { display: block; font-size: 14px; font-weight: 600; } .ship small { color: var(--mut); font-size: 12.5px; line-height: 1.5; display: block; margin-top: 2px; }
+.guard { margin-top: 12px; padding: 14px 16px; border-radius: 14px; background: #fff8e8; color: #7a4a00; font-size: 12.5px; line-height: 1.55; }
+.guard b { font-weight: 600; }
+
+/* registration helper row + change markers */
+.xrow { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 12px; background: #f6f8fa; border: 1px solid var(--line); margin-bottom: 12px; }
+.xrow .xi { width: 30px; height: 30px; border-radius: 9px; background: var(--g-l); color: var(--g); display: grid; place-items: center; flex: none; } .xrow .xi svg { width: 16px; height: 16px; }
+.xrow b { display: block; font-size: 13px; font-weight: 600; line-height: 1.3; } .xrow small { display: block; color: var(--mut); font-size: 11.5px; line-height: 1.4; }
+.xrow .xb { margin-left: auto; flex: none; border: 1px solid var(--line-2); background: #fff; border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--g-d); }
+.fx { display: none; align-items: center; gap: 6px; justify-content: center; margin-top: 10px; font-size: 11px; font-weight: 600; color: #5a6470; } .fx svg { width: 12px; height: 12px; }
+.ct { display: none; }
+.frame.hl .fx { display: flex; }
+.frame.hl .adp { outline: 2px dashed #f5a623; outline-offset: 3px; border-radius: 10px; position: relative; }
+.frame.hl .ct { display: block; position: absolute; top: -9px; right: 6px; z-index: 3; pointer-events: none; background: #f5a623; color: #3b2500; font-style: normal; font: 700 9px/1 var(--font, Poppins, sans-serif); letter-spacing: .06em; text-transform: uppercase; padding: 3px 6px; border-radius: 999px; }
+.frame.hl .bn > .ct, .frame.hl .nx-main > .ct, .frame.hl .reg-copy > .ct { top: 6px; right: 8px; }
+.frame.hl .nx-main { outline-color: #f5a623; }
+.hlb { border: 1px solid rgba(255, 255, 255, .09); background: rgba(255, 255, 255, .07); color: #aab2bc; padding: 7px 13px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; transition: background .2s, color .2s; }
+.hlb:hover { color: #fff; } .hlb.on { background: #f5a623; border-color: #f5a623; color: #3b2500; }
+.xmk svg { width: 10px; height: 15px; }
+
+/* ---------- adapts / never adapts ---------- */
+.rules2 { margin-top: 24px; display: grid; gap: 24px; }
+.rules2 .rh { max-width: 720px; }
+.rules2 .rh h2 { font-size: 26px; font-weight: 700; letter-spacing: -.025em; line-height: 1.15; margin-top: 8px; }
+.rules2 .rh p { color: var(--ink-2); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
+.ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ad-col { padding: 24px 26px; border-radius: 24px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 24px 50px -34px rgba(16, 24, 40, .25); }
+.ad-col.no { background: #14181d; color: #fff; border-color: #14181d; }
+.ad-col h3 { font-size: 17px; font-weight: 700; letter-spacing: -.015em; display: flex; align-items: center; gap: 10px; }
+.ad-col h3 i { width: 28px; height: 28px; border-radius: 9px; background: var(--g-l); color: var(--g); display: grid; place-items: center; font-style: normal; } .ad-col h3 i svg { width: 15px; height: 15px; }
+.ad-col.no h3 i { background: rgba(255, 255, 255, .12); color: #ffb3b8; }
+.ad-col ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 0; }
+.ad-col li { padding: 11px 0; border-top: 1px solid var(--line); font-size: 13.5px; line-height: 1.5; }
+.ad-col li:first-child { border-top: 0; }
+.ad-col li b { font-weight: 600; } .ad-col li span { color: var(--mut); display: block; font-size: 12.5px; }
+.ad-col.no li { border-color: rgba(255, 255, 255, .1); } .ad-col.no li span { color: #9aa3ae; }
+.mx { overflow-x: auto; border-radius: 24px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 24px 50px -34px rgba(16, 24, 40, .25); }
+.mx table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 760px; }
+.mx th { text-align: left; padding: 14px 18px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); font-weight: 600; background: #fafbfc; border-bottom: 1px solid var(--line); }
+.mx td { padding: 14px 18px; border-top: 1px solid var(--line); vertical-align: top; line-height: 1.45; }
+.mx tr:first-child td { border-top: 0; }
+.mx .pn { display: flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
+.mx .pn i { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); font-style: normal; } .mx .pn i svg { width: 16px; height: 16px; }
+.mx td small { display: block; color: var(--mut); font-size: 11.5px; margin-top: 2px; }
+.mx tr.on td { background: #f3faf6; }
+.phase { margin-top: 18px; display: grid; gap: 10px; }
+.phase > div { padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: #fafbfc; }
+.phase em { font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--g); }
+.phase b { display: block; font-size: 14px; font-weight: 600; margin-top: 2px; }
+.phase small { display: block; color: var(--mut); font-size: 12.5px; line-height: 1.5; margin-top: 3px; }
+.phase > div.p2 { background: #fff; border-style: dashed; } .phase > div.p2 em { color: #7a4a00; }
+@media (max-width: 900px) { .ad-grid { grid-template-columns: 1fr; } }
+
+/* ---------- containers ---------- */
+@container site (max-width: 640px) {
+  .s-nav { display: none; }
+  .s-hdr { padding: 0 14px; }
+  .s-view { padding: 0 8px 12px; }
+  .hero { padding: 28px 16px 0; min-height: 0; }
+  .hero.ret { padding-bottom: 24px; }
+  .hero .sub { margin-bottom: 18px; }
+  .tk { grid-template-columns: 84px 1fr; } .tk-l { min-height: 112px; } .tk-l svg { width: 56px; height: 56px; } .tk-r { padding: 12px 14px 10px; } .tk-r b { font-size: 30px; } .tk-f { padding: 10px 14px; font-size: 11px; }
+  .cm > * { padding: 9px 6px; font-size: 11px; } .cm > .hd { font-size: 12.5px; } .cm > .lb { font-size: 10.5px; } .cm > .hd em { font-size: 8.5px; padding: 2px 5px; }
+  .v-plat { height: 200px; } .mt5 { height: 186px; width: 76%; } .mt5-b { grid-template-columns: 70px 1fr; } .mt5-w { font-size: 9px; } .phx { height: 210px; min-width: 100px; }
+  .v-learn { grid-template-columns: 1fr; } .dm { display: none; }
+  .nx-g { grid-template-columns: 1fr; }
+  .reg { padding-top: 16px; } .reg-card { padding: 18px 16px 16px; }
+  .bn { flex-wrap: wrap; }
+  .ch-h .lg { display: none; }
+  .fc.a { left: -2px; } .fc.b { right: -2px; }
+}
+
+/* ---------- responsive page ---------- */
+@media (max-width: 1180px) {
+  .lab { grid-template-columns: 370px minmax(0, 1fr); }
+  .seg2 button small { display: none; }
+}
+@media (max-width: 1020px) {
+  .lab { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'one' 'pv' 'two'; }
+  .s2 { grid-template-columns: minmax(0, 1fr); }
+  .pv { position: static; --sh: 600px; }
+  .why { grid-template-columns: minmax(0, 1fr); }
+  .intro { flex-direction: column; align-items: flex-start; }
+  .src-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 0 14px; }
+  .intro { padding: 22px 0 18px; } .facts div { padding: 0 16px; } .facts div:first-child { padding-left: 0; } .facts b { font-size: 28px; }
+  .step { padding: 18px 16px; border-radius: 20px; }
+  .src-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .src small { display: none; } .src { padding: 11px; min-width: 0; }
+  .pv { padding: 10px; border-radius: 22px; --sh: 560px; }
+  .devs { display: none; }
+  .pv-ctl { width: 100%; } .seg2:not(.dev) { flex: 1; } .seg2:not(.dev) button { flex: 1; justify-content: center; }
+  .tabs { width: 100%; } .tabs button { flex: 1; padding: 8px 6px; }
+  .frame.m { width: 100%; }
+  .strip .r { display: none; } .strip .l { flex-wrap: wrap; white-space: normal; row-gap: 2px; }
+  .seg2 button { padding-top: 10px; padding-bottom: 10px; } .tabs button { padding-top: 11px; padding-bottom: 11px; }
+  #btnReload, #btnReset { min-height: 40px; }
+  .bar { grid-template-columns: 104px minmax(0, 1fr) 46px; gap: 10px; } .bar b::after { display: none; }
+  .why .step { padding: 20px 16px; }
+  .sg { grid-template-columns: minmax(0, 1fr) 62px 40px; } .sg-w { display: none; }
+  .dt-row { grid-template-columns: 56px minmax(0, 1fr) 78px; } .dt-row > :nth-child(4) { display: none; }
+  .fr-url { max-width: none; }
+  .pv-ft .qs { flex-basis: 100%; order: 2; }
+  .pv-ft .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main class="wrap">
+  <!-- ================= INTRO ================= -->
+  <section class="intro">
+    <div>
+      <span class="eyebrow">Idea 04 · Segmentation lab</span>
+      <h1>One cookie.<br>Six first impressions.</h1>
+      <p class="lead">A first-party cookie remembers what the visitor came for. The homepage, the registration form and the next step then speak to that intent. Prices, required fields and legal text never change. Clients who come back get a short, secure sign-in instead of a sales page.</p>
+      <div class="pers" aria-label="Personas">
+        <span class="pers-l">Personas</span>
+        <div class="pers-c" id="persChips"></div>
+      </div>
+      <p class="pers-n"><span data-ico="check"></span><span>The homepage and registration content can be customized for each persona: headline, subline, button, visual, helper row and next step. Anyone else sees today's page.</span></p>
+    </div>
+    <div class="facts" aria-label="Key facts">
+      <div><b>6</b><span>personas</span></div>
+      <div><b>1</b><span>first-party cookie</span></div>
+      <div><b>0</b><span>personal data stored</span></div>
+    </div>
+  </section>
+
+  <!-- ================= LAB ================= -->
+  <div class="lab">
+    <!-- step 1 -->
+    <section class="step s1" id="s1" aria-labelledby="h1a">
+      <header class="sh"><span class="n">1</span><div><h2 id="h1a">Where did the visitor come from?</h2><p>Pick the affiliate page they just read. Choosing one drops the cookie.</p></div></header>
+      <div class="src-grid" id="srcGrid"></div>
+      <div class="tour"><button class="btn btn-outline btn-sm" id="tourBtn" type="button" aria-pressed="false"></button><span>Presenting? Plays every persona, homepage then registration.</span></div>
+      <div class="aff empty" id="aff" aria-live="polite">
+        <div class="aff-bar"><i></i><i></i><i></i><span class="aff-url" id="affUrl">partner-site.example</span></div>
+        <div class="aff-body">
+          <div class="aff-art" id="affArt">
+            <span class="aff-tag" id="affTag">Waiting</span>
+            <h4 id="affTitle">Waiting for a visitor to arrive</h4>
+            <div class="skl"><i></i><i></i><i></i></div>
+            <div class="aff-hl" id="affHl">Select an affiliate page above to simulate the visit.</div><br>
+            <span class="aff-btn" id="affBtn">Open XMTrading account</span>
+          </div>
+          <div class="aff-sc"><b id="affThumb"></b></div>
+        </div>
+        <div class="aff-ft"><span>Scroll depth <b id="affDepth">0%</b></span><span>Articles read <b id="affSeen">0</b></span><span>Click <b id="affClk">none</b></span></div>
+      </div>
+    </section>
+
+    <!-- preview -->
+    <section class="block pv" id="pv" aria-label="Live preview">
+      <div class="pv-top">
+        <div class="tabs" id="tabs" role="tablist" aria-label="Preview page">
+          <i class="tab-ind" id="tabInd"></i>
+          <button class="on" data-tab="home" role="tab" aria-selected="true">Homepage</button>
+          <button data-tab="reg" role="tab" aria-selected="false">Registration</button>
+          <button data-tab="next" role="tab" aria-selected="false">Next step</button>
+        </div>
+        <div class="pv-ctl">
+          <button class="hlb" id="hlBtn" type="button" aria-pressed="false">Show what changed</button>
+          <div class="seg2" id="modeSeg" role="group" aria-label="Segmentation"><button class="on" data-mode="seg" aria-pressed="true">Segmented</button><button class="ctl" data-mode="ctrl" aria-pressed="false">Control <small>(no segmentation)</small></button></div>
+          <div class="seg2 dev devs" id="devSeg" role="group" aria-label="Device"><button class="on" data-dev="d" aria-label="Desktop" aria-pressed="true"></button><button data-dev="m" aria-label="Mobile" aria-pressed="false"></button></div>
+        </div>
+      </div>
+      <div class="strip" id="strip"></div>
+      <div class="pv-stage">
+        <div class="frame" id="frame">
+          <div class="fr-bar"><i></i><i></i><i></i><span class="fr-url" id="frUrl"></span></div>
+          <div class="fr-in">
+            <div class="fr-stat"><span>9:41</span><span>5G &nbsp;100%</span></div>
+            <div class="vp" id="vp"><div class="site" id="site"><div class="s-hdr" id="sHdr"></div><div class="s-view" id="sView"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-ft">
+        <span class="qs" id="qs"></span>
+        <a class="btn btn-lg pill" id="tryLink" href="#"><span id="tryTxt">Open registration with this persona</span> <span data-ico="arrow"></span></a>
+      </div>
+    </section>
+
+    <!-- step 2 + rules -->
+    <div class="s2">
+      <section class="step" id="s2" aria-labelledby="h2a">
+        <header class="sh"><span class="n">2</span><div><h2 id="h2a">What the cookie remembers</h2><p>Written to the browser for real. Reload the page and it is still there.</p></div></header>
+        <div class="dt">
+          <div class="dt-top"><svg class="ckie" id="ckie" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 1 0 9.5 9.5 4.5 4.5 0 0 1-4.5-4.5A4.5 4.5 0 0 1 12.5 3c0-.2 0-.4-.5-.5z"/><circle cx="8.5" cy="10" r="1.3" fill="#0f1216"/><circle cx="12" cy="15.5" r="1.3" fill="#0f1216"/><circle cx="15.5" cy="12" r="1.1" fill="#0f1216"/><circle cx="7.8" cy="14.8" r=".9" fill="#0f1216"/></svg><span>DevTools · Application · Cookies</span><span class="dom" id="dtDom"></span></div>
+          <div class="dt-row hd"><span>Name</span><span>Value</span><span>Expires</span><span>Size</span></div>
+          <div class="dt-row sel" id="dtRow"></div>
+          <pre class="dt-code" id="dtCode" aria-live="polite"></pre>
+          <div class="dt-raw" id="dtRaw"></div>
+        </div>
+        <div class="dt-foot">
+          <span class="dt-st"><i class="sd" id="dtSd"></i><span id="dtSt">No cookie yet</span></span>
+          <button class="btn btn-outline btn-sm" id="btnReload" type="button">Reload page</button>
+          <button class="btn btn-outline btn-sm" id="btnReset" type="button">Reset cookie</button>
+        </div>
+        <p class="privacy"><span data-ico="shield"></span><span>Only a segment label and the names of the pages read. No name, email, token or login state. Production would set it as <code style="font-family:var(--mono);font-size:11.5px">Secure; SameSite=Lax</code> on <code style="font-family:var(--mono);font-size:11.5px">.xmtrading.com</code>.</span></p>
+      </section>
+
+      <section class="step" id="s3" aria-labelledby="h3a">
+        <header class="sh"><span class="n">3</span><div><h2 id="h3a">How the persona is decided</h2><p>Three rules, checked in order. The rule that fired lights up.</p></div></header>
+        <ol class="rules">
+          <li class="rule" data-r="1"><span class="rn">1</span><div><b>Is this already a client?</b><small>A trusted-device marker means persona <code>returning</code>. Scoring is skipped and the page becomes a short secure sign-in.</small></div></li>
+          <li class="rule" data-r="2"><span class="rn">2</span><div><b>Score what they read</b><small>Four weighted signals. At 0.60 or above, the top topic wins.</small>
+            <div class="sig" id="sig"></div>
+            <div class="score"><span class="big" id="scoreN">0.00</span><span class="trk"><i id="scoreBar"></i><u></u></span><span class="verdict" id="verdict"></span></div>
+          </div></li>
+          <li class="rule" data-r="3"><span class="rn">3</span><div><b>Otherwise: control</b><small>No cookie, or a score below 0.60, shows today's page. No half-guesses.</small></div></li>
+        </ol>
+      </section>
+    </div>
+  </div>
+
+  <!-- ================= ADAPT / NEVER ADAPT ================= -->
+  <section class="rules2" id="rules" aria-labelledby="rl">
+    <div class="rh">
+      <span class="eyebrow">Where the line is</span>
+      <h2 id="rl">Adapt the message and the helpers. Never the rules.</h2>
+      <p>Segmentation changes what we say and what we pre-fill, so the form feels made for the visitor. It never changes what is required, what is charged or what is disclosed. That keeps it safe to run, and easy for Compliance to sign off.</p>
+    </div>
+    <div class="ad-grid">
+      <div class="ad-col">
+        <h3><i><span data-ico="check"></span></i>Adapts per visitor</h3>
+        <ul>
+          <li><b>Headline, subline and button label</b><span>On the homepage, the registration page and the next step.</span></li>
+          <li><b>One helper row on the registration form</b><span>Pre-selected account type, platform note, practice account, or a chat shortcut.</span></li>
+          <li><b>Partner code field</b><span>Filled from the cookie, so there is nothing to type.</span></li>
+          <li><b>Page visual and next-step order</b><span>Bonus ticket, comparison, platform or course card; what to do first after verifying.</span></li>
+          <li><b>Language and help</b><span>Local-language chat and support when the cookie says so.</span></li>
+        </ul>
+      </div>
+      <div class="ad-col no">
+        <h3><i><span data-ico="lock"></span></i>Never adapts</h3>
+        <ul>
+          <li><b>Required fields and validation</b><span>Country, email and password, plus every KYC and entity check.</span></li>
+          <li><b>Terms, risk warning and consents</b><span>Legal text is identical for everyone and in the same place.</span></li>
+          <li><b>Prices, spreads and conditions</b><span>No segment sees a different cost. Offers need Compliance approval before they are shown.</span></li>
+          <li><b>Regulated entity and region rules</b><span>Decided by country of residence, not by the cookie.</span></li>
+          <li><b>Anything the visitor did not choose</b><span>The cookie holds a segment label only: no name, email or behaviour log.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="mx"><table id="mxT" aria-label="What each segment changes"></table></div>
+  </section>
+
+  <!-- ================= WHY ================= -->
+  <section class="why" id="why">
+    <article class="step chart" id="chart">
+      <span class="eyebrow">Why it pays</span>
+      <h3 style="margin-top:8px">Message match lifts registration, segment by segment.</h3>
+      <p class="sb">Illustrative lift in registration rate against today's one-size-fits-all page. Control = 1.0×.</p>
+      <div class="bars" id="bars"></div>
+      <div class="cap"><span class="tag amber">Illustrative</span><span>Not measured. For new visitors this is registration rate; for returning clients it is login-to-trade rate.</span></div>
+    </article>
+    <article class="step">
+      <span class="eyebrow">How it would ship</span>
+      <h3 style="margin-top:8px">Start with what we already know.</h3>
+      <div class="phase">
+        <div><em>Phase 1 · XMTrading-side signals</em><b>No partner work needed</b><small>Landing page and campaign URL, affiliate ID, referrer, language, country and device, plus a returning-client marker. The cookie is written on arrival and the pages read it.</small></div>
+        <div class="p2"><em>Phase 2 · What they read</em><b>Needs partner buy-in</b><small>Affiliates pass the topic of the page the visitor read, as a landing parameter or a light tag. Only worth building once Phase 1 shows lift.</small></div>
+      </div>
+      <ol class="ship" style="list-style:none;margin-left:0;padding-left:0">
+        <li><div><b>XMTrading writes the xm_seg cookie</b><small>First-party, 90 days, segment label only. Rules above, evaluated once at the edge. Consent wording to be confirmed with Legal.</small></div></li>
+        <li><div><b>Pages read the persona</b><small>Homepage hero, registration helper row and next step come from one config, so marketing can edit copy without a release.</small></div></li>
+      </ol>
+      <p class="guard"><b>Guardrail:</b> keep a 10% control hold-out so the lift is measured, not assumed. Anyone without the cookie, or below the 0.60 score, sees the page they see today.</p>
+    </article>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$, esc = XM.esc;
+  var I = function (n, c) { return XM.icon(n, c || ''); };
+  var COOKIE = 'xm_seg';
+  var REG = XM.url('ideas/02-hero-email/register.html'), LOGIN = XM.url('ideas/14-login-router/index.html');
+  var T0 = new Date();
+
+  /* ============================================================
+     PERSONA CONFIG. Everything in the preview is rendered from this.
+     ============================================================ */
+  var P = {
+    promo_seeker: {
+      id: 'promo_seeker', short: 'Bonus comparison', sub: 'Welcome and deposit bonuses', ico: 'gift', c: '#c26a00', acc: '#f5a623', acc2: '#00a36a',
+      aff: { url: 'bonus-broker-reviews.example/best-bonus-brokers-2026', tag: 'Comparison', title: 'Best bonus brokers 2026', hl: 'A welcome bonus lets you try live markets before you fund an account.', depth: .75, click: 'Open XMTrading account' },
+      ck: { source: 'affiliate:12345', seen: ['bonus-guide', 'deposit-bonus'], lang: 'ja', ttl: 90 },
+      sig: { entry: .85, content: .70, scroll: .75, source: .80 },
+      sigTx: { entry: 'Landed on bonus-guide', content: '2 of 2 pages about bonuses', scroll: '75% scrolled', source: 'Partner 12345, Japanese' },
+      hero: { badge: 'WELCOME BONUS', h: 'Your welcome bonus is ready', sub: 'Register in two minutes and we will hold your ¥13,000 credit for you.', cta: 'Claim and register', link: 'See bonus terms', vis: 'promo' },
+      reg: { eye: 'Welcome bonus', h: 'Claim your ¥13,000 welcome bonus', sub: 'It takes two minutes. The credit is added to your account once your ID is verified.', perks: ['No deposit needed', 'Trade live markets'], cta: 'Claim bonus and register', banner: true, row: { i: 'gift', t: 'Bonus is attached to this form', s: 'No promo code to find or paste.' } },
+      next: { ico: 'gift', h: 'You are in. Your bonus is waiting.', sub: 'Verify your ID to release the ¥13,000 welcome credit.', main: { t: 'Activate your welcome bonus', p: 'Upload your ID in about three minutes. The credit appears right after approval. Terms are illustrative.', cta: 'Verify and activate' }, more: [{ i: 'chart', t: 'Place your first trade', s: 'Open the Portal with the bonus credit ready' }, { i: 'phone', t: 'Get the app', s: 'Trade your bonus from your phone' }] }
+    },
+    account_comparer: {
+      id: 'account_comparer', short: 'Account types explained', sub: 'Standard vs Zero vs KIWAMI', ico: 'wallet', c: '#0b7285', acc: '#14a5a0', acc2: '#2f62f0',
+      aff: { url: 'forex-compare.example/standard-vs-zero-vs-kiwami', tag: 'Guide', title: 'Standard vs Zero vs KIWAMI: which account?', hl: 'Active traders weigh spread against commission. Beginners often start simple.', depth: .65, click: 'Compare accounts' },
+      ck: { source: 'affiliate:12345', seen: ['account-types', 'zero-account'], lang: 'en', ttl: 90 },
+      sig: { entry: .80, content: .75, scroll: .65, source: .75 },
+      sigTx: { entry: 'Landed on account-types', content: '2 of 2 pages on accounts', scroll: '65% scrolled', source: 'Partner 12345, English' },
+      hero: { badge: 'ACCOUNTS', h: 'Find the account that fits you', sub: 'Three account types, one clear comparison. Pick the one that matches how you trade.', cta: 'Open the right account', link: 'Compare in detail', vis: 'cmp' },
+      reg: { eye: 'Account types', h: 'Open the account that fits you', sub: 'You compared Standard, Zero and KIWAMI. We pre-selected Zero, and you can switch it later.', perks: ['Pre-selected: Zero', 'Switch any time'], cta: 'Register and choose account', row: { i: 'wallet', t: 'Account type: Zero', s: 'Pre-selected from your comparison. Change it any time.', b: 'Change' } },
+      next: { ico: 'wallet', h: 'Let us open the right account.', sub: 'Based on what you compared, Zero is pre-selected.', main: { t: 'Open your Zero account', p: 'Pre-selected from your comparison. Confirm it, or switch to Standard or KIWAMI before you fund it.', cta: 'Open Zero account' }, more: [{ i: 'play', t: 'Try it on a demo first', s: 'Same account type, practice funds' }, { i: 'users', t: 'Ask an account specialist', s: 'Short chat, no sales call' }] }
+    },
+    platform_seeker: {
+      id: 'platform_seeker', short: 'Platform review', sub: 'MT5 vs Trader Pro', ico: 'monitor', c: '#2f62f0', acc: '#2f62f0', acc2: '#00a36a',
+      aff: { url: 'trading-tools.example/mt5-vs-trader-pro', tag: 'Review', title: 'MT5 vs XMTD Trader Pro: which to use?', hl: 'MT5 for robots and deep charting. The app for quick trades on the go.', depth: .55, click: 'Download platform' },
+      ck: { source: 'affiliate:12345', seen: ['mt5-review', 'app-review'], lang: 'en', ttl: 90 },
+      sig: { entry: .75, content: .60, scroll: .55, source: .70 },
+      sigTx: { entry: 'Landed on mt5-review', content: '2 of 2 pages on platforms', scroll: '55% scrolled', source: 'Partner 12345, English' },
+      hero: { badge: 'PLATFORMS', h: 'Trade on MT5 or the XMTD app', sub: 'One account and one balance. Desktop power, or one-tap trading on your phone.', cta: 'Register and download', link: 'Compare platforms', vis: 'plat' },
+      reg: { eye: 'Platforms', h: 'Register, then pick your platform', sub: 'Your MT5 login and your app login are created together, with one set of funds.', perks: ['MT5', 'XMTD Trader Pro', 'Web Portal'], cta: 'Register and download', row: { i: 'monitor', t: 'Platforms: MT5 and XMTD Trader Pro', s: 'Both logins are created together.' } },
+      next: { ico: 'monitor', h: 'Download your platform.', sub: 'Your account number and server are ready.', main: { t: 'Get MetaTrader 5', p: 'Sign in with your new account number. The server is pre-filled so there is nothing to look up.', cta: 'Download MT5' }, more: [{ i: 'qr', t: 'XMTD Trader Pro', s: 'Scan the QR code to install the app' }, { i: 'globe', t: 'Web Portal', s: 'Nothing to install. Trade in the browser' }] }
+    },
+    learner: {
+      id: 'learner', short: 'Beginner’s course', sub: '7-day forex basics', ico: 'book', c: '#8a3fd1', acc: '#8a3fd1', acc2: '#14a5a0',
+      aff: { url: 'learn-fx.example/beginners-course', tag: 'Course', title: 'Forex for beginners: a 7-day course', hl: 'Lesson 1 covers pips, lots and how to read a price quote.', depth: .85, click: 'Start free course' },
+      ck: { source: 'affiliate:12345', seen: ['beginner-course', 'demo-guide'], lang: 'en', ttl: 90 },
+      sig: { entry: .90, content: .80, scroll: .85, source: .60 },
+      sigTx: { entry: 'Landed on beginner-course', content: '2 of 2 pages on learning', scroll: '85% scrolled', source: 'Partner 12345, English' },
+      hero: { badge: 'LEARN', h: 'Learn first, trade when ready', sub: 'A free beginner course and a practice account. No deposit until you decide.', cta: 'Start learning free', link: 'See the course', vis: 'learn' },
+      reg: { eye: 'Learn first', h: 'Your free course starts here', sub: 'Create a free account to unlock the lessons and a practice account with virtual funds.', perks: ['Free course', 'Practice account', 'No deposit'], cta: 'Create free account', row: { i: 'book', t: 'Practice account included', s: 'Virtual funds, no deposit needed.' } },
+      next: { ico: 'book', h: 'Start your first lesson.', sub: 'Your practice account is ready too.', main: { t: 'Lesson 1: What is a pip?', p: 'Four minutes, no jargon. Finish it and the next lesson unlocks.', cta: 'Start lesson 1' }, more: [{ i: 'play', t: 'Practice account', s: '100,000 virtual funds, no risk' }, { i: 'users', t: 'Beginner webinar', s: 'Live Q&A, replay available' }] }
+    },
+    support_seeker: {
+      id: 'support_seeker', short: 'Support & JA broker review', sub: 'Japanese-language review', ico: 'headset', c: '#008454', acc: '#00c27c', acc2: '#e5373f',
+      aff: { url: 'fx-hikaku.example/ja/xm-support-review', tag: 'Review (JA)', title: 'XMTrading review: Japanese support, tested', hl: 'Reviewers rate Japanese-language support and help with account setup.', depth: .60, click: 'Open XMTrading account' },
+      ck: { source: 'affiliate:12345', seen: ['jp-support', 'broker-review'], lang: 'ja', ttl: 90 },
+      sig: { entry: .70, content: .65, scroll: .60, source: .90 },
+      sigTx: { entry: 'Landed on jp-support', content: '2 of 2 pages on support', scroll: '60% scrolled', source: 'Partner 12345, Japanese' },
+      hero: { badge: 'SUPPORT', h: 'Real people, in your language', sub: 'Japanese-speaking specialists help with registration, verification and your first deposit.', cta: 'Register with help', link: 'Talk to support first', vis: 'chat' },
+      reg: { eye: 'Support', h: 'Register with a person on hand', sub: 'Stuck at any step? A Japanese-speaking specialist can finish it with you.', perks: ['日本語サポート', 'Chat while you register'], cta: 'Register with help', row: { i: 'headset', t: '日本語 chat is open now', s: 'A specialist can finish this with you.', b: 'Chat' } },
+      next: { ico: 'headset', h: 'A person will help you finish.', sub: 'Most people ask about ID verification and their first deposit.', main: { t: 'Book a 10-minute setup call', p: 'A Japanese-speaking specialist walks you through ID verification and your first deposit.', cta: 'Choose a time' }, more: [{ i: 'bolt', t: 'Chat now', s: 'Replies in Japanese or English' }, { i: 'book', t: 'Help centre', s: 'Step-by-step guides in Japanese' }] }
+    },
+    casual_browser: {
+      id: 'casual_browser', short: 'News roundup', sub: 'Skimmed, low intent', ico: 'globe', c: '#6b7280', acc: '#00c27c', acc2: '#008454',
+      aff: { url: 'daily-fx-news.example/market-roundup', tag: 'News', title: 'Market roundup: five stories to watch', hl: 'A quick scan of headlines across forex, stocks and crypto.', depth: .25, click: 'Open XMTrading account' },
+      ck: { source: 'affiliate:12345', seen: ['market-roundup'], lang: 'en', ttl: 90 },
+      sig: { entry: .35, content: .30, scroll: .25, source: .50 },
+      sigTx: { entry: 'Landed on market-roundup', content: '1 page, mixed topics', scroll: '25% scrolled', source: 'Partner 12345, English' }
+    },
+    returning: {
+      id: 'returning', short: 'Returning client', sub: 'Logged-in cookie', ico: 'lock', c: '#1d2024', acc: '#00c27c', acc2: '#008454', client: true,
+      aff: { url: 'xmtrading.com', tag: 'Direct visit', title: 'Typed xmtrading.com', hl: 'Trusted device recognised. A passkey is registered on this device.', depth: .05, click: 'n/a (not an affiliate visit)' },
+      ck: { lifecycle: 'client', source: 'direct', seen: [], lang: 'ja', ttl: 365 },
+      score: 1,
+      hero: { badge: 'CLIENT' },
+      reg: {},
+      next: { ico: 'lock', h: 'You are signed in.', sub: 'Pick up where you left off.', main: { t: 'Continue to the Portal', p: 'Your last chart and watchlist are right where you left them.', cta: 'Open Portal' }, more: [{ i: 'chart', t: 'Resume your last chart', s: 'USDJPY, 4-hour' }, { i: 'wallet', t: 'Deposit funds', s: 'Saved methods, one tap' }] }
+    }
+  };
+  var ORDER = ['promo_seeker', 'account_comparer', 'learner', 'platform_seeker', 'support_seeker', 'casual_browser', 'returning'];
+  var MIN = .6;
+  var CTRL = {
+    id: 'control', acc: '#00c27c', acc2: '#008454',
+    hero: { badge: 'TODAY', h: 'Trade with a trusted global broker', sub: 'Forex, metals, indices, stocks and crypto CFDs on one account.', cta: 'Join today', vis: 'ctrl' },
+    reg: { eye: 'Open an account', h: 'Join XMTrading', sub: 'Registration takes about two minutes.', perks: ['Segregated client funds', 'Negative balance protection'], cta: 'Register' },
+    next: { ico: 'shield', h: 'Welcome to XMTrading.', sub: 'One more step before you can trade.', main: { t: 'Verify your account', p: 'Confirm your email and upload ID so you can fund your account.', cta: 'Verify now' }, more: [{ i: 'monitor', t: 'Explore platforms', s: 'Portal, app, MT4 and MT5' }, { i: 'book', t: 'Learn the basics', s: 'Guides and webinars' }] }
+  };
+  var W = { entry: .4, content: .3, scroll: .2, source: .1 };
+  var LIFT = [
+    { id: 'control', l: 'Control', s: 'Today’s page', v: 1.0 },
+    { id: 'promo_seeker', l: 'Promotion seeker', s: 'Bonus-led hero', v: 4.2 },
+    { id: 'learner', l: 'Learner', s: 'Course card', v: 3.8 },
+    { id: 'support_seeker', l: 'Support seeker', s: 'Local-language help', v: 4.6 },
+    { id: 'platform_seeker', l: 'Platform seeker', s: 'MT5 and app', v: 3.4 },
+    { id: 'account_comparer', l: 'Account comparer', s: 'Side-by-side table', v: 3.1 },
+    { id: 'returning', l: 'Returning client', s: 'Passkey sign-in', v: 3.3 }
+  ];
+  function scoreOf(p) { if (p.client) return 1; var s = 0; for (var k in W) s += W[k] * p.sig[k]; return Math.round(s * 100) / 100; }
+  // The persona that actually gets served: clients always, others only at or above the threshold. null = control page.
+  function resolve(id) { var p = P[id]; return p && (p.client || scoreOf(p) >= MIN) ? p : null; }
+  function restoreId(c) {
+    if (!c) return null; if (c.lifecycle === 'client') return 'returning'; if (P[c.persona]) return c.persona;
+    var s = c.seen && c.seen[0]; return ORDER.filter(function (id) { return P[id].ck.seen[0] === s; })[0] || null;
+  }
+
+  /* ============================================================
+     STATE + cookie
+     ============================================================ */
+  var state = { sel: null, cookie: null, ctrl: false, dev: 'd', tab: 'home', rtab: null, rid: null };
+  var tok = 0;
+
+  function ckString(o) { return encodeURIComponent(JSON.stringify(o)); }
+  function writeCookie(o) { document.cookie = COOKIE + '=' + ckString(o) + '; max-age=' + (parseInt(o.ttl, 10) * 86400) + '; path=/; SameSite=Lax'; }
+  function readCookie() { var m = document.cookie.match(/(?:^|;\s*)xm_seg=([^;]*)/); if (!m) return null; try { return JSON.parse(decodeURIComponent(m[1])); } catch (e) { return null; } }
+  function delCookie() { document.cookie = COOKIE + '=; max-age=0; path=/; SameSite=Lax'; }
+  function buildCookie(p) {
+    var c = p.ck;
+    return { lifecycle: c.lifecycle || 'visitor', source: c.source, persona: resolve(p.id) ? p.id : 'control', seen: c.seen, lang: c.lang, score: scoreOf(p), ttl: c.ttl + 'd' };
+  }
+  function eff() { return (state.ctrl || !state.sel) ? CTRL : (resolve(state.sel) || CTRL); }
+
+  /* ============================================================
+     helpers
+     ============================================================ */
+  function countTo(el, to, dur, fmt) {
+    var from = parseFloat(el.dataset.v || '0') || 0, t0 = performance.now(); el.dataset.v = to;
+    if (!dur) { el.textContent = fmt(to); return; }
+    (function f(t) { var k = Math.max(0, Math.min(1, (t - t0) / dur)), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(from + (to - from) * e); if (k < 1) requestAnimationFrame(f); })(t0);
+  }
+  function ico(root) { $$('[data-ico]', root || document).forEach(function (n) { n.outerHTML = I(n.getAttribute('data-ico'), 'w16').replace('<svg ', '<svg style="width:16px;height:16px;flex:none" '); }); }
+  function swap(el, html, after) {
+    el.classList.add('out'); clearTimeout(el._t);
+    el._t = setTimeout(function () { el.innerHTML = html; el.classList.remove('out'); if (after) after(); }, 170);
+  }
+
+  /* ============================================================
+     STEP 1 · source cards + affiliate frame
+     ============================================================ */
+  var grid = $('#srcGrid');
+  grid.innerHTML = ORDER.map(function (id) {
+    var p = P[id];
+    return '<button class="src' + (p.client ? ' client' : '') + '" data-id="' + id + '" style="--c:' + p.c + '" aria-pressed="false"><span class="ic">' + I(p.ico) + '</span><b>' + p.short + '</b><small>' + p.sub + '</small><span class="ck">' + I('check') + '</span></button>';
+  }).join('');
+  grid.addEventListener('click', function (e) { var b = e.target.closest('.src'); if (b) { tourStop(); pick(b.dataset.id); } });
+  function markCards() { $$('.src', grid).forEach(function (b) { var on = b.dataset.id === state.sel; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
+
+  var aff = $('#aff'), affDepthT;
+  function affSet(p) {
+    aff.classList.remove('empty'); aff.classList.add('busy');
+    $('#affUrl').textContent = p.aff.url; $('#affTag').textContent = p.aff.tag; $('#affTitle').textContent = p.aff.title; $('#affHl').textContent = p.aff.hl;
+    $('#affSeen').textContent = '0'; $('#affClk').textContent = 'none'; $('#affDepth').textContent = '0%';
+    $('#affThumb').style.transform = 'translateY(0)'; $('#affArt').style.transform = 'translateY(0)';
+  }
+  function affDepth(p, dur, done, t) {
+    var to = p.aff.depth, t0 = performance.now(), body = $('.aff-body', aff).clientHeight;
+    function setD(k) {
+      var d = to * k;
+      $('#affDepth').textContent = Math.round(d * 100) + '%';
+      $('#affThumb').style.transform = 'translateY(' + Math.round(d * (body - 52)) + 'px)';
+      $('#affArt').style.transform = 'translateY(' + (-Math.round(d * 60)) + 'px)';
+      $('#affSeen').textContent = p.ck.seen.length ? Math.min(p.ck.seen.length, Math.ceil(k * p.ck.seen.length)) + '' : '0';
+    }
+    if (!dur) { setD(1); end(); return; }
+    (function f(now) { if (t !== tok) return; var k = Math.max(0, Math.min(1, (now - t0) / dur)); setD(1 - Math.pow(1 - k, 2)); if (k < 1) requestAnimationFrame(f); else end(); })(t0);
+    function end() {
+      if (t !== tok) return;
+      $('#affClk').textContent = p.aff.click.indexOf('n/a') === 0 ? 'n/a' : p.aff.click;
+      var b = $('#affBtn'); b.classList.remove('hit'); void b.offsetWidth; if (!p.client) b.classList.add('hit');
+      aff.classList.remove('busy'); done();
+    }
+  }
+  function affReset() {
+    aff.classList.add('empty'); aff.classList.remove('busy');
+    $('#affUrl').textContent = 'partner-site.example'; $('#affTag').textContent = 'Waiting'; $('#affTitle').textContent = 'Waiting for a visitor to arrive';
+    $('#affHl').textContent = 'Select an affiliate page above to simulate the visit.';
+    $('#affDepth').textContent = '0%'; $('#affSeen').textContent = '0'; $('#affClk').textContent = 'none';
+    $('#affThumb').style.transform = 'translateY(0)'; $('#affArt').style.transform = 'translateY(0)';
+  }
+
+  /* ============================================================
+     STEP 2 · cookie inspector
+     ============================================================ */
+  function jv(v, chg) {
+    var h;
+    if (typeof v === 'string') h = '<span class="s">"' + esc(v) + '"</span>';
+    else if (typeof v === 'number') h = '<span class="n">' + v + '</span>';
+    else h = '<span class="p">[</span>' + v.map(function (x) { return '<span class="s">"' + esc(x) + '"</span>'; }).join('<span class="p">, </span>') + '<span class="p">]</span>';
+    return chg ? '<span class="chg">' + h + '</span>' : h;
+  }
+  function renderCookie(c, prev) {
+    var keys = Object.keys(c), i = 0, rows = '<div class="ln" style="--i:0"><span class="g">1</span><span class="p">{</span></div>';
+    keys.forEach(function (k, n) {
+      i = n + 1;
+      var chg = prev && JSON.stringify(prev[k]) !== JSON.stringify(c[k]);
+      rows += '<div class="ln" style="--i:' + i + '"><span class="g">' + (i + 1) + '</span><span class="p">  </span><span class="k">"' + k + '"</span><span class="p">: </span>' + jv(c[k], chg) + '<span class="p">' + (n < keys.length - 1 ? ',' : '') + '</span></div>';
+    });
+    rows += '<div class="ln" style="--i:' + (keys.length + 1) + '"><span class="g">' + (keys.length + 2) + '</span><span class="p">}</span><span class="caret"></span></div>';
+    $('#dtCode').innerHTML = rows;
+    var enc = ckString(c), exp = new Date(T0.getTime() + parseInt(c.ttl, 10) * 864e5).toISOString().slice(0, 10);
+    var row = $('#dtRow');
+    row.innerHTML = '<span>xm_seg</span><span>' + esc(enc) + '</span><span>' + exp + '</span><span>' + (COOKIE.length + enc.length) + ' B</span>';
+    row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+    $('#dtRaw').innerHTML = '<b>document.cookie</b> = ' + esc(('xm_seg=' + enc).slice(0, 120)) + '…';
+  }
+  function emptyCookie(msg) {
+    $('#dtCode').innerHTML = '<div class="ln" style="--i:0"><span class="g">1</span><span class="c">// ' + msg + '</span></div><div class="ln" style="--i:1"><span class="g">2</span><span class="c">// visitor is served the control page</span><span class="caret"></span></div>';
+    $('#dtRow').innerHTML = '<span class="c">no xm_seg</span><span></span><span></span><span></span>';
+    $('#dtRaw').innerHTML = '<b>document.cookie</b> = ""';
+  }
+  function setSt(kind, txt) { $('#dtSd').className = 'sd ' + (kind || ''); $('#dtSt').textContent = txt; }
+  function dropFx() { var c = $('#ckie'); c.classList.remove('drop'); void c.getBoundingClientRect(); c.classList.add('drop'); }
+
+  /* ============================================================
+     STEP 3 · rules
+     ============================================================ */
+  var SIGS = [['entry', 'Entry page'], ['content', 'Content seen'], ['scroll', 'Scroll depth'], ['source', 'Source and language']];
+  function renderRules(p) {
+    var client = p && p.client, sel = !!p;
+    var sc = p ? scoreOf(p) : 0, low = sel && !client && sc < MIN;
+    $$('.rule').forEach(function (r) { var n = r.dataset.r; r.classList.toggle('on', sel && ((client && n === '1') || (!client && n === '2')) || ((!sel || low) && n === '3')); });
+    $('.score').classList.toggle('low', !!low);
+    $('#sig').innerHTML = SIGS.map(function (s) {
+      var v = (p && !client) ? p.sig[s[0]] : 0;
+      return '<div class="sg"><span class="sg-n"><b>' + s[1] + '</b><small>' + ((p && !client) ? p.sigTx[s[0]] : (client ? 'Skipped for clients' : 'Waiting for a cookie')) + '</small></span><span class="sg-w">' + Math.round(W[s[0]] * 100) + '%</span><span class="sg-b"><i style="--w:0%" data-w="' + Math.round(v * 100) + '%"></i></span><span class="sg-v">' + (v ? '+' + (v * W[s[0]]).toFixed(2) : '') + '</span></div>';
+    }).join('');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { $$('#sig i').forEach(function (i) { i.style.setProperty('--w', i.dataset.w); }); }); });
+    $('#scoreBar').style.setProperty('--w', Math.round(sc * 100) + '%');
+    countTo($('#scoreN'), sc, 800, function (v) { return v.toFixed(2); });
+    var vd = $('#verdict');
+    vd.textContent = !p ? 'control' : client ? 'client override' : !low ? '≥ 0.60 → ' + p.id : '< 0.60 → control'; vd.style.color = low ? '#b26200' : p ? 'var(--g)' : 'var(--mut)';
+  }
+
+  /* ============================================================
+     PREVIEW · visuals
+     ============================================================ */
+  function candles(w, h, n) {
+    var s = '', p = h * .62, i, x, r, o, c, hi, lo, up, bw = w / n * .56;
+    for (i = 0; i < n; i++) {
+      r = Math.sin(i * 12.9898 + 4.1) * 43758.5453; r -= Math.floor(r);
+      o = p; c = p + (r - .56) * h * .17; p = c; hi = Math.min(o, c) - r * h * .05 - 3; lo = Math.max(o, c) + (1 - r) * h * .05 + 3; up = c < o; x = (i + .5) * w / n;
+      s += '<line x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + hi.toFixed(1) + '" y2="' + lo.toFixed(1) + '" stroke="' + (up ? '#2fe39a' : '#ff6b72') + '" stroke-width="1.2"/><rect x="' + (x - bw / 2).toFixed(1) + '" y="' + Math.min(o, c).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(2, Math.abs(c - o)).toFixed(1) + '" rx="1" fill="' + (up ? '#2fe39a' : '#ff6b72') + '"/>';
+    }
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' + s + '</svg>';
+  }
+  var VIS = {
+    promo: function () {
+      return '<div class="v-promo"><div class="bk b2"></div><div class="bk"></div><div class="tk"><div class="tk-l"><svg viewBox="0 0 80 80" aria-hidden="true"><rect x="12" y="34" width="56" height="38" rx="6" fill="#fff"/><rect x="8" y="24" width="64" height="16" rx="6" fill="#fff"/><rect x="35" y="24" width="10" height="48" fill="#008454"/><path d="M40 24c-4-13-22-14-22-5 0 8 14 8 22 5zM40 24c4-13 22-14 22-5 0 8-14 8-22 5z" fill="none" stroke="#008454" stroke-width="4" stroke-linejoin="round"/></svg></div>' +
+        '<div class="tk-r"><small>WELCOME BONUS</small><b>¥13,000</b><div class="tk-tg"><i>No deposit needed</i><i>Trade live markets</i></div></div>' +
+        '<div class="tk-f"><span class="ldot"></span>Held for you, expires in <b class="cd">6d 04:12:09</b><span class="fine" style="margin-left:auto">Illustrative terms</span></div></div></div>';
+    },
+    cmp: function () {
+      var R = [['Spread from', '1.6 pips', '0.0 pips', '0.7 pips'], ['Commission', 'None', 'Per lot', 'None'], ['Min. deposit', '$5', '$100', '$100'], ['Best for', 'First steps', 'Active traders', 'Low all-in cost']];
+      return '<div class="v-cmp" data-pick="2"><div class="cm"><span class="lb"></span>' + ['Standard', 'Zero', 'KIWAMI'].map(function (n, i) { return '<button class="hd c' + (i + 1) + '" data-col="' + (i + 1) + '">' + n + '<em>' + (i === 1 ? 'Your pick' : 'Select') + '</em></button>'; }).join('') +
+        R.map(function (r) { return '<span class="lb">' + r[0] + '</span><span class="c1">' + r[1] + '</span><span class="c2">' + r[2] + '</span><span class="c3">' + r[3] + '</span>'; }).join('') + '</div><div class="cm-n">Illustrative values. Tap a column to compare.</div></div>';
+    },
+    plat: function () {
+      return '<div class="v-plat"><div class="mt5"><div class="mt5-t"><i></i>MetaTrader 5 · XM-Real</div><div class="mt5-b"><div class="mt5-w"><div><span>EURUSD</span><b class="dn">1.1194</b></div><div><span>USDJPY</span><b>157.15</b></div><div><span>GOLD</span><b>4055.2</b></div><div><span>US100</span><b>29331</b></div><div><span>BTCUSD</span><b>81682</b></div></div><div class="mt5-c">' + candles(300, 170, 34) + '</div></div></div>' +
+        '<div class="phx"><div class="phx-s"><small>XMTD Trader Pro</small><b>$10,284.30</b><span class="up">+2.14% today</span><svg viewBox="0 0 100 40" preserveAspectRatio="none"><path d="M0 30 L12 27 L24 31 L36 22 L48 25 L60 15 L72 18 L84 8 L100 5" fill="none" stroke="#2fe39a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="r"><span>EURUSD</span><b>1.1194</b></div><div class="r"><span>GOLD</span><b>4055.2</b></div></div></div></div>';
+    },
+    learn: function () {
+      var L = [['done', 'check', 'What is a pip?', '4 min'], ['now', 'play', 'Reading a price quote', '6 min'], ['', 'lock', 'Your first demo trade', '9 min']];
+      return '<div class="v-learn"><div class="lc"><div class="lc-h"><span class="lc-ic">' + I('book') + '</span><div><b>Forex basics</b><small>7 lessons · 38 min · free</small></div><span class="tag blue" style="margin-left:auto">Beginner</span></div><div class="lc-pr"><i></i></div><div class="lc-pl"><span>1 of 7 complete</span><span>14%</span></div><ul>' +
+        L.map(function (l) { return '<li class="' + l[0] + '"><span>' + I(l[1]) + '</span>' + l[2] + '<em>' + l[3] + '</em></li>'; }).join('') + '</ul></div><div class="dm"><small>Practice account</small><b>100,000</b><p>Virtual funds to try every lesson on live-style prices.</p><span class="tag">No deposit</span></div></div>';
+    },
+    chat: function () {
+      return '<div class="v-chat"><div class="ch-h"><span class="a">A</span><div><b>Aiko · XMTrading Japan support</b><small><span class="ldot"></span>Online now</small></div><span class="lg"><i>日本語</i><i>EN</i></span></div><div class="ch-b">' +
+        '<div class="msg ag m1">こんにちは!口座開設について、ご質問はありますか?<small>Hello! Any questions about opening an account?</small></div>' +
+        '<div class="msg me m2">本人確認はどうすればいいですか?<small>How do I verify my ID?</small></div>' +
+        '<div class="stk"><div class="ty"><i></i><i></i><i></i></div><div class="msg ag m3">ご案内します。3分ほどで完了します。<small>I will guide you. It takes about 3 minutes.</small></div></div></div></div>';
+    },
+    ctrl: function () {
+      return '<div class="v-ctrl"><div class="pcard"><small>Total profit</small><b>$32,916<span class="up">+12.4%</span></b><svg viewBox="0 0 200 80" preserveAspectRatio="none"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#00c27c" stop-opacity=".4"/><stop offset="1" stop-color="#00c27c" stop-opacity="0"/></linearGradient></defs><path d="M0 62 C20 58 30 40 50 46 S80 62 100 36 S140 22 160 26 S190 8 200 6 V80 H0Z" fill="url(#cg)"/><path d="M0 62 C20 58 30 40 50 46 S80 62 100 36 S140 22 160 26 S190 8 200 6" fill="none" stroke="#2fe39a" stroke-width="2"/></svg></div><span class="fc a">Buy USDJPY<b class="dn">-$149.24</b></span><span class="fc b">Gold<b class="up">+$5,327</b></span></div>';
+    }
+  };
+
+  /* ============================================================
+     PREVIEW · views
+     ============================================================ */
+  function hdrHtml(e) {
+    var logo = '<a class="xm-logo" href="#">' + XM.logo(false) + '</a>';
+    if (e.client) return logo + '<span class="s-sec">' + I('lock') + 'Secure sign-in</span>';
+    return logo + '<nav class="s-nav"><a href="#">Trading</a><a href="#">Promotions</a><a href="#">Learn</a><a href="#">Partners</a></nav><div class="s-r"><a class="btn btn-outline" href="#" data-go="login">Log in</a><button class="btn btn-primary" data-go="reg">Register</button></div>';
+  }
+  var CT = '<i class="ct">Changed</i>';
+  var CHEV = '<svg viewBox="0 3 14 24" aria-hidden="true"><path fill="#e5373f" d="M1 4h5.5L13 15 6.5 26H1l6.5-11z"/></svg>';
+  function heroVars(e) { return '--acc:' + e.acc + ';--acc2:' + e.acc2; }
+  function retHtml() {
+    return '<div class="av st" style="--i:0">T<i>' + I('check') + '</i></div>' +
+      '<h1 class="st" style="--i:1">Welcome back, Taro</h1><p class="sub st" id="retSub" style="--i:2">Sign in securely to continue where you left off.</p>' +
+      '<div class="pk st" style="--i:3"><button class="btn btn-primary btn-lg pill glow pkb" data-pk>' + I('fingerprint') + '<span class="pk-t">Continue with passkey</span></button><button class="lnk" data-mail>Log in with email</button>' +
+      '<form class="pk-mail" id="pkMail" hidden><input type="email" placeholder="Email address" aria-label="Email address" value="taro.yamada@example.com"><button class="btn btn-light pill" type="submit">Next</button></form></div>' +
+      '<div class="ql st" style="--i:4"><button data-q="Trade">' + I('chart') + 'Trade</button><button data-q="Members area">' + I('user') + 'Members area</button><button data-q="MT5">' + I('monitor') + 'MT5</button></div>' +
+      '<div class="sec-line st" style="--i:5">' + I('lock') + 'Last signed in on this device <b>2 days ago</b></div>';
+  }
+  function homeHtml(e) {
+    if (e.client) return retHtml();
+    var h = e.hero, ch = e.id !== 'control', ad = ch ? ' adp' : '', ct = ch ? CT : '';
+    return '<div class="kick' + ad + ' st" style="--i:0"><b class="xmk">' + CHEV + '</b><span class="bdg">' + h.badge + '</span>' + ct + '</div>' +
+      '<h1 class="st' + ad + '" style="--i:1">' + h.h + ct + '</h1><p class="sub st' + ad + '" style="--i:2">' + h.sub + ct + '</p>' +
+      '<div class="hcta st" style="--i:3"><button class="btn btn-primary btn-lg pill glow' + ad + '" data-go="reg">' + h.cta + ct + '</button>' + (h.link ? '<button class="lnk" data-go="reg">' + h.link + '</button>' : '') + '</div>' +
+      '<div class="vis st' + ad + '" style="--i:4">' + VIS[h.vis](e) + ct + '</div>';
+  }
+  var SKEL = '<div class="skd" style="width:112px;height:26px;margin-bottom:20px"></div><div class="skd" style="width:min(430px,86%);height:44px"></div><div class="skd" style="width:min(320px,66%);height:44px;margin-top:10px"></div><div class="skd" style="width:min(380px,76%);height:14px;margin:22px 0 26px"></div><div class="skd" style="width:190px;height:50px;border-radius:999px"></div><div class="skd" style="width:min(470px,100%);height:150px;margin-top:auto;border-radius:20px 20px 0 0"></div>';
+  function regHtml(e) {
+    var r = e.reg, st = function (i) { return ' st" style="--i:' + i; };
+    if (e.client) {
+      return '<div class="reg"><div class="reg-card ret' + st(0) + '"><div class="ok-ic">' + I('shield') + '</div><h3>You already have an account</h3><p>Taro, there is nothing to register. Add another live account, or head back to your members area.</p><button class="btn btn-primary btn-block btn-lg" data-q="Open an additional account">Open an additional account</button><button class="btn btn-outline btn-block" data-q="Members area">Go to Members area</button><div class="fineprint" style="font-size:11px;color:var(--mut);margin-top:14px">Returning clients never see the registration form.</div></div></div>';
+    }
+    var ch = e.id !== 'control', ad = ch ? ' adp' : '', ct = ch ? CT : '';
+    var row = r.row ? '<div class="xrow' + ad + '"><span class="xi">' + I(r.row.i) + '</span><div><b>' + r.row.t + '</b><small>' + r.row.s + '</small></div>' + (r.row.b ? '<button type="button" class="xb" data-q="' + esc(r.row.b) + '">' + r.row.b + '</button>' : '') + ct + '</div>' : '';
+    return '<div class="reg"><div class="reg-copy' + ad + st(0) + '"><span class="eyebrow">' + r.eye + '</span><h2>' + r.h + '</h2><p>' + r.sub + '</p><div class="perks">' + r.perks.map(function (x) { return '<span>' + I('check') + x + '</span>'; }).join('') + '</div>' + ct + '</div>' +
+      (r.banner ? '<div class="bn' + ad + st(1) + '"><span class="bn-ic">' + I('gift') + '</span><div><b>¥13,000 welcome bonus reserved</b><small>Added after ID verification. Illustrative terms.</small></div><span class="tag">Reserved</span>' + ct + '</div>' : '') +
+      '<form class="reg-card' + st(2) + '" id="regForm" novalidate><h3>Let’s get you registered!</h3><p class="al">Already have an account? <a href="#">Login</a></p>' +
+      '<label class="field"><span>Country of residence</span><select class="inp"><option>Japan</option><option>Australia</option><option>Germany</option><option>Thailand</option></select></label>' +
+      '<label class="field"><span>Email</span><input class="inp" type="email" id="regEmail" placeholder="you@example.com" value="taro.yamada@example.com"></label>' +
+      '<label class="field"><span>Password</span><input class="inp" type="password" value="correct horse" aria-label="Password"></label>' + row +
+      (ch ? '<div class="pcode' + ad + '">' + I('check') + '<div>Partner code <b>12345</b> applied<small>Read from the xm_seg cookie. Nothing to type.</small></div>' + ct + '</div>' : '<p class="more">Have a partner or referral code? <a href="#">Enter here</a></p>') +
+      '<button class="btn btn-primary btn-lg btn-block' + ad + '" type="submit" id="regBtn">' + r.cta + ct + '</button><p class="fx">' + I('lock') + 'Fixed for everyone: fields, validation, terms, risk warning</p><p class="fineprint">By registering you agree to the terms. Prototype only: nothing is sent.</p></form></div>';
+  }
+  function nextHtml(e) {
+    var n = e.next, st = function (i) { return ' st" style="--i:' + i; };
+    var ch = e.id !== 'control' && !e.client, ad = ch ? ' adp' : '', ct = ch ? CT : '';
+    var steps = ['Registered', 'Email verified'].map(function (s) { return '<span><i>' + I('check') + '</i>' + s + '</span><u></u>'; }).join('') + '<span class="cur"><i>3</i>Your next step</span>';
+    return '<div class="nx"><div class="stp' + st(0) + '">' + (e.client ? '<span class="cur"><i>' + I('lock') + '</i>Signed in</span>' : steps) + '</div><h2 class="st' + ad + '" style="--i:1">' + n.h + ct + '</h2><p class="sb st" style="--i:2">' + n.sub + '</p>' +
+      '<div class="nx-g"><div class="nx-main' + ad + ' st" style="--i:3;' + heroVars(e) + '"><span class="ti">' + I(n.ico) + '</span><h3>' + n.main.t + '</h3><p>' + n.main.p + '</p><button class="btn btn-primary btn-lg pill glow" data-q="' + esc(n.main.cta) + '">' + n.main.cta + '</button>' + ct + '</div>' +
+      '<div class="nx-side">' + n.more.map(function (m, i) { return '<button class="nx-c' + ad + ' st" style="--i:' + (4 + i) + '" data-q="' + esc(m.t) + '"><span class="ti">' + I(m.i) + '</span><span><b>' + m.t + '</b><small>' + m.s + '</small></span>' + ct + '</button>'; }).join('') + '</div></div></div>';
+  }
+  function viewHtml(e, tab) {
+    if (tab === 'home') return '<section class="hero' + (e.client ? ' ret' : '') + '" style="' + heroVars(e) + '"><div class="hero-in" id="heroIn">' + homeHtml(e) + '</div></section>';
+    return tab === 'reg' ? regHtml(e) : nextHtml(e);
+  }
+
+  function strip() {
+    var s = $('#strip'), html;
+    var f = state.cookie;
+    if (state.ctrl) html = '<span class="l"><span class="sd wait"></span><span><b>Control</b> hold-out: everyone sees today’s page</span></span><span class="r">hero.default</span>';
+    else if (!state.sel) html = '<span class="l"><span class="sd"></span><span>No <b>xm_seg</b> cookie: serving <span class="am">control</span></span></span><span class="r">hero.default</span>';
+    else if (!resolve(state.sel)) html = '<span class="l"><span class="sd wait"></span><span>xm_seg.score = <b>' + scoreOf(P[state.sel]).toFixed(2) + '</b> <span class="am">&lt; 0.60 → control</span> · no half-guesses</span></span><span class="r">hero.default</span>';
+    else html = '<span class="l"><span class="sd live"></span><span>xm_seg.persona = <b>' + state.sel + '</b> · score <b>' + scoreOf(P[state.sel]).toFixed(2) + '</b> <span class="ok">→ ' + (P[state.sel].client ? 'signin.passkey' : 'hero.' + P[state.sel].hero.vis) + '</span></span></span><span class="r">' + (f ? f.lang + ' · ' + f.ttl : '') + '</span>';
+    s.innerHTML = html;
+  }
+  function qsUpdate() {
+    var rs = (!state.ctrl && state.sel) ? resolve(state.sel) : null;
+    var q = '?src=affiliate' + (rs ? '&persona=' + rs.id : '');
+    var back = !!(rs && rs.client);
+    $('#qs').textContent = back ? 'login-router/' : 'register.html' + q;
+    $('#tryLink').href = back ? LOGIN : REG + q;
+    $('#tryTxt').textContent = back ? 'Open the returning-client sign-in' : 'Open registration with this persona';
+    $('#frUrl').innerHTML = I('lock') + '<span>xmtrading.com' + (state.tab === 'reg' ? '/register' : state.tab === 'next' ? '/welcome' : '') + '</span>';
+  }
+
+  var vp = $('#vp'), sView = $('#sView'), sHdr = $('#sHdr');
+  function render(mode) {
+    var e = eff(), tab = state.tab, same = state.rtab === tab && state.rid === e.id;
+    sHdr.innerHTML = hdrHtml(e);
+    strip(); qsUpdate();
+    if (mode === 'skel' && tab === 'home') {
+      var hero = $('.hero', sView);
+      if (hero) { hero.classList.toggle('ret', false); var hi = $('#heroIn'); hi.classList.add('out'); setTimeout(function () { hi.innerHTML = SKEL; hi.classList.add('sk'); hi.classList.remove('out'); }, 170); }
+      return;
+    }
+    if (tab === 'home' && $('.hero', sView) && state.rtab === 'home') {
+      var h = $('.hero', sView), hin = $('#heroIn');
+      h.style.cssText = heroVars(e); h.classList.toggle('ret', !!e.client);
+      hin.classList.add('out'); clearTimeout(hin._t);
+      hin._t = setTimeout(function () { hin.innerHTML = homeHtml(e); hin.classList.remove('out', 'sk'); }, 180);
+    } else {
+      swap(sView, viewHtml(e, tab), function () { if (tab === 'home') $('#heroIn').classList.remove('sk'); vp.scrollTo({ top: 0, behavior: 'auto' }); });
+    }
+    state.rtab = tab; state.rid = e.id;
+    return same;
+  }
+
+  /* ============================================================
+     CORE FLOW: pick persona -> read -> drop cookie -> resolve -> render
+     ============================================================ */
+  function pick(id, instant) {
+    var t = ++tok, p = P[id], prev = state.cookie;
+    state.sel = id; markCards(); affSet(p); setSt('wait', 'Visitor is reading. No cookie written yet…');
+    XM.flow.set({ persona: resolve(id) ? id : undefined, src: 'affiliate' });
+    affDepth(p, instant ? 0 : 950, function () {
+      var c = buildCookie(p); state.cookie = c; writeCookie(c);
+      dropFx(); renderCookie(c, prev); renderRules(p);
+      if (resolve(id)) setSt('live', 'Cookie written · persists ' + c.ttl + ' · survives reload');
+      else setSt('wait', 'Cookie written · score below 0.60, so control page');
+      strip(); qsUpdate();
+      render('skel');
+      setTimeout(function () { if (t === tok) render('full'); }, instant ? 220 : 520);
+    }, t);
+  }
+  function reset() {
+    tok++; delCookie(); state.cookie = null; state.sel = null; XM.flow.set({ persona: undefined });
+    markCards(); affReset(); emptyCookie('xm_seg deleted'); renderRules(null); setSt('', 'No cookie yet');
+    render('full'); XM.toast('Cookie reset. The visitor is back on the control page.');
+  }
+
+  /* ============================================================
+     wiring
+     ============================================================ */
+  function moveInd() { var b = $('#tabs button.on'), i = $('#tabInd'); i.style.left = b.offsetLeft + 'px'; i.style.width = b.offsetWidth + 'px'; }
+  $('#tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; tourStop(); setTab(b.dataset.tab);
+  });
+  function setTab(t) {
+    state.tab = t; $$('#tabs button').forEach(function (x) { var on = x.dataset.tab === t; x.classList.toggle('on', on); x.setAttribute('aria-selected', on); });
+    moveInd(); render('full');
+  }
+  $('#modeSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; if (e.isTrusted) tourStop(); state.ctrl = b.dataset.mode === 'ctrl';
+    $$('#modeSeg button').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+    render('full');
+  });
+  $('#devSeg').innerHTML = '<button class="on" data-dev="d" aria-label="Desktop" aria-pressed="true">' + I('monitor') + '</button><button data-dev="m" aria-label="Mobile" aria-pressed="false">' + I('phone') + '</button>';
+  $('#devSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; state.dev = b.dataset.dev;
+    $$('#devSeg button').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+    $('#frame').classList.toggle('m', state.dev === 'm');
+  });
+  $('#btnReset').addEventListener('click', function () { tourStop(); reset(); });
+  $('#btnReload').addEventListener('click', function () { location.reload(); });
+
+  /* presenter tour: every persona in turn, homepage then registration */
+  var tour = { on: false, t: null }, tourBtn = $('#tourBtn');
+  var playIc = I('play').replace('<svg ', '<svg style="width:13px;height:13px" ');
+  function tourLabel() { tourBtn.innerHTML = tour.on ? I('close').replace('<svg ', '<svg style="width:13px;height:13px" ') + 'Stop tour' : playIc + 'Play tour'; tourBtn.classList.toggle('on', tour.on); tourBtn.setAttribute('aria-pressed', tour.on); }
+  function tourStop() { if (!tour.on) return; tour.on = false; clearTimeout(tour.t); tourLabel(); }
+  function tourStep(i) {
+    if (!tour.on) return;
+    setTab('home'); pick(ORDER[i]);
+    tour.t = setTimeout(function () {
+      if (!tour.on) return; setTab('reg');
+      tour.t = setTimeout(function () { tourStep((i + 1) % ORDER.length); }, 3200);
+    }, 4800);
+  }
+  tourBtn.addEventListener('click', function () {
+    if (tour.on) { tourStop(); return; }
+    if (state.ctrl) $('#modeSeg [data-mode="seg"]').click();
+    tour.on = true; tourLabel(); tourStep(0);
+  });
+  tourLabel();
+
+  // clicks inside the preview
+  $('#site').addEventListener('click', function (e) {
+    var t = e.target.closest('[data-go],[data-pk],[data-mail],[data-q],[data-col]'); if (!t) return;
+    if (t.dataset.go === 'reg') { setTab('reg'); return; }
+    if (t.dataset.go === 'login') { XM.toast('Today’s login. Returning clients get the passkey version.'); return; }
+    if (t.dataset.col) { t.closest('.v-cmp').dataset.pick = t.dataset.col; $$('.hd em', t.closest('.v-cmp')).forEach(function (m, i) { m.textContent = (i + 1 == t.dataset.col) ? 'Your pick' : 'Select'; }); return; }
+    if (t.dataset.q) { XM.toast('Prototype: would open “' + t.dataset.q + '”'); return; }
+    if (t.hasAttribute('data-mail')) { var f = $('#pkMail'); f.hidden = !f.hidden; if (!f.hidden) $('input', f).focus(); return; }
+    if (t.hasAttribute('data-pk')) passkey(t);
+  });
+  $('#site').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (e.target.id === 'pkMail') { XM.toast('Prototype: would send a one-time code'); return; }
+    if (e.target.id === 'regForm') {
+      var inp = $('#regEmail'); if (!/^\S+@\S+\.\S+$/.test(inp.value)) { inp.classList.add('err'); inp.focus(); return; }
+      inp.classList.remove('err');
+      var b = $('#regBtn'), txt = b.textContent; b.innerHTML = '<span class="spn2"></span>Creating account…'; b.disabled = true;
+      setTimeout(function () { setTab('next'); }, 900);
+    }
+  });
+  function passkey(b) {
+    if (b.classList.contains('busy') || b.classList.contains('ok')) return;
+    b.classList.add('busy'); b.innerHTML = '<span class="spn"></span><span class="pk-t">Waiting for Face ID…</span>';
+    setTimeout(function () {
+      b.classList.remove('busy'); b.classList.add('ok'); b.innerHTML = I('check') + '<span class="pk-t">Signed in</span>';
+      var s = $('#retSub'); if (s) s.textContent = 'Signed in with your passkey. Where to?';
+      XM.toast('Signed in with passkey (simulated)');
+    }, 1300);
+  }
+  // live countdown on the bonus ticket
+  var cd = 6 * 86400 + 4 * 3600 + 12 * 60 + 9;
+  setInterval(function () { cd--; var d = Math.floor(cd / 86400), h = Math.floor(cd % 86400 / 3600), m = Math.floor(cd % 3600 / 60), s = cd % 60; $$('.cd').forEach(function (n) { n.textContent = d + 'd ' + [h, m, s].map(function (x) { return (x < 10 ? '0' : '') + x; }).join(':'); }); }, 1000);
+
+  /* ---------- show what changed ---------- */
+  $('#hlBtn').addEventListener('click', function () {
+    var on = !this.classList.contains('on'); this.classList.toggle('on', on); this.setAttribute('aria-pressed', on);
+    $('#frame').classList.toggle('hl', on);
+  });
+
+  /* ---------- what each segment changes ---------- */
+  $('#mxT').innerHTML = '<thead><tr><th>Segment</th><th>Homepage</th><th>Registration helper</th><th>Next step</th></tr></thead><tbody>' +
+    ORDER.filter(function (id) { return P[id].reg && P[id].reg.row; }).map(function (id) {
+      var p = P[id];
+      return '<tr data-id="' + id + '"><td><span class="pn" style="--c:' + p.c + '"><i>' + I(p.ico) + '</i>' + p.short + '</span></td><td><b>' + p.hero.h + '</b><small>Button: ' + p.hero.cta + '</small></td><td><b>' + p.reg.row.t + '</b><small>Button: ' + p.reg.cta + '</small></td><td><b>' + p.next.main.t + '</b><small>' + p.next.more[0].t + '</small></td></tr>';
+    }).join('') + '<tr><td><span class="pn" style="--c:#6b7280"><i>' + I('globe') + '</i>Control</span></td><td><b>' + CTRL.hero.h + '</b><small>Button: ' + CTRL.hero.cta + '</small></td><td><b>No helper row</b><small>Button: ' + CTRL.reg.cta + '</small></td><td><b>' + CTRL.next.main.t + '</b><small>' + CTRL.next.more[0].t + '</small></td></tr></tbody>';
+  function mxMark() { var id = eff().id; $$('#mxT tbody tr').forEach(function (r) { r.classList.toggle('on', r.dataset.id === id || (id === 'control' && !r.dataset.id)); }); }
+
+  /* ---------- illustrative lift chart ---------- */
+  var bars = $('#bars');
+  bars.innerHTML = LIFT.map(function (b, i) {
+    var col = b.id === 'control' ? '' : (P[b.id].c === '#1d2024' ? '#008454' : P[b.id].c);
+    return '<div class="bar' + (b.id === 'control' ? ' ctrl' : '') + '" data-id="' + b.id + '"><span><b>' + b.l + '</b><small>' + b.s + '</small></span><span class="tr"><i style="--w:' + (b.v / 5 * 100) + '%;--i:' + i + ';' + (col ? '--c:' + col : '') + '"></i></span><span class="v" data-to="' + b.v + '">0.0×</span></div>';
+  }).join('');
+  function chartMark() { var id = eff().id; $$('.bar', bars).forEach(function (b) { b.classList.toggle('on', b.dataset.id === id); }); }
+  var chart = $('#chart');
+  function chartGo() { if (chart.classList.contains('go')) return; chart.classList.add('go'); $$('.v', bars).forEach(function (v, i) { setTimeout(function () { countTo(v, parseFloat(v.dataset.to), 1100, function (n) { return n.toFixed(1) + '×'; }); }, i * 90); }); }
+  if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { chartGo(); io.disconnect(); } }); }, { threshold: .3 }); io.observe(chart); } else chartGo();
+  var _render = render; render = function (m) { var r = _render(m); chartMark(); mxMark(); return r; };
+
+  /* ---------- boot ---------- */
+  $('#persChips').innerHTML = ORDER.filter(resolve).map(function (id) {
+    var p = P[id]; return '<span class="pchip" style="--c:' + p.c + '"><i>' + I(p.ico) + '</i>' + p.short + '</span>';
+  }).join('');
+  ico(document);
+  emptyCookie('no xm_seg cookie yet'); renderRules(null);
+  $('#dtDom').textContent = location.hostname || 'localhost';
+  setSt('', 'No cookie yet');
+  render('full'); moveInd(); window.addEventListener('resize', moveInd);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
+
+  var saved = readCookie(), savedId = restoreId(saved);
+  if (savedId) {
+    state.cookie = saved;
+    pick(savedId, true);
+    setTimeout(function () { XM.toast('Restored “' + saved.persona + '” from the xm_seg cookie'); }, 900);
+  } else {
+    setTimeout(function () { if (tok === 0) pick('promo_seeker'); }, XM.embedded ? 400 : 1100);
+  }
+
+  XM.notes({
+    title: 'Idea 04 · Segment by what they read',
+    today: 'Every visitor gets the same homepage and registration form, whether they read a bonus review, an account comparison or a beginner course.',
+    proposed: 'A first-party xm_seg cookie records what the visitor came for. Headline, one helper row on the registration form and the next step follow it. Fields, legal text and prices never change. Phase 1 uses XMTrading-side signals only; partner "what they read" tags come later.',
+    why: 'Message match: someone who came for a bonus should land on the bonus, and someone comparing accounts should see Zero pre-selected. Compliance signs off promo claims; Legal confirms cookie consent.',
+    metric: 'Registration rate per segment against a 10% control hold-out; login-to-trade for returning clients. Chart values are illustrative, not measured.'
+  });
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="04"></script>
+</body>
+</html>

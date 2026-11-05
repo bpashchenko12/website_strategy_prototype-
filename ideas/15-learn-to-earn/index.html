@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn to earn · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 15 · Learn to earn (gamified learning paths, deposit bonus x2, shareable badge)
+   One winding SVG level map per track, lessons unlock in order, quizzes award XP.
+   ===================================================================== */
+:root { --gl: #00c27c; --bd: rgba(255, 255, 255, .09); }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 20px; }
+.pill { border-radius: 999px; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgba(0, 160, 100, .55); outline-offset: 2px; }
+.us .demo { min-height: 32px; }
+.btn-xl { padding: 16px 34px; font-size: 16px; }
+.btn-primary.glow-btn { box-shadow: 0 10px 34px rgba(0, 132, 84, .45), inset 0 1px 0 rgba(255, 255, 255, .25); background: linear-gradient(180deg, #00a064, #008454); }
+.btn-primary.glow-btn:hover { background: linear-gradient(180deg, #00b06d, #007a4d); box-shadow: 0 14px 40px rgba(0, 150, 95, .6); transform: translateY(-1px); }
+.kick { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; }
+.xmk { width: 28px; height: 28px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 11px; letter-spacing: -.5px; }
+.bdg { background: #fff; color: #0b0d10; font-weight: 700; font-size: 12px; letter-spacing: .08em; padding: 6px 11px; border-radius: 8px; }
+.ico svg { width: 100%; height: 100%; }
+
+/* ---------- hero ---------- */
+.hero { margin-top: 10px; padding: 84px 32px 44px; text-align: center; display: flex; flex-direction: column; align-items: center; background: #090b0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.hero::before { background: radial-gradient(70% 62% at 50% -6%, rgba(0, 200, 125, .42), rgba(0, 132, 84, .14) 48%, transparent 72%), radial-gradient(40% 40% at 92% 100%, rgba(247, 147, 26, .16), transparent 70%); }
+.hero::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 65%); mask-image: linear-gradient(180deg, #000, transparent 65%); }
+.hero h1 { font-size: clamp(38px, 5.2vw, 68px); line-height: 1.04; letter-spacing: -.035em; font-weight: 700; animation: fadeUp .8s .05s both; }
+.hero h1 em { font-style: normal; background: linear-gradient(90deg, #2fe39a, #8ef0c4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .sub { margin: 20px auto 32px; max-width: 540px; font-size: clamp(16px, 1.5vw, 19px); color: #a9b0ba; line-height: 1.6; animation: fadeUp .8s .14s both; }
+.hero .kick { animation: fadeUp .7s both; }
+.hero .hcta { animation: fadeUp .8s .22s both; }
+.hero > *:not(.fc) { position: relative; z-index: 1; }
+.coin { display: grid; place-items: center; border-radius: 50%; font-weight: 800; letter-spacing: -.04em; color: #6b4400; background: radial-gradient(circle at 30% 24%, #fff6cf, #f9cd5c 42%, #e09512 100%); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .38), inset 0 0 0 8px rgba(168, 104, 0, .3), 0 16px 44px rgba(240, 160, 32, .5); }
+.bx { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 2px auto 34px; animation: fadeUp .8s .18s both; }
+.bx-c { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.bx-c small { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #a9b0ba; }
+.bx-1 .coin { width: 84px; height: 84px; font-size: 30px; filter: saturate(.35) brightness(.8); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .22), inset 0 0 0 7px rgba(0, 0, 0, .18); opacity: .85; }
+.bx-2 .coin { position: relative; width: 170px; height: 170px; font-size: 76px; animation: bob 3.4s ease-in-out infinite; }
+.bx-2 .coin::after { content: ''; position: absolute; inset: 14px; border-radius: 50%; border: 2px dashed rgba(107, 68, 0, .35); }
+.bx-2 small { color: #ffd166; font-size: 13px; }
+.bx-2 .rays { position: absolute; left: 50%; top: 85px; width: 330px; height: 330px; margin: -165px 0 0 -165px; border-radius: 50%; z-index: -1; background: repeating-conic-gradient(from 0deg, rgba(255, 209, 102, .22) 0 8deg, transparent 8deg 24deg); -webkit-mask-image: radial-gradient(circle, #000 18%, transparent 68%); mask-image: radial-gradient(circle, #000 18%, transparent 68%); animation: spin 26s linear infinite; }
+.bx-2 .glow { position: absolute; left: 50%; top: 85px; width: 300px; height: 300px; margin: -150px 0 0 -150px; border-radius: 50%; z-index: -1; background: radial-gradient(circle, rgba(247, 168, 38, .38), transparent 66%); }
+.bx-ar { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 30px; color: #ffd166; }
+.bx.on .bx-1 { opacity: .35; } .bx.on .bx-ar small { color: #5fe3ac; }
+.bx-ar svg { width: 64px; height: 24px; } .bx-ar small { font-size: 11.5px; font-weight: 600; color: #cfd5dc; white-space: nowrap; }
+.bx .spk2 { position: absolute; fill: #ffd166; animation: spk2 2.6s ease-in-out infinite; } .bx .spk2.b { animation-delay: 1.2s; }
+.fc { position: absolute; z-index: 0; font-size: 20px; animation: bob 4.6s ease-in-out infinite; pointer-events: none; }
+.fc.f1 { left: 7%; top: 26%; width: 62px; height: 62px; font-size: 24px; transform: rotate(-14deg); }
+.fc.f2 { left: 16%; top: 54%; width: 38px; height: 38px; font-size: 15px; animation-delay: 1.3s; opacity: .85; }
+.fc.f3 { right: 8%; top: 22%; width: 48px; height: 48px; font-size: 19px; animation-delay: .7s; transform: rotate(12deg); }
+.fc.f4 { right: 15%; top: 56%; width: 70px; height: 70px; font-size: 27px; animation-delay: 2s; transform: rotate(10deg); }
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spk2 { 0%, 100% { transform: scale(.5); opacity: .3; } 50% { transform: scale(1.1); opacity: 1; } }
+@media (max-width: 900px) { .fc { display: none; } }
+@media (max-width: 700px) { .bx { gap: 10px; } .bx-1 .coin { width: 60px; height: 60px; font-size: 22px; } .bx-2 .coin { width: 132px; height: 132px; font-size: 58px; } .bx-2 .rays { top: 66px; width: 260px; height: 260px; margin: -130px 0 0 -130px; } .bx-2 .glow { top: 66px; } .bx-ar svg { width: 40px; } .bx-ar { margin-bottom: 26px; } .bx-ar small { font-size: 10.5px; } }
+@media (prefers-reduced-motion: reduce) { .bx-2 .coin, .bx-2 .rays, .fc, .bx .spk2 { animation: none; } }
+.hs { margin-top: 56px; width: 100%; max-width: 900px; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 0; padding: 20px 8px; border-radius: 24px; background: rgba(255, 255, 255, .06); border: 1px solid var(--bd); backdrop-filter: blur(10px); text-align: left; animation: fadeUp .9s .34s both; }
+.hs .c { padding: 2px 22px; border-left: 1px solid var(--bd); min-width: 0; }
+.hs .c:first-child { border-left: 0; }
+.hs small { display: block; color: #8e97a3; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+.hs b { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.hs b svg { width: 22px; height: 22px; flex: none; }
+.hs .c > span { display: block; color: #a9b0ba; font-size: 12.5px; margin-top: 2px; line-height: 1.4; }
+.hs .bar { height: 7px; border-radius: 999px; background: rgba(255, 255, 255, .14); margin: 8px 0 5px; overflow: hidden; }
+.hs .bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #00c27c, #8ef0c4); box-shadow: 0 0 10px rgba(0, 194, 124, .5); transition: width .8s cubic-bezier(.3, .7, .2, 1); }
+.hs .x2 { color: #ffd166; }
+.hs .x2.on { animation: pop .7s; }
+@keyframes pop { 0% { transform: scale(.9); opacity: .4; } 60% { transform: scale(1.08); } 100% { transform: none; opacity: 1; } }
+
+/* ---------- section heads ---------- */
+.sec { margin-top: 88px; }
+.sh { max-width: 780px; margin-bottom: 32px; }
+.sh .h-l { margin-top: 10px; }
+.sh .lead { margin-top: 12px; }
+
+/* ---------- unlock chain ---------- */
+.uc { display: grid; grid-template-columns: repeat(5, 1fr); background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 26px 12px 20px; box-shadow: 0 20px 50px -34px rgba(16, 24, 40, .3); }
+.us { position: relative; padding: 0 8px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; min-width: 0; }
+.us::before { content: ''; position: absolute; top: 21px; left: calc(-50% + 26px); right: calc(50% + 26px); height: 3px; border-radius: 3px; background: var(--line); transition: background .5s; }
+.us:first-child::before { display: none; }
+.us.pd::before { background: var(--g); }
+.us .nd0 { position: relative; z-index: 1; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 15px; background: #fff; border: 2px solid var(--line-2); color: var(--mut); transition: .3s; margin-bottom: 8px; }
+.us .nd0 svg { width: 20px; height: 20px; stroke-width: 2.4; }
+.us.dn .nd0 { background: var(--g); border-color: var(--g); color: #fff; }
+.us.nx .nd0 { border-color: var(--blue); color: var(--blue); box-shadow: 0 0 0 6px rgba(47, 98, 240, .12); animation: ring 2.2s infinite; }
+.us.bn .nd0 { font-size: 14px; letter-spacing: -.02em; }
+.us.bn.dn .nd0 { background: linear-gradient(135deg, #ffd166, #f0a020); border-color: transparent; color: #4a2e00; box-shadow: 0 8px 20px rgba(240, 160, 32, .4); }
+@keyframes ring { 0%, 100% { box-shadow: 0 0 0 4px rgba(47, 98, 240, .14); } 50% { box-shadow: 0 0 0 9px rgba(47, 98, 240, .05); } }
+.us b { font-size: 14.5px; font-weight: 600; line-height: 1.25; }
+.us.lk b, .us.lk small { color: var(--mut); }
+.us small { color: var(--ink-2); font-size: 12.5px; line-height: 1.4; }
+.us .demo { margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--blue); background: var(--blue-l); border: 0; border-radius: 999px; padding: 5px 12px; }
+.us .demo:hover { background: #dbe6fd; }
+.us .demo.go { color: var(--g); background: var(--g-l); }
+.fn { margin-top: 14px; font-size: 12.5px; color: var(--mut); display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: space-between; }
+
+/* ---------- track picker ---------- */
+.tcs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.tc { --ac: #008454; position: relative; overflow: hidden; background: #fff; border: 1.5px solid var(--line); border-radius: 20px; padding: 20px 16px 16px; text-align: left; display: flex; flex-direction: column; gap: 4px; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.tc::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: var(--ac); }
+.tc:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(16, 24, 40, .1); }
+.tc.on { border-color: var(--ac); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ac) 16%, transparent), 0 18px 40px rgba(16, 24, 40, .1); }
+.tc .ico { width: 42px; height: 42px; padding: 10px; border-radius: 13px; color: var(--ac); background: color-mix(in srgb, var(--ac) 13%, #fff); margin-bottom: 8px; }
+.tc h4 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; }
+.tc .mt { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+.tc .pb { height: 6px; border-radius: 999px; background: #eceef2; margin-top: 12px; overflow: hidden; }
+.tc .pb i { display: block; height: 100%; border-radius: inherit; background: var(--ac); transition: width .7s cubic-bezier(.3, .7, .2, 1); }
+.tc .pt { display: flex; justify-content: space-between; font-size: 12px; color: var(--mut); font-weight: 500; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.tc .pt em { font-style: normal; color: var(--ac); font-weight: 700; }
+
+/* ---------- map ---------- */
+.map { --ac: #008454; margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 28px; padding: 26px 26px 14px; box-shadow: 0 20px 50px -34px rgba(16, 24, 40, .3); position: relative; overflow: hidden; }
+.map::before { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 70% at 100% 0%, color-mix(in srgb, var(--ac) 10%, transparent), transparent 70%); pointer-events: none; }
+.mh { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; }
+.mh h3 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.mh p { color: var(--ink-2); font-size: 14.5px; margin-top: 6px; max-width: 56ch; line-height: 1.55; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--ac) 11%, #fff); color: color-mix(in srgb, var(--ac) 70%, #000); }
+.chip svg { width: 14px; height: 14px; }
+.mv { position: relative; margin-top: 6px; }
+.mv.mapin { animation: fadeIn .45s; }
+.mv svg { display: block; width: 100%; height: auto; overflow: visible; user-select: none; -webkit-user-select: none; }
+.mv text { font-family: var(--font); }
+.rd-base { fill: none; stroke: #e6e8ec; stroke-width: 16; stroke-linecap: round; }
+.rd-dash { fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1 12; }
+.rd-fill { fill: none; stroke: var(--ac); stroke-width: 16; stroke-linecap: round; }
+.nd { cursor: pointer; outline: none; }
+.nd .face { fill: #fff; stroke: var(--ac); stroke-width: 5; transition: transform .2s; transform-box: fill-box; transform-origin: center; }
+.nd:hover .face, .nd:focus-visible .face { transform: scale(1.1); }
+.nd:focus-visible .face { stroke-dasharray: 6 4; }
+.nd .num { font-size: 22px; font-weight: 700; fill: var(--ac); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.nd .nl { font-size: 15px; font-weight: 600; fill: #1d2024; pointer-events: none; }
+.nd .nm { font-size: 12px; font-weight: 500; fill: #7b828b; pointer-events: none; }
+.nd .halo { fill: var(--ac); opacity: 0; transform-box: fill-box; transform-origin: center; }
+.nd.cur .halo { animation: halo 1.9s ease-out infinite; }
+.nd.done .face { fill: var(--ac); stroke: var(--ac); }
+.nd.done .num { fill: #fff; }
+.nd.lock .face { fill: #eef0f3; stroke: #d6d9de; }
+.nd.lock .nl { fill: #9aa1aa; } .nd.lock { cursor: not-allowed; }
+.nd.tro .face { stroke: #d4a017; fill: #fff7e0; }
+.nd.tro.lock .face { fill: #fff7e0; stroke: #e0b94a; stroke-dasharray: 5 5; }
+.nd.tro.lock .halo { display: none; }
+.mv .x2t { font-size: 30px; font-weight: 800; letter-spacing: -.04em; text-anchor: middle; fill: #6b4400; pointer-events: none; }
+.nd.tro.lock .x2t { fill: #c9972b; }
+.mv .spk { fill: #f0a020; pointer-events: none; animation: spk 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.mv .spk.b { animation-delay: 1.1s; }
+@keyframes spk { 0%, 100% { transform: scale(.5); opacity: .35; } 50% { transform: scale(1.15); opacity: 1; } }
+.rw { position: relative; margin-top: 6px; border-radius: 22px; padding: 16px 20px; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(140px, 220px); align-items: center; gap: 18px; color: #fff; background: radial-gradient(70% 140% at 0% 0%, rgba(240, 160, 32, .32), transparent 70%), #0b0d10; }
+.rw .cn { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font-size: 28px; font-weight: 800; letter-spacing: -.04em; color: #6b4400; background: linear-gradient(135deg, #ffe9a3, #f0a020); box-shadow: 0 0 0 5px rgba(240, 160, 32, .22), 0 10px 26px rgba(240, 160, 32, .35); }
+.rw.lk .cn { filter: saturate(.55) brightness(.92); box-shadow: 0 0 0 5px rgba(255, 255, 255, .07); }
+.rw h4 { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.rw p { font-size: 13px; line-height: 1.5; color: #b9c0c9; margin-top: 3px; }
+.rw .pg { font-size: 12px; font-weight: 600; color: #cfd5dc; }
+.rw .pg .tr { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, .14); margin-top: 8px; overflow: hidden; } .rw .pg .tr i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffe9a3, #f0a020); transition: width .5s; }
+.rw .pg .st { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, .1); } .rw .pg .st.ok { background: rgba(0, 200, 125, .2); color: #5fe3ac; }
+@media (max-width: 700px) { .rw { grid-template-columns: auto minmax(0, 1fr); padding: 14px; gap: 12px 14px; } .rw .pg { grid-column: 1 / -1; } .rw .cn { width: 56px; height: 56px; font-size: 23px; } }
+@media (prefers-reduced-motion: reduce) { .mv .spk { animation: none; } }
+.nd.tro.cur .face { fill: url(#gld); stroke: #d4a017; }
+.nd.tro .halo { fill: #f0a020; }
+@keyframes halo { 0% { transform: scale(.9); opacity: .38; } 100% { transform: scale(1.75); opacity: 0; } }
+.mv .dec { fill: var(--ac); opacity: .07; }
+.mv .flag-t { font-size: 12px; font-weight: 700; fill: #7b828b; letter-spacing: .1em; text-anchor: middle; }
+
+/* ---------- quiet controls ---------- */
+.quiet { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; font-size: 12.5px; color: var(--mut); }
+.quiet span { margin-right: auto; }
+.quiet button { background: none; border: 0; padding: 10px 0; color: var(--mut); font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; }
+.quiet button:hover { color: var(--ink); }
+
+/* ---------- closing block ---------- */
+.cta { margin-top: 88px; padding: 80px 24px; text-align: center; background: linear-gradient(135deg, #005c3b, #00a36a 70%, #14c488); }
+.cta::before { background: radial-gradient(50% 80% at 85% 0%, rgba(255, 255, 255, .22), transparent 70%); }
+.cta h3 { font-size: clamp(30px, 4vw, 52px); font-weight: 700; letter-spacing: -.03em; line-height: 1.08; max-width: 18ch; margin: 0 auto; }
+.cta p { margin: 14px auto 30px; opacity: .88; font-size: 17px; max-width: 500px; }
+.cta .btn-light { color: #00553a; }
+
+/* ---------- lesson modal ---------- */
+.lmc { --ac: #008454; background: #fff; border-radius: 26px; width: 100%; max-width: 640px; max-height: 94vh; overflow: auto; position: relative; box-shadow: var(--sh-l); animation: fadeUp .3s cubic-bezier(.2, .7, .2, 1); }
+.lmc .x, .cmc .x { position: absolute; right: 14px; top: 14px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .22); color: #fff; z-index: 8; display: grid; place-items: center; }
+.cmc .x { background: var(--soft); color: var(--ink); }
+.lmc .x svg, .cmc .x svg { width: 16px; height: 16px; }
+.lh { position: relative; overflow: hidden; color: #fff; padding: 26px 28px 24px; background: linear-gradient(135deg, rgba(255, 255, 255, .16), rgba(0, 0, 0, .3)), var(--ac); display: flex; align-items: center; gap: 18px; justify-content: space-between; }
+.lh::after { content: ''; position: absolute; right: -60px; top: -80px; width: 240px; height: 240px; border-radius: 50%; background: rgba(255, 255, 255, .1); }
+.lh small { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+.lh h3 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; line-height: 1.15; padding-right: 30px; }
+.lh .art { position: relative; z-index: 1; flex: none; width: 112px; height: 80px; margin-right: 22px; }
+.lh .art svg { width: 100%; height: 100%; }
+.ldots { display: flex; gap: 6px; padding: 16px 28px 0; }
+.ldots i { flex: 1; height: 6px; border-radius: 999px; background: #e6e8ec; transition: background .3s; }
+.ldots i.on { background: var(--ac); } .ldots i.bad { background: #e5373f; }
+.lb { padding: 22px 28px 26px; }
+.lb .eyebrow { color: var(--ac); }
+.lb h4 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; margin-top: 8px; }
+.lb p.tx { margin-top: 12px; font-size: 16px; line-height: 1.65; color: var(--ink-2); }
+.opts { display: grid; gap: 10px; margin-top: 18px; }
+.opt { text-align: left; border: 1.5px solid var(--line); background: #fff; border-radius: 14px; padding: 13px 16px; font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: border-color .15s, background .15s; }
+.opt:hover:not(:disabled) { border-color: var(--ac); background: color-mix(in srgb, var(--ac) 5%, #fff); }
+.opt .l { width: 26px; height: 26px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--ink-2); flex: none; }
+.opt:disabled { cursor: default; }
+.opt.ok { border-color: var(--g); background: var(--g-l); } .opt.ok .l { background: var(--g); color: #fff; }
+.opt.bad { border-color: #e5373f; background: var(--red-l); } .opt.bad .l { background: #e5373f; color: #fff; }
+.opt.dim { opacity: .55; }
+.fb { margin-top: 14px; font-size: 14.5px; line-height: 1.55; padding: 12px 14px; border-radius: 12px; background: var(--soft); animation: fadeUp .25s; }
+.fb.ok { background: var(--g-l); color: #05492f; } .fb.bad { background: var(--red-l); color: #7a1c21; }
+.lf { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.lf .sp { margin-left: auto; }
+.res { text-align: center; padding: 6px 0 0; }
+.res .sc { width: 92px; height: 92px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 28px; font-weight: 700; color: #fff; background: var(--ac); box-shadow: 0 12px 30px color-mix(in srgb, var(--ac) 45%, transparent); animation: pop .6s; }
+.res .sc.f { background: #9aa1aa; box-shadow: none; }
+.res h4 { font-size: 26px; margin-top: 16px; }
+.res p.tx { max-width: 40ch; margin-left: auto; margin-right: auto; }
+.res .xp { display: inline-flex; gap: 8px; align-items: center; margin-top: 14px; background: var(--blue-l); color: var(--blue); font-weight: 700; font-size: 14px; padding: 6px 14px; border-radius: 999px; }
+.res .xp svg { width: 15px; height: 15px; }
+.res .lf { justify-content: center; margin-top: 22px; }
+
+/* ---------- celebration modal ---------- */
+.cmc { background: #fff; border-radius: 28px; width: 100%; max-width: 1140px; max-height: 94vh; overflow: auto; position: relative; display: grid; grid-template-columns: 380px minmax(0, 1fr); box-shadow: var(--sh-l); animation: fadeUp .35s cubic-bezier(.2, .7, .2, 1); }
+.cl { padding: 36px 32px 30px; display: flex; flex-direction: column; }
+.cl h2 { font-size: 30px; font-weight: 700; letter-spacing: -.025em; line-height: 1.12; margin-top: 8px; }
+.cl > p { margin-top: 10px; color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+.x2b { margin-top: 20px; border-radius: 22px; padding: 18px 20px; display: flex; align-items: center; gap: 16px; color: #fff; background: radial-gradient(80% 120% at 0% 0%, rgba(0, 200, 125, .4), transparent 70%), #0b0d10; }
+.x2b b { font-size: 64px; font-weight: 800; letter-spacing: -.04em; line-height: 1; background: linear-gradient(180deg, #ffe9a3, #f0a020); -webkit-background-clip: text; background-clip: text; color: transparent; animation: pop .8s; }
+.x2b span { font-size: 14px; line-height: 1.4; color: #cfd5dc; }
+.x2b span i { display: block; font-style: normal; font-size: 11.5px; color: #8e97a3; margin-top: 4px; }
+.mc { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 6px; }
+.mc span { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: var(--soft); color: var(--mut); }
+.mc span.dn { background: var(--g-l); color: var(--g); }
+.mc span svg { width: 12px; height: 12px; stroke-width: 3; }
+.cl .fine { margin-top: 14px; font-size: 12.5px; color: var(--mut); line-height: 1.5; }
+.cl .lf { margin-top: auto; padding-top: 22px; }
+.cr { background: #f1f2f4; padding: 30px 30px 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.cert { border-radius: 18px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, .28); background: #090b0e; line-height: 0; }
+.cert svg { width: 100%; height: auto; display: block; }
+.nm-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.nm-row label { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.nm-row input { flex: 1; min-width: 160px; height: 44px; border: 1.5px solid var(--line-2); border-radius: 12px; padding: 0 14px; font-size: 15px; background: #fff; outline: 0; font-family: inherit; }
+.nm-row input:focus { border-color: var(--g); box-shadow: 0 0 0 4px rgba(0, 132, 84, .14); }
+.ca { display: flex; gap: 10px; flex-wrap: wrap; }
+.ca .btn svg { width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; }
+#cf { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1200; pointer-events: none; }
+
+@media (max-width: 1100px) {
+  .tcs { grid-template-columns: repeat(5, 62%); overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; margin: 0 -24px; padding-left: 24px; padding-right: 24px; scrollbar-width: none; }
+  .tc { scroll-snap-align: start; }
+  .hs { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+  .hs .c:nth-child(3) { border-left: 0; }
+}
+@media (max-width: 900px) {
+  .cmc { grid-template-columns: 1fr; }
+  .cr { padding: 22px 16px 20px; }
+  .cl { padding: 28px 22px 8px; }
+  .cl .lf { padding-top: 16px; }
+}
+@media (max-width: 700px) {
+  .wrap { padding: 0 14px; }
+  .hero { padding: 60px 18px 28px; }
+  .tcs { margin: 0 -14px; padding-left: 14px; padding-right: 14px; grid-template-columns: repeat(5, 78%); }
+  .uc { padding: 22px 4px 16px; }
+  .us { padding: 0 3px; }
+  .us::before { left: calc(-50% + 22px); right: calc(50% + 22px); top: 18px; }
+  .us .nd0 { width: 38px; height: 38px; font-size: 13px; }
+  .us b { font-size: 12px; } .us small { display: none; }
+  .us .demo { font-size: 10.5px; padding: 4px 8px; }
+  .map { padding: 18px 12px 8px; border-radius: 22px; }
+  .mh h3 { font-size: 22px; }
+  .hs { padding: 16px 4px; } .hs .c { padding: 2px 14px; } .hs b { font-size: 19px; }
+  .lh { padding: 22px 18px 20px; } .lh h3 { font-size: 22px; } .lh .art { width: 70px; margin-right: 26px; }
+  .lb { padding: 18px 18px 22px; } .ldots { padding: 14px 18px 0; }
+  .x2b b { font-size: 52px; }
+  .nm-row { align-items: stretch; }
+}
+@media (prefers-reduced-motion: reduce) { .nd.cur .halo, .us.nx .nd0 { animation: none; } .hs .x2.on, .x2b b { animation: none; } }
+@media (max-width: 520px) { .xm-lang, .xm-hdr [data-login] { display: none; } }
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Learn & Research"></div>
+
+<div class="wrap">
+  <!-- HERO -->
+  <section class="block hero" id="hero">
+    <div class="kick"><span class="xmk">XM</span><span class="bdg">LEARN TO EARN</span></div>
+    <h1>Learn the markets.<br><em>Earn double.</em></h1>
+    <p class="sub">Finish a track, deposit, and your welcome bonus doubles (illustrative terms).</p>
+    <div class="bx" id="bx" aria-hidden="true">
+      <div class="bx-c bx-1"><span class="coin">×1</span><small>Welcome bonus</small></div>
+      <div class="bx-ar"><svg viewBox="0 0 64 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h56M49 3l10 9-10 9"/></svg><small>Finish a track</small></div>
+      <div class="bx-c bx-2"><span class="glow"></span><span class="rays"></span><span class="coin">×2</span><small id="bxS">Doubled*</small>
+        <svg class="spk2" style="left:-18px;top:14px" width="22" height="22" viewBox="-11 -11 22 22"><path d="M0-10Q0 0 10 0Q0 0 0 10Q0 0-10 0Q0 0 0-10z"/></svg>
+        <svg class="spk2 b" style="right:-22px;top:4px" width="30" height="30" viewBox="-11 -11 22 22"><path d="M0-10Q0 0 10 0Q0 0 0 10Q0 0-10 0Q0 0 0-10z"/></svg>
+        <svg class="spk2" style="right:-10px;top:120px" width="16" height="16" viewBox="-11 -11 22 22"><path d="M0-10Q0 0 10 0Q0 0 0 10Q0 0-10 0Q0 0 0-10z"/></svg>
+        <svg class="spk2 b" style="left:-8px;top:132px" width="14" height="14" viewBox="-11 -11 22 22"><path d="M0-10Q0 0 10 0Q0 0 0 10Q0 0-10 0Q0 0 0-10z"/></svg>
+      </div>
+    </div>
+    <span class="coin fc f1" aria-hidden="true">$</span><span class="coin fc f2" aria-hidden="true">$</span><span class="coin fc f3" aria-hidden="true">$</span><span class="coin fc f4" aria-hidden="true">$</span>
+    <div class="hcta"><button class="btn btn-primary btn-xl pill glow-btn" id="startBtn" type="button">Start learning</button></div>
+    <div class="hs" aria-live="polite">
+      <div class="c"><small id="lvK">Level 1</small><b id="lvN">Rookie</b><div class="bar"><i id="lvBar"></i></div><span id="lvX">0 / 150 XP</span></div>
+      <div class="c"><small>Streak</small><b><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset="1" stop-color="#ff6b3d"/></linearGradient></defs><path fill="url(#fl)" d="M12.5 2C13.2 6 18 8.200 18 14a6 6 0 0 1-12 0c0-2.400 1-4.200 2.400-5.400.2 1.800 1 2.800 2.200 3C10.400 8.400 11 5 12.500 2z"/></svg><span id="stk">0</span><span id="stkU" style="font-size:14px;font-weight:600;color:#a9b0ba">days</span></b><span id="stkS">Learn today to start one</span></div>
+      <div class="c"><small>Tracks</small><b id="trN">0/5</b><span>completed</span></div>
+      <div class="c"><small>Deposit bonus</small><b class="x2" id="bonN">×1</b><span id="bonS">Finish a track to unlock ×2*</span></div>
+    </div>
+  </section>
+
+  <!-- CHAIN -->
+  <section class="sec" id="chain">
+    <div class="sh reveal"><span class="eyebrow">The unlock chain</span><h2 class="h-l">Five steps to a doubled bonus</h2><p class="lead">Learning is free and open to everyone. Your bonus unlocks once all five steps are done.</p></div>
+    <div class="uc reveal" id="uc"></div>
+    <div class="fn"><span>Illustrative terms, not an offer.</span><span>Register, Verify and Deposit buttons are demo toggles in this prototype.</span></div>
+  </section>
+
+  <!-- TRACKS + MAP -->
+  <section class="sec" id="learn">
+    <div class="sh reveal"><span class="eyebrow">Choose your path</span><h2 class="h-l">Five tracks, one lesson at a time</h2><p class="lead">Each lesson is two short slides and a three-question quiz. Pass with two correct answers to unlock the next node.</p></div>
+    <div class="tcs reveal" id="tcs"></div>
+    <div class="map" id="map">
+      <div class="mh">
+        <div><h3 id="mT"></h3><p id="mD"></p></div>
+        <div class="chips" id="mC"></div>
+      </div>
+      <div class="mv" id="mv"></div>
+      <div class="rw lk" id="mRw"></div>
+    </div>
+    <div class="quiet">
+      <span>Progress is saved in this browser. Lessons are short generic primers, not investment advice.</span>
+      <button type="button" id="demoTrack">Complete a track instantly (demo)</button>
+      <button type="button" id="demoAll">Complete everything (demo)</button>
+      <button type="button" id="reset">Reset progress</button>
+    </div>
+  </section>
+
+  <section class="block cta">
+    <h3>Learn first. Trade when you are ready.</h3>
+    <p>Practise on a demo account while you climb the path. Nothing here is a promise of returns.</p>
+    <a class="btn btn-light btn-lg pill" href="https://my.xmtrading.com/" target="_blank" rel="noopener">Open my.xmtrading.com</a>
+  </section>
+</div>
+
+<!-- LESSON MODAL -->
+<div class="modal-back" id="lm">
+  <div class="lmc" id="lmc" role="dialog" aria-modal="true" aria-labelledby="lT">
+    <button class="x" id="lmX" type="button" aria-label="Close"></button>
+    <div class="lh"><div><small id="lK"></small><h3 id="lT"></h3></div><div class="art" id="lA"></div></div>
+    <div class="ldots" id="lD"></div>
+    <div class="lb" id="lB"></div>
+  </div>
+</div>
+
+<!-- CELEBRATION MODAL -->
+<div class="modal-back" id="cm">
+  <div class="cmc" id="cmc" role="dialog" aria-modal="true" aria-labelledby="cT">
+    <button class="x" id="cmX" type="button" aria-label="Close"></button>
+    <div class="cl" id="cl"></div>
+    <div class="cr">
+      <div class="cert" id="cert"></div>
+      <div class="nm-row" id="cn"><label for="cName">Name on badge</label><input id="cName" type="text" maxlength="28" placeholder="Your name" autocomplete="name"></div>
+      <div class="ca">
+        <button class="btn btn-primary pill" id="cDl" type="button"></button>
+        <button class="btn btn-outline pill" id="cCp" type="button"></button>
+        <button class="btn btn-dark pill" id="cSh" type="button"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<canvas id="cf" aria-hidden="true"></canvas>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = XM.$, $$ = XM.$$, esc = XM.esc;
+  var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function ic(n, c) { return XM.icon(n, c || ''); }
+  function inner(n) { return XM.icon(n).replace(/^<svg[^>]*>|<\/svg>$/g, ''); }
+  var KEY = 'xm.l2e.v1', TRO = 100, LV = [['Rookie', 0], ['Explorer', 150], ['Analyst', 400], ['Strategist', 750], ['Market pro', 1200]];
+
+  /* ------------------------------------------------------------------ content
+     Lesson = [title, minutes, art, [slide1 head, text], [slide2 head, text], [[question, right, wrong1, wrong2, explanation] x3]] */
+  var TR = [
+    { id: 'platform', code: 'PL', name: 'Platform tutorials', ac: '#008454', xpl: 40, icon: 'monitor', desc: 'Find your way around a trading platform, place a first order and protect it. Best done on a demo account.', L: [
+      ['Find your way around', 3, 'ic:grid', ['The places you will use most', 'Most trading platforms share the same layout: a list of markets (often called Market Watch), a chart, an order ticket and an account area for balance and history. Learn where each one lives before you place anything.'], ['Start on a demo', 'A demo account uses virtual money with live-style prices. It is the safest place to click around, test order types and make first mistakes at no cost.'], [
+        ['Where do you usually find the list of tradable markets and their prices?', 'In the market list (Market Watch)', 'In the account history', 'In the help centre', 'The market list shows each instrument with its live bid and ask prices.'],
+        ['What is a demo account mainly for?', 'Practising with virtual money', 'Withdrawing profits', 'Getting higher leverage', 'A demo lets you practise without risking real money.'],
+        ['Which area shows your balance, equity and past trades?', 'The account area', 'The chart toolbar', 'The news feed', 'Account details and history live in the account area.']]],
+      ['Place a market order', 4, 'ic:chart', ['What a market order is', 'A market order buys or sells immediately at the best price currently available. You choose the instrument, the size and the direction: Buy if you expect the price to rise, Sell if you expect it to fall.'], ['Bid, ask and size', 'You buy at the ask and sell at the bid. The difference is the spread. Size is measured in lots; start with the smallest size so that mistakes stay small.'], [
+        ['When you open a Buy market order, at which price is it normally filled?', 'The ask price', 'The bid price', 'A price you set in advance', 'Buys fill at the ask and sells at the bid. The gap between them is the spread.'],
+        ['You think a price will fall. Which direction fits that view?', 'Sell', 'Buy', 'Buy and wait', 'Selling profits when the price falls.'],
+        ['What is a sensible size for a first trade?', 'The smallest available size', 'As large as margin allows', 'Whatever a friend suggests', 'Small sizes keep early mistakes cheap.']]],
+      ['Protect with Stop Loss', 4, 'ic:shield', ['What a Stop Loss does', 'A Stop Loss is an order that closes your position automatically if the price moves against you to a level you choose. It limits the loss on a trade before it grows.'], ['Take Profit is its partner', 'A Take Profit closes the trade when it reaches your target. Setting both before you enter means the plan is made calmly, not in the middle of a fast move. In very fast markets a stop can fill at a worse price than set (slippage).'], [
+        ['What does a Stop Loss do?', 'Closes a losing trade at a level you chose', 'Guarantees a profit', 'Increases your leverage', 'It limits how much a single trade can lose.'],
+        ['Which order closes a trade when your profit target is reached?', 'Take Profit', 'Stop Loss', 'Market order', 'Take Profit is the target order.'],
+        ['In very fast markets a stop order may fill at...', 'A worse price than set (slippage)', 'Exactly the set price, always', 'A better price, always', 'Fast moves can skip past your level, so the fill can differ.']]],
+      ['Read your account', 3, 'ic:wallet', ['Balance and equity', 'Balance is your money excluding open trades. Equity is the balance plus or minus the floating profit or loss of open positions, so it moves with the market.'], ['Margin', 'Margin is the amount set aside to keep positions open. Free margin is what remains available. If equity falls too far compared with the margin in use, a margin call or stop out can close positions.'], [
+        ['Equity equals...', 'Balance plus floating profit or loss', 'Balance minus fees only', 'Deposits only', 'Equity reflects open trades, so it moves with the market.'],
+        ['What is margin?', 'Funds set aside to keep positions open', 'A fee paid on each trade', 'Profit from open trades', 'Margin is collateral, not a fee.'],
+        ['If equity falls too far compared with margin in use, the platform may...', 'Close positions (stop out)', 'Double your balance', 'Ignore it', 'Stop out protects against losses beyond the account.']]]
+    ] },
+    { id: 'forex', code: 'FX', name: 'Forex fundamentals', ac: '#2f62f0', xpl: 60, icon: 'globe', desc: 'Pairs, pips, leverage and costs: the vocabulary every forex trader uses every day.', L: [
+      ['Currency pairs', 4, 'ic:globe', ['Base and quote', 'A forex price quotes one currency against another. In EUR/USD, EUR is the base and USD is the quote. A price of 1.1000 means one euro costs 1.1000 US dollars.'], ['Majors, minors, exotics', 'Pairs that include the US dollar and another large economy (EUR/USD, USD/JPY, GBP/USD) are called majors and are usually the most liquid. Pairs with smaller economies are called exotics and often have wider spreads.'], [
+        ['In EUR/USD at 1.1000, what does the price mean?', '1 EUR costs 1.1000 USD', '1 USD costs 1.1000 EUR', '1 EUR is worth 1.1000 cents', 'The base currency is priced in the quote currency.'],
+        ['Which of these is a major pair?', 'GBP/USD', 'USD/TRY', 'EUR/PLN', 'Majors pair the US dollar with another large economy.'],
+        ['If you buy EUR/USD, you are...', 'Buying euros and selling US dollars', 'Buying dollars and selling euros', 'Buying a stock index', 'A buy is a buy of the base currency against the quote.']]],
+      ['What is a pip', 4, 'ic:chart', ['The pip', 'A pip is the standard unit for measuring price moves in forex. For most pairs it is the fourth decimal place (0.0001). For pairs quoted with the yen, it is usually the second decimal place (0.01).'], ['Counting pips', 'If EUR/USD moves from 1.1000 to 1.1025 it has moved 25 pips. The value of a pip depends on your position size and the quote currency, so check it before you trade.'], [
+        ['EUR/USD moves from 1.1000 to 1.1025. How many pips is that?', '25', '2.5', '250', 'The move is 0.0025, and one pip is 0.0001.'],
+        ['For most USD/JPY quotes, a pip is usually...', 'The second decimal place', 'The fourth decimal place', 'The first decimal place', 'Yen pairs are quoted with fewer decimals.'],
+        ['What does the value of a pip depend on?', 'Position size and the quote currency', 'Only the time of day', 'Only the broker logo', 'Bigger positions make each pip worth more.']]],
+      ['Leverage and margin', 5, 'ic:bolt', ['Leverage', 'Leverage lets you control a larger position with a smaller amount of your own money. At 1:100, a position worth 10,000 needs roughly 100 in margin.'], ['It cuts both ways', 'Leverage magnifies gains and losses equally. A small price move against a highly leveraged position can cause a large loss relative to your deposit. Many traders use far less than the maximum available.'], [
+        ['At 1:100 leverage, roughly how much margin does a 10,000 position need?', '100', '1,000', '10,000', '10,000 divided by 100 is 100.'],
+        ['Leverage magnifies...', 'Both gains and losses', 'Only gains', 'Only losses', 'It works in both directions.'],
+        ['Which approach is usually considered more cautious?', 'Using well below the maximum leverage', 'Always using the maximum', 'Adding leverage after a loss', 'Lower leverage leaves more room for the market to move.']]],
+      ['Spreads and costs', 4, 'spread', ['The spread', 'The spread is the difference between the bid (sell) price and the ask (buy) price. It is a cost you pay when you open a trade, so a position starts slightly below break-even.'], ['Other costs', 'Depending on the account and instrument there may also be commissions or overnight financing (swap) for positions held past the daily rollover. Check the contract specification before trading.'], [
+        ['The spread is the difference between...', 'Bid and ask', 'Open and close of the day', 'Balance and equity', 'Bid is where you sell, ask is where you buy.'],
+        ['A wider spread generally means...', 'A higher cost to open the trade', 'A guaranteed profit', 'Lower risk', 'You pay the spread when entering.'],
+        ['Where do you check swap and commission details for an instrument?', 'The contract specification', 'The chart colour settings', 'The demo account balance', 'Costs are listed in the contract specification.']]]
+    ] },
+    { id: 'crypto', code: 'CR', name: 'Crypto', ac: '#f7931a', xpl: 50, icon: 'bolt', desc: 'What crypto is, why it moves so fast and how to size positions when prices swing.', L: [
+      ['What is crypto', 4, 'ic:grid', ['Digital assets on a blockchain', 'Cryptocurrencies are digital assets recorded on a blockchain, a shared ledger maintained by a network of computers rather than a single bank. Bitcoin was the first, and Ethereum added programmable contracts.'], ['Trading the price', 'When you trade a crypto CFD you speculate on the price moving up or down. You typically do not own or store the coin itself, so there is no wallet to manage.'], [
+        ['A blockchain is best described as...', 'A shared ledger kept by a network of computers', 'A single bank private database', 'A stock exchange fee', 'No single party controls the ledger.'],
+        ['When trading a crypto CFD you usually...', 'Speculate on price without owning the coin', 'Receive coins in your wallet', 'Mine the coins yourself', 'A CFD tracks the price only.'],
+        ['Which was the first cryptocurrency?', 'Bitcoin', 'Ethereum', 'Litecoin', 'Bitcoin launched in 2009.']]],
+      ['Volatility and 24/7', 4, 'wave', ['Big swings are normal', 'Crypto prices can move several percent in a day, far more than most major currency pairs. Large moves create opportunity and risk, so position size matters even more.'], ['Markets that do not close', 'Many crypto markets trade around the clock, including weekends, so price can gap while you sleep. Stops, alerts and a clear plan help. Check the trading hours of the instruments you use.'], [
+        ['Compared with major currency pairs, crypto prices are typically...', 'More volatile', 'Less volatile', 'Fixed by central banks', 'Crypto often swings much more.'],
+        ['A risk of markets that trade 24/7 is that...', 'Price can move while you are away', 'You can only trade in office hours', 'Prices never change at weekends', 'There is no overnight pause.'],
+        ['Higher volatility usually calls for...', 'Smaller position sizes', 'Larger position sizes', 'Removing the Stop Loss', 'Smaller size offsets bigger swings.']]],
+      ['Reading crypto charts', 5, 'candle', ['Candles tell a story', 'Each candle shows the open, high, low and close for a period. A green candle usually means the close was above the open and a red candle the opposite. Long wicks show prices that were rejected.'], ['Support, resistance, volume', 'Support is a level where price has tended to stop falling; resistance is where it has tended to stop rising. Rising volume during a move suggests more participation behind it. None of these are guarantees.'], [
+        ['A candle shows...', 'Open, high, low and close for a period', 'Only the closing price', 'Only the trading volume', 'Four prices summarise each period.'],
+        ['A level where price has repeatedly stopped falling is called...', 'Support', 'Resistance', 'Spread', 'Support is a floor-like level.'],
+        ['Support and resistance levels are...', 'Useful reference points, not guarantees', 'Guaranteed turning points', 'Set by the broker', 'Price can and does break through them.']]],
+      ['Managing crypto risk', 4, 'ic:shield', ['Risk a small slice', 'Many traders risk only a small fixed percentage of the account, often 1% or 2%, on a single trade. Because crypto is volatile the stop distance is often wider, so the position size should shrink to match.'], ['Plan before you enter', 'Decide entry, stop and target before opening a trade. Avoid trading on rumours or social media hype, and never risk money you cannot afford to lose.'], [
+        ['A common risk guideline is to risk per trade...', 'A small percentage of the account (e.g. 1-2%)', 'Half of the account', 'Whatever feels exciting', 'Small fixed risk keeps losing streaks survivable.'],
+        ['If the stop distance gets wider, the position size should usually...', 'Get smaller', 'Get larger', 'Stay the same regardless', 'Wider stop plus same size means a bigger loss.'],
+        ['Which is a sound habit?', 'Deciding entry, stop and target before entering', 'Trading on social media hype', 'Adding to losers without a plan', 'Plans made in advance beat decisions made under pressure.']]]
+    ] },
+    { id: 'metals', code: 'PM', name: 'Precious metals', ac: '#c58a00', xpl: 50, icon: 'star', desc: 'Gold first, then silver, platinum and palladium: what drives them and how to size them.', L: [
+      ['What is a gold CFD', 3, 'gold', ['Gold as a market', 'Gold is quoted in US dollars per troy ounce, so a price of 2,000 means one troy ounce costs 2,000 USD. Traders watch it as a store of value and as a reaction to economic uncertainty.'], ['Trading the price', 'A gold CFD lets you take a view on the price rising or falling without owning physical bars. The contract specification tells you the lot size, tick value and trading hours.'], [
+        ['Gold is usually quoted in...', 'US dollars per troy ounce', 'Euros per kilogram', 'Yen per gram', 'The convention is USD per troy ounce.'],
+        ['A gold CFD lets you...', 'Speculate on price without owning bars', 'Take delivery of gold', 'Own a share of a mine', 'You trade the price, not the metal.'],
+        ['Where do you find lot size and trading hours?', 'The contract specification', 'The news calendar', 'The demo login page', 'Each instrument has a specification page.']]],
+      ['What moves gold', 4, 'wave', ['Dollar and interest rates', 'Gold pays no interest, so when interest rates and bond yields rise it can look less attractive. A stronger US dollar also tends to weigh on gold priced in dollars, though the link is not constant.'], ['Safe-haven demand', 'In periods of market stress or geopolitical tension investors sometimes buy gold as a perceived safe haven. Central bank buying and inflation expectations are other drivers.'], [
+        ['Higher interest rates can make gold less attractive because it...', 'Pays no interest', 'Pays a high dividend', 'Is regulated by rates', 'Holding gold earns no yield.'],
+        ['A stronger US dollar tends to...', 'Weigh on dollar-priced gold', 'Always lift gold', 'Have no relation to gold', 'The relationship is common, not constant.'],
+        ['Investors sometimes buy gold during stress because it is seen as...', 'A safe haven', 'A high-yield bond', 'A currency pair', 'Perceived safety draws demand in uncertain times.']]],
+      ['Silver, platinum, palladium', 4, 'gold', ['Industrial and precious', 'Silver, platinum and palladium are also precious metals, but they have more industrial uses than gold, for example in electronics and vehicle catalysts. Their prices react to industrial demand as well as investment demand.'], ['Thinner markets', 'These markets are smaller than gold, so prices can move more sharply and spreads may be wider. Silver is often described as more volatile than gold.'], [
+        ['Compared with gold, silver, platinum and palladium have...', 'More industrial uses', 'No industrial uses', 'No price changes', 'Industrial demand is a bigger driver for them.'],
+        ['Smaller markets can mean...', 'Sharper moves and wider spreads', 'Always lower costs', 'Fixed prices', 'Less liquidity can mean bigger swings.'],
+        ['Silver is often described as...', 'More volatile than gold', 'Exactly as volatile as gold', 'A stable-value asset', 'Silver usually moves more than gold.']]],
+      ['Trading metals sensibly', 4, 'ic:shield', ['Know the contract', 'Contract sizes differ by instrument. For example, 1 lot of gold is commonly 100 troy ounces, so a 1 USD move in price is about 100 USD per lot. Always check the specification before sizing a trade.'], ['Respect the news', 'Metals can jump around central bank decisions and inflation data. Keep position sizes modest around these events and use a Stop Loss.'], [
+        ['If 1 lot of gold is 100 ounces, a 1 USD price move equals about...', '100 USD per lot', '1 USD per lot', '10 USD per lot', '1 USD times 100 ounces is 100 USD.'],
+        ['Before sizing a metals trade you should check...', 'The contract specification', 'Only the chart colour', 'Nothing, sizes are identical', 'Specifications differ between instruments.'],
+        ['Around central bank decisions, a cautious trader may...', 'Reduce size and use a Stop Loss', 'Double the size', 'Remove all stops', 'Event risk is best met with smaller size and a stop.']]]
+    ] },
+    { id: 'news', code: 'NW', name: 'News trading', ac: '#8a3fd1', xpl: 60, icon: 'bell', desc: 'Use the economic calendar, understand spread widening and plan for central bank days.', L: [
+      ['The economic calendar', 3, 'ic:book', ['Scheduled events', 'An economic calendar lists upcoming data releases and decisions, such as inflation, jobs and interest-rate announcements, with the time, the affected currency and an impact rating.'], ['Forecast vs actual', 'Markets move on surprises. Each event shows a forecast (the consensus expectation) and then the actual result. The bigger the gap between them, the bigger the possible reaction.'], [
+        ['An economic calendar lists...', 'Scheduled data releases and decisions', 'Your open trades', 'Only company dividends', 'It is a schedule of market-moving events.'],
+        ['Markets mostly react to...', 'The surprise versus the forecast', 'The date of the release', 'The headline colour', 'Expected news is already priced in.'],
+        ['An impact rating tells you...', 'How much the event could move markets', 'Your profit', 'The spread', 'Higher ratings mean bigger potential moves.']]],
+      ['News and spreads', 4, 'spread', ['Spreads can widen', 'Around major releases liquidity can thin out and spreads often widen sharply for a short time. The cost of entering and exiting rises.'], ['Slippage and gaps', 'Prices can jump past your order level, so stops and market orders may fill at worse prices than expected. Many traders stay flat or reduce size just before top-tier news.'], [
+        ['Around a major release, spreads often...', 'Widen', 'Disappear', 'Stay exactly the same', 'Liquidity thins out for a moment.'],
+        ['When price jumps past your stop level, the order may fill...', 'At a worse price (slippage)', 'At the exact level, guaranteed', 'Never', 'The next available price is used.'],
+        ['A cautious approach just before top-tier news is to...', 'Reduce size or stay flat', 'Increase leverage', 'Ignore the calendar', 'Smaller exposure reduces event risk.']]],
+      ['Rates and currencies', 4, 'ic:chart', ['Central banks set the tone', 'Central banks adjust policy interest rates to manage inflation and growth. All else equal, higher expected rates can attract capital and support a currency, while lower expected rates can weigh on it.'], ['Expectations matter', 'Prices often move before a decision, based on what markets expect. If the decision matches expectations the reaction may be small; the tone of the statement and guidance can matter as much as the rate itself.'], [
+        ['All else equal, higher expected interest rates tend to...', 'Support a currency', 'Weaken it', 'Have no effect', 'Higher yield can attract capital.'],
+        ['A central bank decision that matches expectations usually causes...', 'A smaller reaction', 'The biggest possible move', 'No trading', 'It was already priced in.'],
+        ['Central banks mainly adjust rates to manage...', 'Inflation and growth', 'Broker spreads', 'Chart colours', 'Those are their usual policy goals.']]],
+      ['A news trading plan', 5, 'ic:book', ['Before the event', 'Check the calendar, note the time and the instruments involved, and decide in advance whether you will trade the release at all. Define your maximum loss before anything happens.'], ['After the event', 'Many traders wait for the first volatile minutes to pass and for spreads to normalise before acting. Keep a short journal of what you expected and what happened, so you improve over time.'], [
+        ['What should you define before a news event?', 'Your maximum loss', 'Only your expected profit', 'Nothing', 'Risk limits come first.'],
+        ['Why might traders wait after the release?', 'Spreads and volatility often normalise', 'Prices are fixed', 'Orders are blocked', 'The first minutes are usually the most erratic.'],
+        ['A trading journal helps you...', 'Learn from expectation versus outcome', 'Avoid all losses', 'Guarantee profit', 'Reviewing decisions builds skill.']]]
+    ] }
+  ];
+  function T(id) { return TR.filter(function (t) { return t.id === id; })[0]; }
+  function minsOf(t) { return t.L.reduce(function (a, l) { return a + l[1]; }, 0); }
+  function xpOf(t) { return t.L.length * t.xpl + TRO; }
+  var STAGES = [['reg', 'Register', 'Open your account'], ['course', 'Complete a course', 'Finish any track'], ['ver', 'Verify', 'Confirm your identity'], ['dep', 'Deposit', 'Fund your account'], ['bonus', 'Bonus ×2', 'Welcome bonus doubles*']];
+
+  /* ------------------------------------------------------------------ state */
+  function blank() { return { d: { platform: 0, forex: 0, crypto: 0, metals: 0, news: 0 }, cert: {}, xp: 0, st: 0, last: '', name: '', ch: { reg: 0, ver: 0, dep: 0 }, sel: 'platform' }; }
+  function load() { var b = blank(); try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && s.d) { Object.keys(b).forEach(function (k) { if (s[k] != null) b[k] = s[k]; }); b.ch = Object.assign({ reg: 0, ver: 0, dep: 0 }, s.ch); b.d = Object.assign(blank().d, s.d); } } catch (e) {} if (!T(b.sel)) b.sel = 'platform'; return b; }
+  var S = load();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function pad(n) { return ('0' + n).slice(-2); }
+  function dayStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function today() { return dayStr(new Date()); }
+  function yest() { var d = new Date(); d.setDate(d.getDate() - 1); return dayStr(d); }
+  function streak() { return (S.last === today() || S.last === yest()) ? S.st : 0; }
+  function bumpStreak() { var t = today(); if (S.last === t) { if (!S.st) S.st = 1; return; } S.st = (S.last === yest()) ? S.st + 1 : 1; S.last = t; }
+  function lvl(xp) { var i = 0; LV.forEach(function (l, k) { if (xp >= l[1]) i = k; }); var cur = LV[i][1], nx = LV[i + 1] ? LV[i + 1][1] : null; return { i: i, name: LV[i][0], cur: cur, nx: nx, pct: nx ? (xp - cur) / (nx - cur) : 1 }; }
+  function isDone(t) { return S.d[t.id] >= t.L.length; }
+  function doneCount() { return TR.filter(isDone).length; }
+  function chainD() { var c = doneCount() > 0, r = !!S.ch.reg, v = !!S.ch.ver, d = !!S.ch.dep; return [r, c, v, d, r && c && v && d]; }
+  function fmtN(n) { return Number(n).toLocaleString('en-US'); }
+  function dateTxt(iso) { var p = String(iso).split('-'); var d = p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2]) : new Date(); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }); }
+
+  /* ------------------------------------------------------------------ render: hero + chain + tracks */
+  var lastLv = lvl(S.xp).i, lastBonus = chainD()[4];
+  function renderHero(quiet) {
+    var l = lvl(S.xp), sk = streak(), cd = chainD(), nDone = doneCount();
+    $('#lvK').textContent = 'Level ' + (l.i + 1); $('#lvN').textContent = l.name;
+    $('#lvBar').style.width = Math.round(l.pct * 100) + '%';
+    $('#lvX').textContent = l.nx ? fmtN(S.xp) + ' / ' + fmtN(l.nx) + ' XP' : fmtN(S.xp) + ' XP · max level';
+    $('#stk').textContent = sk; $('#stkU').textContent = sk === 1 ? 'day' : 'days';
+    $('#stkS').textContent = sk ? (S.last === today() ? 'Done for today. Nice.' : 'Learn today to keep it') : 'Learn today to start one';
+    $('#trN').textContent = nDone + '/5';
+    var b = $('#bonN'); b.textContent = cd[4] ? '×2' : (nDone ? '×2 soon' : '×1');
+    $('#bonS').textContent = cd[4] ? 'Unlocked*, illustrative' : (nDone ? 'Verify and deposit to unlock*' : 'Finish a track to unlock ×2*');
+    $('#bxS').textContent = cd[4] ? 'Unlocked*' : 'Doubled*'; $('#bx').classList.toggle('on', cd[4]);
+    if (!quiet && cd[4] && !lastBonus) { b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); }
+    lastBonus = cd[4];
+    $('#startBtn').textContent = S.xp ? 'Continue learning' : 'Start learning';
+  }
+  function renderChain() {
+    var D = chainD(), cur = D.indexOf(false);
+    $('#uc').innerHTML = STAGES.map(function (s, i) {
+      var cls = D[i] ? 'dn' : (i === cur ? 'nx' : 'lk');
+      if (i > 0 && D[i - 1]) cls += ' pd'; if (i === 4) cls += ' bn';
+      var node = i === 4 ? '×2' : (D[i] ? ic('check') : (i === cur ? (i + 1) : ic('lock')));
+      var act = '';
+      if (i === 0 && !D[0]) act = '<button class="demo" type="button" data-ch="reg">Mark done · demo</button>';
+      if (i === 2 && !D[2] && D[0]) act = '<button class="demo" type="button" data-ch="ver">Mark done · demo</button>';
+      if (i === 3 && !D[3] && D[2]) act = '<button class="demo" type="button" data-ch="dep">Mark done · demo</button>';
+      if (i === 1 && !D[1]) act = '<button class="demo go" type="button" data-go="learn">Go to tracks</button>';
+      if (i === 4 && D[4]) act = '<span class="tag amber" style="margin-top:8px">Unlocked*</span>';
+      return '<div class="us ' + cls + '"><span class="nd0">' + node + '</span><b>' + s[1] + '</b><small>' + s[2] + '</small>' + act + '</div>';
+    }).join('');
+  }
+  function renderTracks() {
+    $('#tcs').innerHTML = TR.map(function (t) {
+      var d = S.d[t.id], n = t.L.length, done = d >= n;
+      return '<button type="button" class="tc' + (S.sel === t.id ? ' on' : '') + '" data-t="' + t.id + '" style="--ac:' + t.ac + '" aria-pressed="' + (S.sel === t.id) + '">' +
+        '<span class="ico">' + ic(t.icon) + '</span><h4>' + t.name + '</h4>' +
+        '<span class="mt">' + n + ' lessons · ' + (n * t.xpl + TRO) + ' XP · ' + minsOf(t) + ' min</span>' +
+        '<span class="pb"><i style="width:' + Math.round(d / n * 100) + '%"></i></span>' +
+        '<span class="pt"><span>' + (done ? '<em>Complete</em>' : d + ' of ' + n + ' lessons') + '</span><span>' + (done ? '✓' : '') + '</span></span></button>';
+    }).join('');
+  }
+
+  /* ------------------------------------------------------------------ render: map */
+  var mq = window.matchMedia('(max-width: 900px)');
+  function layout(v) {
+    return v ? { w: 400, h: 1010, v: true, p: [[200, 80], [110, 220], [290, 390], [110, 560], [290, 730], [200, 900]] }
+             : { w: 1200, h: 460, v: false, p: [[90, 240], [260, 310], [460, 150], [660, 310], [860, 150], [1080, 250]] };
+  }
+  function seg(a, b, v) { var m; if (v) { m = (b[1] - a[1]) / 2; return 'M' + a[0] + ' ' + a[1] + 'C' + a[0] + ' ' + (a[1] + m) + ' ' + b[0] + ' ' + (b[1] - m) + ' ' + b[0] + ' ' + b[1]; } m = (b[0] - a[0]) / 2; return 'M' + a[0] + ' ' + a[1] + 'C' + (a[0] + m) + ' ' + a[1] + ' ' + (b[0] - m) + ' ' + b[1] + ' ' + b[0] + ' ' + b[1]; }
+  function renderMap(anim) {
+    var t = T(S.sel), d = S.d[t.id], n = t.L.length, v = mq.matches, Lo = layout(v), P = Lo.p;
+    var map = $('#map'); map.style.setProperty('--ac', t.ac);
+    $('#mT').textContent = t.name; $('#mD').textContent = t.desc;
+    $('#mC').innerHTML = '<span class="chip">' + ic('book') + n + ' lessons</span><span class="chip">' + ic('bolt') + (n * t.xpl + TRO) + ' XP</span><span class="chip">' + ic('play') + minsOf(t) + ' min</span><span class="chip">' + (isDone(t) ? 'Track complete' : d + '/' + n + ' done') + '</span>';
+    var s = '<svg viewBox="0 0 ' + Lo.w + ' ' + Lo.h + '" role="group" aria-label="' + esc(t.name) + ' level map"><defs><linearGradient id="gld" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a3"/><stop offset="1" stop-color="#f0a020"/></linearGradient></defs>';
+    // decoration
+    if (!v) s += '<path class="dec" d="M0 460V400C180 350 330 420 560 380S980 340 1200 400V460z"/><circle class="dec" cx="1130" cy="90" r="70"/><circle class="dec" cx="140" cy="70" r="38"/><circle class="dec" cx="620" cy="60" r="22"/><circle class="dec" cx="980" cy="410" r="26"/>';
+    else s += '<circle class="dec" cx="360" cy="120" r="60"/><circle class="dec" cx="30" cy="470" r="70"/><circle class="dec" cx="370" cy="650" r="34"/><circle class="dec" cx="30" cy="830" r="50"/><circle class="dec" cx="350" cy="960" r="44"/>';
+    // road
+    var full = P.slice(1).map(function (q, i) { return seg(P[i], q, v); });
+    full.forEach(function (dd) { s += '<path class="rd-base" d="' + dd + '"/>'; });
+    full.forEach(function (dd, i) { if (i < d) s += '<path class="rd-fill" d="' + dd + '"/>'; });
+    full.forEach(function (dd) { s += '<path class="rd-dash" d="' + dd + '"/>'; });
+    // start flag
+    var f = P[0]; s += '<g aria-hidden="true"><circle cx="' + f[0] + '" cy="' + f[1] + '" r="16" fill="#fff" stroke="' + t.ac + '" stroke-width="4"/><path d="M' + (f[0] - 4) + ' ' + (f[1] + 8) + 'V' + (f[1] - 9) + '" stroke="#1d2024" stroke-width="2.5" stroke-linecap="round"/><path d="M' + (f[0] - 4) + ' ' + (f[1] - 9) + 'l11 4-11 4z" fill="' + t.ac + '"/><text class="flag-t" x="' + f[0] + '" y="' + (f[1] + 40) + '">START</text></g>';
+    // nodes
+    for (var i = 1; i <= 5; i++) {
+      var p = P[i], x = p[0], y = p[1], tro = i === 5, k = i - 1, st, title, sub, r = tro ? 36 : 30;
+      if (tro) { st = d >= n ? 'cur' : 'lock'; title = d >= n ? 'Your ×2 bonus' : '×2 deposit bonus'; sub = d >= n ? 'Unlocked*, tap to claim' : '+' + TRO + ' XP · finish all ' + n; }
+      else { st = k < d ? 'done' : (k === d ? 'cur' : 'lock'); title = t.L[k][0]; sub = '+' + t.xpl + ' XP · ' + t.L[k][1] + ' min'; }
+      var lx, ly, ly2, anc;
+      if (!v) { anc = 'middle'; lx = x; var up = y < 200; ly = up ? y - 62 : y + r + 34; ly2 = ly + 19; if (up) { ly = y - r - 40; ly2 = ly + 19; } }
+      else { var left = x < 200; anc = left ? 'start' : 'end'; lx = left ? x + r + 18 : x - r - 18; ly = y - 2; ly2 = y + 18; if (tro) { anc = 'middle'; lx = x; ly = y + r + 30; ly2 = ly + 19; } }
+      function star(cx, cy, s, c) { return '<path class="spk ' + c + '" d="M' + cx + ' ' + (cy - s) + 'Q' + cx + ' ' + cy + ' ' + (cx + s) + ' ' + cy + 'Q' + cx + ' ' + cy + ' ' + cx + ' ' + (cy + s) + 'Q' + cx + ' ' + cy + ' ' + (cx - s) + ' ' + cy + 'Q' + cx + ' ' + cy + ' ' + cx + ' ' + (cy - s) + 'z"/>'; }
+      var face = tro ? '<text class="x2t" x="' + x + '" y="' + (y + 10) + '">×2</text>' + (st === 'lock'
+          ? '<circle cx="' + (x + 26) + '" cy="' + (y + 26) + '" r="13" fill="#fff" stroke="#d6d9de" stroke-width="2"/><g transform="translate(' + (x + 19) + ' ' + (y + 19) + ') scale(.58)" fill="none" stroke="#9aa1aa" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + inner('lock') + '</g>'
+          : star(x - 52, y - 30, 9, '') + star(x + 54, y - 38, 12, 'b') + star(x + 48, y + 36, 8, '') + star(x - 46, y + 38, 6, 'b'))
+        : st === 'lock' ? '<g transform="translate(' + (x - 13) + ' ' + (y - 13) + ') scale(1.08)" fill="none" stroke="#9aa1aa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + inner('lock') + '</g>'
+        : st === 'done' ? '<g transform="translate(' + (x - 15) + ' ' + (y - 15) + ') scale(1.25)" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">' + inner('check') + '</g>'
+        : tro ? '<g transform="translate(' + (x - 16) + ' ' + (y - 16) + ') scale(1.33)" fill="none" stroke="#6b4400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + inner('trophy') + '</g>'
+        : '<text class="num" x="' + x + '" y="' + (y + 1) + '">' + i + '</text>';
+      var lab = tro ? (d >= n ? 'Open your badge' : 'Locked. Finish all lessons first') : title + (st === 'done' ? ', completed' : st === 'cur' ? ', up next' : ', locked');
+      s += '<g class="nd ' + st + (tro ? ' tro' : '') + '" data-i="' + k + '" data-tro="' + (tro ? 1 : 0) + '" tabindex="0" role="button" aria-label="' + esc(lab) + '">' +
+        '<circle class="halo" cx="' + x + '" cy="' + y + '" r="' + (r + 4) + '"/><circle class="face" cx="' + x + '" cy="' + y + '" r="' + r + '"/>' + face +
+        '<text class="nl" x="' + lx + '" y="' + ly + '" text-anchor="' + anc + '">' + esc(title) + '</text><text class="nm" x="' + lx + '" y="' + ly2 + '" text-anchor="' + anc + '">' + esc(sub) + '</text></g>';
+    }
+    s += '</svg>';
+    var mv = $('#mv'); mv.innerHTML = s; mv.classList.remove('mapin'); if (anim && !REDUCED) { void mv.offsetWidth; mv.classList.add('mapin'); }
+    var open = d >= n, cdB = chainD()[4], pct = Math.round(d / n * 100);
+    var rw = $('#mRw'); rw.className = 'rw' + (open ? '' : ' lk');
+    rw.innerHTML = '<span class="cn" aria-hidden="true">×2</span><div><h4>' + (cdB ? 'Your deposit bonus is doubled*' : 'Finish this track, get your deposit bonus doubled*') + '</h4><p>' +
+      (cdB ? 'Your welcome bonus is doubled on your first deposit.' : open ? 'Track complete. Verify your account and make your first deposit to receive ×2.' : 'Complete all ' + n + ' lessons, then verify and deposit: your welcome bonus is doubled.') + '</p></div>' +
+      '<div class="pg"><span>' + d + ' of ' + n + ' lessons</span><div class="tr"><i style="width:' + pct + '%"></i></div><span class="st' + (open ? ' ok' : '') + '">' + (cdB ? 'Unlocked' : open ? 'Track complete' : 'Locked') + '</span></div>';
+  }
+  function renderAll(o) { o = o || {}; renderHero(o.quiet); renderChain(); renderTracks(); renderMap(o.anim); }
+  var mapV = mq.matches;
+  function remap() { if (mq.matches !== mapV) { mapV = mq.matches; renderMap(); } }
+  window.addEventListener('resize', remap);
+  mq.addEventListener ? mq.addEventListener('change', remap) : mq.addListener(remap);
+
+  /* ------------------------------------------------------------------ confetti */
+  var cf = $('#cf'), cx = cf.getContext('2d'), parts = [], cfRun = false;
+  function confetti(cols, big) {
+    if (REDUCED) return;
+    var dpr = Math.min(2, window.devicePixelRatio || 1); cf.width = innerWidth * dpr; cf.height = innerHeight * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = big ? 190 : 110;
+    for (var i = 0; i < n; i++) parts.push({ x: innerWidth * (.2 + Math.random() * .6), y: innerHeight * .42, vx: (Math.random() - .5) * (big ? 17 : 13), vy: -Math.random() * (big ? 17 : 13) - 4, w: 6 + Math.random() * 7, h: 4 + Math.random() * 6, r: Math.random() * 6.3, vr: (Math.random() - .5) * .4, c: cols[i % cols.length], life: 0, max: 100 + Math.random() * 60 });
+    if (!cfRun) { cfRun = true; requestAnimationFrame(cfTick); }
+  }
+  function cfTick() {
+    cx.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter(function (p) { return p.life < p.max && p.y < innerHeight + 20; });
+    parts.forEach(function (p) { p.life++; p.vy += .42; p.vx *= .992; p.x += p.vx; p.y += p.vy; p.r += p.vr; cx.save(); cx.globalAlpha = Math.max(0, 1 - p.life / p.max); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore(); });
+    if (parts.length) requestAnimationFrame(cfTick); else { cfRun = false; cx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+  function colsFor(t) { return [t.ac, '#ffd166', '#2fe39a', '#ffffff', '#ff6b72', '#6d8cff']; }
+
+  /* ------------------------------------------------------------------ lesson modal */
+  var L = null, lm = $('#lm');
+  function art(k, ac) {
+    var g = '<svg viewBox="0 0 112 80" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+    if (k.indexOf('ic:') === 0) return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="padding:0 20px" aria-hidden="true">' + inner(k.slice(3)) + '</svg>';
+    if (k === 'candle') { [[16, 44, 22, 56, 1], [38, 30, 14, 40, 0], [60, 36, 20, 50, 1], [82, 18, 8, 34, 0], [100, 24, 14, 30, 0]].forEach(function (c) { g += '<path stroke-width="2" d="M' + c[0] + ' ' + (c[2] - 4) + 'V' + (c[3] + 8) + '"/><rect x="' + (c[0] - 6) + '" y="' + c[2] + '" width="12" height="' + (c[3] - c[2]) + '" rx="2.5" stroke-width="2" fill="' + (c[4] ? 'rgba(255,255,255,.35)' : 'none') + '"/>'; }); }
+    else if (k === 'spread') g += '<path stroke-width="2.5" d="M8 24h96"/><path stroke-width="2.5" d="M8 56h96" stroke-dasharray="2 7"/><path stroke-width="2.5" d="M56 30v20M50 36l6-6 6 6M50 44l6 6 6-6"/><text x="104" y="19" text-anchor="end" fill="#fff" stroke="none" font-size="10" font-weight="600" font-family="Poppins,Arial,sans-serif">ASK</text><text x="104" y="74" text-anchor="end" fill="#fff" stroke="none" font-size="10" font-weight="600" font-family="Poppins,Arial,sans-serif">BID</text>';
+    else if (k === 'wave') g += '<path stroke-width="3" d="M4 50C16 14 28 14 40 44S66 78 78 36 98 8 108 28"/><circle cx="108" cy="28" r="4" fill="#fff" stroke="none"/>';
+    else if (k === 'gold') g += '<path stroke-width="2.5" fill="rgba(255,255,255,.3)" d="M22 56l10-22h48l10 22z"/><path stroke-width="2.5" fill="rgba(255,255,255,.2)" d="M12 70l10-14h26l10 14zM54 70l10-14h26l10 14z"/>';
+    return g + '</svg>';
+  }
+  function openLesson(tid, i) {
+    var t = T(tid), l = t.L[i];
+    L = { t: t, i: i, step: 0, ok: 0, ans: [], ord: null, redo: S.d[t.id] > i };
+    lm.querySelector('.lmc').style.setProperty('--ac', t.ac);
+    $('#lK').textContent = t.name + ' · lesson ' + (i + 1) + ' of ' + t.L.length;
+    $('#lT').textContent = l[0]; $('#lA').innerHTML = art(l[2], t.ac);
+    lm.classList.add('open'); document.body.style.overflow = 'hidden';
+    renderLesson(); $('#lmc').scrollTop = 0; setTimeout(function () { var b = $('#lB button'); if (b) b.focus({ preventScroll: true }); }, 60);
+  }
+  function closeLesson() { lm.classList.remove('open'); if (!$('#cm').classList.contains('open')) document.body.style.overflow = ''; L = null; }
+  function dots() {
+    var h = '', k; for (k = 0; k < 5; k++) { var c = ''; if (k < L.step) c = (k >= 2 && L.ans[k - 2] === false) ? 'bad' : 'on'; else if (k === L.step) c = 'on'; h += '<i class="' + c + '"></i>'; }
+    $('#lD').innerHTML = h;
+  }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function renderLesson() {
+    var l = L.t.L[L.i], B = $('#lB'), s = L.step;
+    dots();
+    if (s < 2) {
+      var sl = l[3 + s];
+      B.innerHTML = '<span class="eyebrow">Slide ' + (s + 1) + ' of 2</span><h4>' + esc(sl[0]) + '</h4><p class="tx">' + esc(sl[1]) + '</p><div class="lf">' + (s ? '<button class="btn btn-outline pill" type="button" data-a="back">Back</button>' : '') + '<button class="btn btn-dark pill sp" type="button" data-a="next">' + (s ? 'Start the quiz' : 'Next') + '</button></div>';
+    } else if (s < 5) {
+      var q = l[5][s - 2];
+      if (!L.ord || L.ord.s !== s) L.ord = { s: s, o: shuffle([q[1], q[2], q[3]]), a: null };
+      B.innerHTML = '<span class="eyebrow">Question ' + (s - 1) + ' of 3</span><h4>' + esc(q[0]) + '</h4><div class="opts">' + L.ord.o.map(function (o, k) { return '<button class="opt" type="button" data-o="' + k + '"><span class="l">' + 'ABC'.charAt(k) + '</span><span>' + esc(o) + '</span></button>'; }).join('') + '</div><div id="fbh"></div><div class="lf" id="lfh"></div>';
+    } else {
+      var pass = L.ok >= 2, first = !L.redo, last = L.i === L.t.L.length - 1;
+      if (pass) {
+        B.innerHTML = '<div class="res"><div class="sc">' + L.ok + '/3</div><h4>' + (last && first ? 'Track complete!' : 'Lesson passed') + '</h4><p class="tx">' + (first ? 'Nicely done. Your progress is saved and the next node is unlocked.' : 'You already completed this lesson. Good refresher.') + '</p>' +
+          (first ? '<div class="xp">' + ic('bolt') + '+' + L.t.xpl + ' XP' + (last ? ' · +' + TRO + ' XP track bonus' : '') + '</div>' : '') +
+          '<div class="lf">' + (last && first ? '<button class="btn btn-primary pill glow-btn" type="button" data-a="claim">Claim your badge</button>' : (last ? '<button class="btn btn-dark pill" type="button" data-a="close">Back to the map</button>' : '<button class="btn btn-dark pill" type="button" data-a="nextl">Next lesson</button><button class="btn btn-outline pill" type="button" data-a="close">Back to the map</button>')) + '</div></div>';
+      } else {
+        B.innerHTML = '<div class="res"><div class="sc f">' + L.ok + '/3</div><h4>Almost there</h4><p class="tx">You need 2 of 3 correct to pass. Read the slides again, then retry the quiz. There is no limit on attempts.</p><div class="lf"><button class="btn btn-dark pill" type="button" data-a="retry">Retry quiz</button><button class="btn btn-outline pill" type="button" data-a="review">Review lesson</button></div></div>';
+      }
+    }
+  }
+  function answer(k) {
+    if (!L.ord || L.ord.a != null) return;
+    var l = L.t.L[L.i], q = l[5][L.step - 2], good = L.ord.o[k] === q[1];
+    L.ord.a = k; L.ans[L.step - 2] = good; if (good) L.ok++;
+    $$('#lB .opt').forEach(function (b, i) { b.disabled = true; var o = L.ord.o[i]; if (o === q[1]) b.classList.add('ok'); else if (i === k) b.classList.add('bad'); else b.classList.add('dim'); });
+    $('#fbh').innerHTML = '<div class="fb ' + (good ? 'ok' : 'bad') + '" role="status"><b>' + (good ? 'Correct. ' : 'Not quite. ') + '</b>' + esc(q[4]) + '</div>';
+    $('#lfh').innerHTML = '<button class="btn btn-dark pill sp" type="button" data-a="qnext">' + (L.step === 4 ? 'See result' : 'Next question') + '</button>';
+    var nb = $('#lfh button'); if (nb) nb.focus({ preventScroll: true });
+    // dots colour for this answer
+    var di = $$('#lD i')[L.step]; if (di) di.className = good ? 'on' : 'bad';
+  }
+  function lessonStep(a) {
+    if (!L) return;
+    if (a === 'next') { L.step++; L.ord = null; } else if (a === 'back') L.step = 0;
+    else if (a === 'qnext') { L.step++; L.ord = null; if (L.step === 5) { finishQuiz(); } }
+    else if (a === 'retry') { L.step = 2; L.ok = 0; L.ans = []; L.ord = null; }
+    else if (a === 'review') { L.step = 0; L.ok = 0; L.ans = []; L.ord = null; }
+    else if (a === 'close') { closeLesson(); return; }
+    else if (a === 'nextl') { var t = L.t, ni = L.i + 1; closeLesson(); openLesson(t.id, ni); return; }
+    else if (a === 'claim') { var tid = L.t.id; closeLesson(); openCeleb(tid); return; }
+    renderLesson();
+    if (a !== 'qnext') $('#lmc').scrollTop = 0;
+    var b = $('#lB .btn, #lB .opt'); if (b && a !== 'qnext') b.focus({ preventScroll: true });
+  }
+  function commit(t, k) {
+    if (S.d[t.id] !== k) return false;
+    var before = lvl(S.xp).i; S.d[t.id]++; S.xp += t.xpl; bumpStreak();
+    var complete = S.d[t.id] >= t.L.length; if (complete) { S.xp += TRO; if (!S.cert[t.id]) S.cert[t.id] = today(); }
+    save(); renderAll({ quiet: true });
+    var after = lvl(S.xp);
+    if (after.i > before) setTimeout(function () { XM.toast('Level up: <b>' + after.name + '</b>'); }, 600);
+    return complete ? 2 : 1;
+  }
+  function finishQuiz() {
+    if (L.ok >= 2) {
+      var r = commit(L.t, L.i);
+      if (r) { confetti(colsFor(L.t), r === 2); if (REDUCED) XM.toast('Lesson complete · +' + L.t.xpl + ' XP'); }
+    }
+  }
+
+  /* ------------------------------------------------------------------ celebration + certificate */
+  var C = null, cm = $('#cm');
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ('0000' + (h >>> 0).toString(16)).slice(-5).toUpperCase(); }
+  function certSVG(t, name, dtxt) {
+    var ac = t.ac, nm = esc(name || 'Your name'), len = (name || 'Your name').length, fs = len > 22 ? 46 : len > 16 ? 56 : 66, id = 'XM-' + t.code + '-' + hash(name + t.id + dtxt);
+    var F = 'font-family="Poppins, Helvetica, Arial, sans-serif"';
+    var dots = ''; for (var i = 0; i < 26; i++) for (var j = 0; j < 14; j++) if ((i + j) % 2 === 0) dots += '<circle cx="' + (50 + i * 44) + '" cy="' + (60 + j * 44) + '" r="1.6"/>';
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" ' + F + '>' +
+      '<defs><radialGradient id="cg1" cx="50%" cy="0%" r="75%"><stop offset="0" stop-color="' + ac + '" stop-opacity=".6"/><stop offset="1" stop-color="' + ac + '" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="cg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a3"/><stop offset="1" stop-color="#e09a14"/></linearGradient></defs>' +
+      '<rect width="1200" height="675" fill="#090b0e"/><rect width="1200" height="675" fill="url(#cg1)"/><g fill="#fff" fill-opacity=".07">' + dots + '</g>' +
+      '<rect x="26" y="26" width="1148" height="623" rx="24" fill="none" stroke="' + ac + '" stroke-opacity=".7" stroke-width="2.5"/>' +
+      '<path fill="#e5373f" d="M72 62h12l15 26-15 26H72l15-26z"/><text x="104" y="107" fill="#fff" font-size="40" font-weight="800" font-style="italic" letter-spacing="-2">XMTRADING</text>' +
+      '<text x="1128" y="98" text-anchor="end" fill="#a9b0ba" font-size="19" font-weight="600" letter-spacing="4">LEARN TO EARN</text>' +
+      '<text x="600" y="208" text-anchor="middle" fill="#cfd5dc" font-size="21" font-weight="600" letter-spacing="7">CERTIFICATE OF COMPLETION</text>' +
+      '<text x="600" y="300" text-anchor="middle" fill="#fff" font-size="' + fs + '" font-weight="700" letter-spacing="-1">' + nm + '</text>' +
+      '<path d="M420 326h360" stroke="' + ac + '" stroke-width="3" stroke-linecap="round"/>' +
+      '<text x="600" y="372" text-anchor="middle" fill="#a9b0ba" font-size="22">has completed the learning track</text>' +
+      '<text x="600" y="436" text-anchor="middle" fill="' + ac + '" font-size="50" font-weight="700" letter-spacing="-1" style="filter:brightness(1.35)">' + esc(t.name) + '</text>' +
+      '<text x="600" y="482" text-anchor="middle" fill="#cfd5dc" font-size="20">' + t.L.length + ' lessons · ' + t.L.length * 3 + ' quiz questions · ' + xpOf(t) + ' XP</text>' +
+      '<g transform="translate(600 568)"><circle r="44" fill="url(#cg2)"/><circle r="36" fill="none" stroke="#7a4b00" stroke-opacity=".5" stroke-width="2"/><path d="m-15 1 11 11 20-24" fill="none" stroke="#5a3600" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>' +
+      '<text x="72" y="560" fill="#8e97a3" font-size="15" font-weight="600" letter-spacing="3">DATE</text><text x="72" y="590" fill="#fff" font-size="22" font-weight="600">' + esc(dtxt) + '</text>' +
+      '<text x="1128" y="560" text-anchor="end" fill="#8e97a3" font-size="15" font-weight="600" letter-spacing="3">BADGE ID</text><text x="1128" y="590" text-anchor="end" fill="#fff" font-size="22" font-weight="600">' + id + '</text>' +
+      '<text x="600" y="634" text-anchor="middle" fill="#6f7884" font-size="13">Illustrative badge, not a regulated qualification</text></svg>';
+  }
+  function certName() { return C.visitor ? (C.name || 'XM learner') : (S.name || ''); }
+  function drawCert() { var t = C.t; $('#cert').innerHTML = certSVG(t, certName(), dateTxt(C.date)); }
+  function openCeleb(tid, vis) {
+    var t = T(tid); C = { t: t, visitor: !!vis, name: vis ? vis.name : '', date: vis ? today() : (S.cert[tid] || today()) };
+    var cd = chainD(), cl = $('#cl'), full = cd[4];
+    var chips = ['Register', 'Course', 'Verify', 'Deposit'].map(function (n, i) { var dn = vis ? i === 1 : cd[i]; return '<span class="' + (dn ? 'dn' : '') + '">' + (dn ? ic('check') : '') + n + '</span>'; }).join('') + '<span class="' + (full && !vis ? 'dn' : '') + '">Bonus ×2</span>';
+    if (vis) {
+      cl.innerHTML = '<span class="eyebrow" id="cK">Shared badge</span><h2 id="cT">' + esc(C.name || 'A learner') + ' finished ' + esc(t.name) + '</h2><p>Learn the markets at your own pace and earn a badge too. Learning is free, and the bonus terms are illustrative.</p><div class="x2b"><b>×2</b><span>deposit bonus multiplier after a track<i>Illustrative terms, not an offer</i></span></div><div class="lf"><button class="btn btn-primary pill glow-btn" type="button" data-a="startown">Start your own track</button></div>';
+    } else {
+      cl.innerHTML = '<span class="eyebrow" id="cK">Track complete</span><h2 id="cT">' + esc(t.name) + ' done. Nice work.</h2><p>' + t.L.length + ' lessons passed and ' + fmtN(xpOf(t)) + ' XP earned. Your badge is ready to share.</p>' +
+        '<div class="x2b"><b>×2</b><span>deposit bonus multiplier unlocked*<i>Illustrative terms, not an offer</i></span></div><div class="mc">' + chips + '</div>' +
+        '<p class="fine">' + (full ? 'Every step is done, so the multiplier is active. ' : 'Verify and deposit to activate it. ') + 'For example, a 20% welcome bonus would become 40%. Example only, not an offer.</p>' +
+        '<div class="lf"><button class="btn btn-dark pill" type="button" data-a="tochain">See the unlock chain</button><button class="btn btn-outline pill" type="button" data-a="cclose">Keep learning</button></div>';
+    }
+    $('#cn').hidden = !!vis; $('#cName').value = vis ? '' : S.name;
+    $('#cDl').innerHTML = ic('arrow').replace('<svg ', '<svg style="transform:rotate(90deg)" ') + 'Download PNG'; $('#cCp').innerHTML = ic('copy') + 'Copy share link'; $('#cSh').innerHTML = ic('share') + 'Share';
+    drawCert(); cm.classList.add('open'); document.body.style.overflow = 'hidden'; $('#cmc').scrollTop = 0;
+    if (!vis) confetti(colsFor(t), true);
+    setTimeout(function () { var b = $('#cl .btn'); if (b) b.focus({ preventScroll: true }); }, 60);
+  }
+  function closeCeleb() { cm.classList.remove('open'); if (!lm.classList.contains('open')) document.body.style.overflow = ''; C = null; }
+  function shareUrl() { var u = new URL(location.href); u.search = ''; u.hash = ''; u.searchParams.set('badge', C.t.id); var n = certName(); if (n) u.searchParams.set('n', n); return u.href; }
+  function copyText(txt) { return (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt) : Promise.reject()).catch(function () { var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = 0; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); }); }
+  function downloadPng() {
+    var svg = certSVG(C.t, certName(), dateTxt(C.date)), img = new Image(), t = C.t;
+    img.onload = function () {
+      var c = document.createElement('canvas'); c.width = 2400; c.height = 1350; c.getContext('2d').drawImage(img, 0, 0, 2400, 1350);
+      var url = c.toDataURL('image/png'), a = document.createElement('a'); a.href = url; a.download = 'xm-badge-' + t.id + '.png'; document.body.appendChild(a); a.click(); a.remove();
+      XM.toast('Badge saved as PNG'); C && (C.png = url.length);
+    };
+    img.onerror = function () { XM.toast('Could not render the PNG in this browser'); };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+  function shareBadge() {
+    var url = shareUrl(), data = { title: 'I finished ' + C.t.name + ' on XM', text: 'I finished the ' + C.t.name + ' track in XM Learn to earn.', url: url };
+    if (navigator.share) navigator.share(data).catch(function () {}); else copyText(url).then(function () { XM.toast('Sharing is not available here. Link copied instead.'); });
+  }
+
+  /* ------------------------------------------------------------------ demo helpers */
+  function forceComplete(t) {
+    var r = 0; while (S.d[t.id] < t.L.length) { r = commit(t, S.d[t.id]) || r; }
+    return r;
+  }
+
+  /* ------------------------------------------------------------------ events */
+  function openNode(g) {
+    var t = T(S.sel), d = S.d[t.id], n = t.L.length;
+    if (g.getAttribute('data-tro') === '1') { if (d >= n) openCeleb(t.id); else XM.toast('Finish all ' + n + ' lessons to unlock the badge'); return; }
+    var k = +g.getAttribute('data-i');
+    if (k > d) { XM.toast('Locked. Pass <b>' + esc(t.L[d][0]) + '</b> first'); return; }
+    openLesson(t.id, k);
+  }
+  $('#mv').addEventListener('click', function (e) { var g = e.target.closest('.nd'); if (g) openNode(g); });
+  $('#mv').addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('nd')) { e.preventDefault(); openNode(e.target); } });
+  $('#tcs').addEventListener('click', function (e) { var b = e.target.closest('.tc'); if (!b) return; S.sel = b.getAttribute('data-t'); save(); renderTracks(); renderMap(true); var mp = $('#map').getBoundingClientRect(); if (mp.top > innerHeight * .8) $('#map').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); });
+  $('#uc').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var k = b.getAttribute('data-ch');
+    if (k) { S.ch[k] = 1; save(); renderAll({}); XM.toast(({ reg: 'Registered', ver: 'Verified', dep: 'Deposit received' })[k] + ' (demo)'); if (chainD()[4]) confetti(['#ffd166', '#f0a020', '#2fe39a', '#fff'], true); }
+    else if (b.getAttribute('data-go')) $('#learn').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+  });
+  $('#startBtn').addEventListener('click', function () { var tg = $('#learn'); tg.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); });
+  $('#lB').addEventListener('click', function (e) { var o = e.target.closest('.opt'); if (o) { answer(+o.getAttribute('data-o')); return; } var b = e.target.closest('[data-a]'); if (b) lessonStep(b.getAttribute('data-a')); });
+  $('#lmX').addEventListener('click', closeLesson);
+  lm.addEventListener('mousedown', function (e) { if (e.target === lm) closeLesson(); });
+  $('#cmX').addEventListener('click', closeCeleb);
+  cm.addEventListener('mousedown', function (e) { if (e.target === cm) closeCeleb(); });
+  $('#cl').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-a]'); if (!b) return; var a = b.getAttribute('data-a');
+    if (a === 'cclose') closeCeleb();
+    else if (a === 'tochain') { closeCeleb(); $('#chain').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); }
+    else if (a === 'startown') { closeCeleb(); $('#learn').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); }
+  });
+  $('#cName').addEventListener('input', function (e) { S.name = e.target.value.trim(); save(); drawCert(); });
+  $('#cDl').addEventListener('click', downloadPng);
+  $('#cCp').addEventListener('click', function () { copyText(shareUrl()).then(function () { XM.toast('Share link copied'); }); });
+  $('#cSh').addEventListener('click', shareBadge);
+  document.addEventListener('keydown', function (e) { if (e.key !== 'Escape') return; if (cm.classList.contains('open')) closeCeleb(); else if (lm.classList.contains('open')) closeLesson(); });
+  $('#demoTrack').addEventListener('click', function () { var t = T(S.sel); if (!isDone(t)) forceComplete(t); renderAll({ quiet: true }); openCeleb(t.id); });
+  $('#demoAll').addEventListener('click', function () { TR.forEach(function (t) { if (!isDone(t)) forceComplete(t); }); S.ch = { reg: 1, ver: 1, dep: 1 }; save(); renderAll({ quiet: true }); openCeleb(S.sel); });
+  $('#reset').addEventListener('click', function () { var nm = S.name; S = blank(); S.name = nm; save(); lastLv = 0; lastBonus = false; renderAll({ quiet: true }); XM.toast('Progress reset'); });
+
+  /* ------------------------------------------------------------------ boot */
+  renderAll({ quiet: true });
+  XM.reveal();
+  var qb = XM.qs('badge');
+  if (qb && T(qb)) openCeleb(qb, { name: (XM.qs('n') || '').slice(0, 28) });
+
+  XM.notes({
+    title: 'Idea 15 · Learn to earn',
+    today: 'New clients register and wait. There is no reason to learn before the first deposit, and education content is scattered across articles and videos with no sense of progress.',
+    proposed: 'Five gamified tracks (platform tutorials, forex fundamentals, crypto, precious metals, news trading) shown as a winding level map. Short lessons with a quiz unlock nodes in order and award XP. Finishing a track unlocks a deposit bonus multiplier (illustrative x2) and a shareable badge or certificate.',
+    why: 'Learning becomes a game with a visible path, streaks and a reward at the end. Educated clients trade more sensibly, and the shareable badge brings organic reach.',
+    metric: 'Lesson and track completion, time from registration to first deposit, deposit conversion among course completers, badge shares and referrals from shared links, early churn.'
+  });
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="15"></script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-load register and PWA login · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 06 · Performance: pre-load the register page and the PWA login.
+   Deliberately light and compact. No heavy visuals.
+   ===================================================================== */
+:root { --c-dns: #9aa3ad; --c-srv: #d9902a; --c-html: #2f62f0; --c-js: #8a3fd1; --c-paint: #008454; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { margin-top: 72px; padding-bottom: 92px; }
+.ic { display: inline-grid; place-items: center; width: 18px; height: 18px; flex: none; }
+.ic svg { width: 100%; height: 100%; }
+.sec { margin-top: 56px; }
+.sh { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+.sh h2 { font-size: clamp(22px, 2.4vw, 30px); letter-spacing: -.02em; line-height: 1.15; font-weight: 700; margin-top: 8px; }
+.sh p { color: var(--mut); font-size: 14.5px; max-width: 430px; line-height: 1.55; }
+
+.intro { padding: 48px 0 8px; display: flex; justify-content: space-between; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
+.intro h1 { font-size: clamp(32px, 4.4vw, 54px); line-height: 1.06; letter-spacing: -.03em; font-weight: 700; margin-top: 12px; max-width: 16ch; }
+.intro h1 em { font-style: normal; color: var(--g); }
+.intro p { max-width: 440px; color: var(--ink-2); font-size: 16px; line-height: 1.6; }
+
+/* ---------- run bar ---------- */
+.runbar { margin-top: 28px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 12px 14px 12px 12px; }
+.phases { display: flex; gap: 6px; flex: 1; min-width: 260px; flex-wrap: wrap; }
+.ph { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--mut); background: var(--soft); transition: background .2s, color .2s; }
+.ph i { width: 20px; height: 20px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-style: normal; font-size: 11px; font-weight: 700; }
+.ph.on { background: var(--g-l); color: var(--g-d); font-weight: 600; }
+.ph.on i { background: var(--g); color: #fff; }
+.ph.done { color: var(--ink-2); }
+.ph.done i { background: var(--g-l); color: var(--g); }
+
+/* ---------- waterfalls ---------- */
+.cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.wf { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 22px 22px 18px; box-shadow: var(--sh-s); transition: border-color .3s, box-shadow .3s; }
+.wf.win { border-color: rgba(0, 132, 84, .5); box-shadow: 0 0 0 4px rgba(0, 132, 84, .08), var(--sh-s); }
+.wf-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.wf-h h3 { font-size: 17px; font-weight: 600; margin-top: 8px; letter-spacing: -.01em; }
+.wf-h p { font-size: 12.5px; color: var(--mut); margin-top: 2px; }
+.sw { text-align: right; line-height: 1; }
+.sw b { font-size: 42px; font-weight: 700; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.sw small { font-size: 14px; color: var(--mut); margin-left: 4px; font-weight: 500; }
+.sw .done-c { display: block; margin-top: 8px; font-size: 12px; font-weight: 600; color: var(--g); opacity: 0; transition: opacity .3s; }
+.wf.fin .sw .done-c { opacity: 1; }
+.axis { margin: 18px 0 6px; display: grid; grid-template-columns: 124px 1fr; }
+.axis .tk { position: relative; height: 16px; font-size: 10.5px; color: var(--mut); font-variant-numeric: tabular-nums; }
+.axis .tk span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.axis .tk span:first-child { transform: none; }
+.axis .tk span:last-child { transform: translateX(-100%); }
+.row { display: grid; grid-template-columns: 124px 1fr; align-items: center; height: 34px; border-top: 1px solid #f0f1f3; }
+.row .l { font-size: 12.5px; color: var(--ink-2); font-weight: 500; }
+.trk { position: relative; height: 22px; border-radius: 6px; background: repeating-linear-gradient(90deg, transparent 0 calc(19% - 1px), #f0f1f3 calc(19% - 1px) 19%); }
+.zone { position: absolute; left: 0; top: 0; bottom: 0; width: 24%; border-radius: 6px; background: repeating-linear-gradient(135deg, #f3f4f6 0 4px, #fafafa 4px 8px); }
+.bar { position: absolute; top: 2px; height: 18px; border-radius: 5px; width: 0; color: #fff; font-size: 10.5px; font-weight: 600; line-height: 18px; padding-left: 7px; overflow: hidden; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bar.pre { opacity: .55; background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .35) 0 3px, transparent 3px 6px); }
+.clickline { position: absolute; top: -4px; bottom: -4px; left: 24%; width: 0; border-left: 2px dashed var(--ink); opacity: .5; }
+.wf-n { margin-top: 12px; font-size: 12.5px; color: var(--mut); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+.wf-n .ic { width: 14px; height: 14px; margin-top: 3px; color: var(--g); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; font-size: 11.5px; color: var(--mut); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* ---------- code + bfcache ---------- */
+.two { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px; align-items: stretch; }
+.code { background: #0b0d10; color: #d4dae1; border-radius: 22px; padding: 20px 22px 22px; position: relative; overflow: hidden; display: flex; flex-direction: column; isolation: isolate; }
+.code::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 50% at 100% 0%, rgba(0, 194, 124, .2), transparent 70%); }
+.code-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.code .pill-tabs { background: rgba(255, 255, 255, .07); border-color: rgba(255, 255, 255, .1); }
+.code .pill-tabs button { color: #a9b0ba; padding: 7px 14px; font-size: 13px; }
+.code .pill-tabs button.on { background: #fff; color: #0b0d10; }
+.code pre { margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12.8px; line-height: 1.7; overflow-x: auto; flex: 1; padding: 4px 0; }
+.code .k { color: #8fb8ff; } .code .s { color: #86e2b2; } .code .t { color: #ff9aa2; } .code .c { color: #66707d; } .code .a { color: #f5b04a; }
+.code pre .hl { background: rgba(0, 194, 124, .16); display: inline-block; width: 100%; border-radius: 4px; }
+.cbtn { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .14); color: #fff; border-radius: 999px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.cbtn:hover { background: rgba(255, 255, 255, .16); }
+.cbtn .ic { width: 14px; height: 14px; }
+.live { margin-top: 14px; border-top: 1px solid rgba(255, 255, 255, .1); padding-top: 16px; display: grid; gap: 12px; }
+.live-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.live-top b { font-size: 14px; display: block; }
+.live-top small { color: #8a93a0; font-size: 12px; display: block; margin-top: 2px; max-width: 46ch; line-height: 1.5; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.st { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, .08); color: #c9ced6; white-space: nowrap; }
+.st.ok { background: rgba(0, 194, 124, .18); color: #3ddc97; }
+.st.no { background: rgba(229, 55, 63, .18); color: #ff8a90; }
+.st.warn { background: rgba(245, 176, 74, .18); color: #f5b04a; }
+.test-link { display: inline-flex; align-items: center; gap: 8px; color: #3ddc97; font-size: 13px; font-weight: 600; }
+.test-link:hover { text-decoration: underline; }
+.sw2 { position: relative; width: 46px; height: 26px; flex: none; }
+.sw2 input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.sw2 i { position: absolute; inset: 0; border-radius: 999px; background: #c4c9d0; transition: background .2s; }
+.sw2 i::after { content: ''; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); }
+.sw2 input:checked + i { background: var(--g); }
+.sw2 input:checked + i::after { transform: translateX(20px); }
+.sw2 input:focus-visible + i { box-shadow: 0 0 0 4px rgba(0, 132, 84, .25); }
+.code .sw2 i { background: #3a424d; }
+.code .sw2 input:checked + i { background: #00a064; }
+
+.bf { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 22px; box-shadow: var(--sh-s); display: flex; flex-direction: column; }
+.bf-h { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.bf-h h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.bf-h p { font-size: 12.5px; color: var(--mut); margin-top: 3px; line-height: 1.5; }
+.fix { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; padding: 14px 0; border-top: 1px solid var(--line); align-items: center; }
+.fix:first-of-type { margin-top: 14px; }
+.fix b { font-size: 14px; font-weight: 600; display: block; }
+.fix small { display: block; font-size: 12px; color: var(--mut); margin-top: 3px; line-height: 1.5; }
+.fix code { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; background: var(--soft); border-radius: 5px; padding: 1px 5px; color: var(--ink-2); }
+.fix .chip2 { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tag.red-l { background: var(--red-l); color: var(--red); }
+.bf-res { margin-top: auto; background: var(--bg); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; transition: background .3s; }
+.bf-res.ok { background: var(--g-l); }
+.bf-res b { font-size: 26px; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.bf-res small { font-size: 12.5px; color: var(--ink-2); display: block; margin-top: 4px; }
+
+/* ---------- where it applies ---------- */
+.where { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.hop { text-align: left; background: #fff; border: 1.5px solid var(--line); border-radius: 22px; padding: 20px; transition: border-color .15s, box-shadow .15s, transform .15s; display: flex; flex-direction: column; gap: 14px; }
+.hop:hover { transform: translateY(-2px); border-color: var(--line-2); box-shadow: var(--sh-m); }
+.hop.on { border-color: var(--g); box-shadow: 0 0 0 4px rgba(0, 132, 84, .08); }
+.hop svg.flow { width: 100%; height: auto; }
+.hop h4 { font-size: 15.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.hop h4 span.nb { width: 24px; height: 24px; border-radius: 8px; background: var(--g-l); color: var(--g); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.hop p { font-size: 13px; color: var(--mut); line-height: 1.55; margin-top: -6px; }
+.pf { stroke-dasharray: 3 6; animation: dashm 1.2s linear infinite; }
+@keyframes dashm { to { stroke-dashoffset: -18; } }
+
+/* ---------- measure ---------- */
+.meas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.m { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 22px; }
+.m .lb { font-size: 12.5px; color: var(--mut); font-weight: 500; display: flex; justify-content: space-between; gap: 8px; }
+.m .vs { display: flex; align-items: baseline; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.m .vs s { font-size: 18px; color: var(--mut); text-decoration-thickness: 1.5px; font-variant-numeric: tabular-nums; }
+.m .vs b { font-size: 36px; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.m .vs .ar { color: var(--g); width: 20px; height: 20px; align-self: center; }
+.m .meter { margin-top: 16px; height: 6px; border-radius: 3px; background: var(--soft); overflow: hidden; }
+.m .meter i { display: block; height: 100%; border-radius: 3px; background: var(--g); width: 0; transition: width 1.2s cubic-bezier(.2, .7, .2, 1); }
+.m .meter.go i { width: var(--w); }
+.m p { font-size: 12.5px; color: var(--mut); margin-top: 12px; line-height: 1.55; }
+.hint { margin-top: 14px; display: flex; gap: 14px; align-items: flex-start; padding: 16px 20px; border-radius: 18px; background: #fff; border: 1px dashed var(--line-2); font-size: 13.5px; color: var(--ink-2); line-height: 1.6; }
+.hint .ic { width: 20px; height: 20px; color: var(--blue); margin-top: 2px; }
+.hint b { color: var(--ink); }
+
+@media (max-width: 1000px) {
+  .cmp, .two, .where, .meas { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .xm-lang, .hdr-login { display: none; }
+  .wrap { padding: 0 14px; }
+  .intro { padding-top: 28px; }
+  .axis, .row { grid-template-columns: 1fr; }
+  .axis > span { display: none; }
+  .row { height: auto; padding: 6px 0 8px; gap: 4px; }
+  .sw b { font-size: 34px; }
+  .wf { padding: 18px 16px 14px; }
+  .code { padding: 16px; }
+  .code pre { font-size: 11.5px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Trading"></div>
+
+<main class="wrap">
+  <header class="intro">
+    <div><span class="eyebrow">Performance</span><h1>Make the next page <em>feel instant.</em></h1></div>
+    <p>The register page and the PWA login are the two moments a new visitor must not wait. The browser can load them while the visitor is still reading. A few lines of markup, no new tools.</p>
+  </header>
+
+  <!-- ===== timing comparison ===== -->
+  <section class="sec" style="margin-top:28px" id="cmpSec">
+    <div class="runbar">
+      <button class="btn btn-primary btn-lg" id="run" type="button" style="border-radius:999px"><span class="ic" data-ic="play"></span><span id="runT">Run comparison</span></button>
+      <div class="phases" id="phases">
+        <span class="ph" data-p="0"><i>1</i>Visitor reads the page</span>
+        <span class="ph" data-p="1"><i>2</i>Clicks Register</span>
+        <span class="ph" data-p="2"><i>3</i>Next page loads</span>
+      </div>
+      <span class="tag grey" title="Values are illustrative">Illustrative timings</span>
+    </div>
+
+    <div class="cmp" id="cmp"></div>
+    <div class="legend"><span><i style="background:var(--c-dns)"></i>DNS and TLS</span><span><i style="background:var(--c-srv)"></i>Server response</span><span><i style="background:var(--c-html)"></i>HTML download</span><span><i style="background:var(--c-js)"></i>CSS and JS</span><span><i style="background:var(--c-paint)"></i>Render and paint</span><span><i style="background:repeating-linear-gradient(135deg,#bbb 0 3px,#eee 3px 6px)"></i>Done before the click</span></div>
+  </section>
+
+  <!-- ===== speculation rules + bfcache ===== -->
+  <section class="sec">
+    <div class="sh"><div><span class="eyebrow">How</span><h2>Tell the browser what comes next</h2></div><p>Speculation Rules are plain JSON on the page. Browsers that do not support them ignore the block, so nothing breaks.</p></div>
+    <div class="two">
+      <div class="code">
+        <div class="code-h">
+          <div class="pill-tabs" id="tabs"><button class="on" data-t="landing" type="button">Landing pages</button><button data-t="success" type="button">Register success page</button></div>
+          <button class="cbtn" id="copy" type="button"><span class="ic" data-ic="copy"></span><span>Copy</span></button>
+        </div>
+        <pre id="snippet"></pre>
+        <div class="live">
+          <div class="live-top">
+            <div><b>Try it on this page</b><small>Adds a real rule set to this document. In a Chromium browser, hover the link for about 200 ms and the register page is prerendered.</small></div>
+            <label class="sw2" title="Activate speculation rules on this page"><input type="checkbox" id="live" aria-label="Activate speculation rules on this page"><i></i></label>
+          </div>
+          <div class="chips" id="chips"></div>
+          <a class="test-link" id="testLink" href="../02-hero-email/register.html"><span class="ic" data-ic="arrow" style="width:16px;height:16px"></span>Open the register page (hover to prerender)</a>
+        </div>
+      </div>
+
+      <div class="bf">
+        <div class="bf-h"><div><h3>Back and forward cache fixes</h3><p>Lets the Back button restore a page instantly instead of reloading it.</p></div>
+          <label class="sw2" title="Apply all fixes"><input type="checkbox" id="bfAll" aria-label="Apply all back and forward cache fixes"><i></i></label></div>
+        <div id="fixes"></div>
+        <div class="bf-res" id="bfRes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== where it applies ===== -->
+  <section class="sec">
+    <div class="sh"><div><span class="eyebrow">Where it applies</span><h2>Three hand-over points</h2></div><p>Each one is a high-intent click to a page we already know the visitor will want. Select one to see its rule.</p></div>
+    <div class="where" id="where"></div>
+  </section>
+
+  <!-- ===== measurement ===== -->
+  <section class="sec">
+    <div class="sh"><div><span class="eyebrow">Measure</span><h2>What we will track</h2></div><p>Ship to a share of traffic first and keep a holdout, so the uplift is measured, not assumed.</p></div>
+    <div class="meas" id="meas">
+      <div class="m"><div class="lb"><span>Register-page load time</span><span class="tag grey">Perceived navigation</span></div><div class="vs"><s>1,180 ms</s><span class="ic ar" data-ic="arrow"></span><b>120 ms</b></div><div class="meter"><i style="--w:90%"></i></div><p>Click to usable form. Illustrative lab value; field value comes from real visits.</p></div>
+      <div class="m"><div class="lb"><span>Conversion</span><span class="tag grey">Landing to registered</span></div><div class="vs"><s>38.0%</s><span class="ic ar" data-ic="arrow"></span><b>40.5%</b></div><div class="meter"><i style="--w:68%"></i></div><p>Placeholder uplift. Real number from an A/B test with a 10% holdout.</p></div>
+      <div class="m"><div class="lb"><span>Time to first login</span><span class="tag grey">Success page to PWA</span></div><div class="vs"><s>9.4 s</s><span class="ic ar" data-ic="arrow"></span><b>6.1 s</b></div><div class="meter"><i style="--w:35%"></i></div><p>From account created to signed in on my.xmtrading.com. Illustrative baseline and target.</p></div>
+    </div>
+    <div class="hint"><span class="ic" data-ic="chart"></span><div><b>Real Core Web Vitals will come from field data.</b> LCP, INP and CLS will be read from real visitors (CrUX and our own RUM beacon), segmented by device and country. Every number on this page is an illustrative placeholder.</div></div>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $$('[data-ic]').forEach(function (e) { e.innerHTML = XM.icon(e.getAttribute('data-ic')); });
+
+  XM.notes({
+    title: 'Pre-load the register page and PWA login',
+    today: 'Clicking Register or Log in starts a cold navigation: DNS, TLS, server, assets and render all begin after the click.',
+    proposed: 'Speculation Rules prerender the register page from landing pages and prefetch the PWA login from the success page. Back/forward cache fixes make the Back button instant.',
+    why: 'Removes the wait at the two highest-intent hand-overs. Low effort: a JSON block and three hygiene fixes, no visual change.',
+    metric: 'Register-page load time, landing-to-registered conversion (A/B with holdout), time to first login. Core Web Vitals from field data.'
+  });
+
+  /* ---------- waterfalls ---------- */
+  var T = 1180, PRE_MS = 1300, CLICK_MS = 600, SCALE = 3;
+  var ZONE = 24;                                   /* % of track used by the "before the click" lane */
+  var COL = { dns: 'var(--c-dns)', srv: 'var(--c-srv)', html: 'var(--c-html)', js: 'var(--c-js)', paint: 'var(--c-paint)' };
+  var ROWS = [
+    { k: 'dns', l: 'DNS and TLS', s: 0, d: 160 },
+    { k: 'srv', l: 'Server response', s: 160, d: 340 },
+    { k: 'html', l: 'HTML download', s: 500, d: 140 },
+    { k: 'js', l: 'CSS and JS', s: 640, d: 330 },
+    { k: 'paint', l: 'Render and paint', s: 970, d: 210 }
+  ];
+  var PRE_TOTAL = 970;                             /* work moved before the click (everything but paint) */
+  var WITH_POST = [{ s: 0, d: 70, t: 'Activate' }, { s: 70, d: 50, t: 'Paint' }];
+
+  function card(id, tag, title, sub) {
+    var ticks = [0, 300, 600, 900, 1200].map(function (v) { return '<span style="left:' + (ZONE + v / 1200 * (100 - ZONE)) + '%">' + (v === 0 ? 'Click' : v + ' ms') + '</span>'; }).join('');
+    return '<article class="wf" id="' + id + '"><div class="wf-h"><div><span class="tag ' + (id === 'wfB' ? '' : 'grey') + '">' + tag + '</span><h3>' + title + '</h3><p>' + sub + '</p></div><div class="sw"><div><b id="' + id + 'T">0</b><small>ms</small></div><span class="done-c" id="' + id + 'D"></span></div></div>' +
+      '<div class="axis"><span></span><div class="tk">' + ticks + '</div></div><div id="' + id + 'R"></div>' +
+      '<div class="wf-n"><span class="ic">' + XM.icon(id === 'wfB' ? 'bolt' : 'warn') + '</span><span>' + (id === 'wfB' ? 'The browser prerenders the page while the visitor reads. At the click it only has to activate it.' : 'Nothing happens until the click. Every step waits for the one before it.') + '</span></div></article>';
+  }
+  $('#cmp').innerHTML = card('wfA', 'Without preload', 'Cold navigation', 'Everything starts on click') + card('wfB', 'With Speculation Rules', 'Prerendered page', 'Most work finished before the click');
+  function fill(id, withPre) {
+    $('#' + id + 'R').innerHTML = ROWS.map(function (r, i) {
+      var h = '<div class="row"><div class="l">' + r.l + '</div><div class="trk"><span class="zone"></span><span class="clickline"></span>';
+      if (!withPre) h += '<span class="bar" data-i="' + i + '" style="left:' + (ZONE + r.s / 1200 * (100 - ZONE)) + '%;background:' + COL[r.k] + '"></span>';
+      else if (i < 4) h += '<span class="bar pre" data-i="' + i + '" style="left:' + (1 + r.s / PRE_TOTAL * (ZONE - 3)) + '%;background:' + COL[r.k] + '"></span>';
+      else WITH_POST.forEach(function (p, j) { h += '<span class="bar post" data-j="' + j + '" style="left:' + (ZONE + p.s / 1200 * (100 - ZONE)) + '%;background:' + (j ? '#005f3c' : COL.paint) + '">' + (p.d > 60 ? '' : '') + '</span>'; });
+      return h + '</div></div>';
+    }).join('');
+  }
+  fill('wfA', false); fill('wfB', true);
+
+  var raf = 0, hasRun = false;
+  function setPhase(p) { $$('.ph').forEach(function (e) { var i = +e.getAttribute('data-p'); e.classList.toggle('on', i === p); e.classList.toggle('done', i < p); }); }
+  function clamp(x) { return Math.max(0, Math.min(1, x)); }
+  function reset() {
+    cancelAnimationFrame(raf);
+    $$('.bar').forEach(function (b) { b.style.width = '0'; b.textContent = ''; });
+    $('#wfAT').textContent = '0'; $('#wfBT').textContent = '0';
+    ['wfA', 'wfB'].forEach(function (id) { $('#' + id).classList.remove('fin', 'win'); $('#' + id + 'D').textContent = ''; });
+    setPhase(-1);
+  }
+  function run() {
+    reset(); hasRun = true;
+    $('#run').disabled = true; $('#runT').textContent = 'Running…';
+    var t0 = performance.now(), fast = reduce ? 0.02 : 1;
+    var finA = false, finB = false;
+    (function frame(now) {
+      var e = (now - t0) / fast;
+      if (e < PRE_MS) {                                           /* phase 1: reading, browser works in the background */
+        setPhase(0);
+        var pv = clamp(e / (PRE_MS - 250)) * PRE_TOTAL;
+        $$('#wfBR .bar.pre').forEach(function (b) { var r = ROWS[+b.getAttribute('data-i')]; var p = clamp((pv - r.s) / r.d); b.style.width = (p * r.d / PRE_TOTAL * (ZONE - 3)) + '%'; });
+      } else if (e < PRE_MS + CLICK_MS) {                       /* phase 2: click */
+        setPhase(1);
+      } else {                                                    /* phase 3: navigation */
+        setPhase(2);
+        var t = (e - PRE_MS - CLICK_MS) / SCALE;
+        $$('#wfAR .bar').forEach(function (b) { var r = ROWS[+b.getAttribute('data-i')]; var p = clamp((t - r.s) / r.d); b.style.width = (p * r.d / 1200 * (100 - ZONE)) + '%'; if (p > .9 && r.d >= 200) b.textContent = r.d + ' ms'; });
+        $$('#wfBR .bar.post').forEach(function (b) { var r = WITH_POST[+b.getAttribute('data-j')]; var p = clamp((t - r.s) / r.d); b.style.width = (p * r.d / 1200 * (100 - ZONE)) + '%'; });
+        $('#wfAT').textContent = XM.fmt(Math.min(t, T), 0);
+        $('#wfBT').textContent = XM.fmt(Math.min(t, 120), 0);
+        if (!finB && t >= 120) { finB = true; $('#wfB').classList.add('fin', 'win'); $('#wfBD').textContent = 'Ready in 120 ms'; }
+        if (!finA && t >= T) { finA = true; $('#wfA').classList.add('fin'); $('#wfAD').textContent = 'Ready in 1,180 ms'; }
+        if (finA) { $('#run').disabled = false; $('#runT').textContent = 'Run again'; return; }
+      }
+      raf = requestAnimationFrame(frame);
+    })(t0);
+  }
+  $('#run').addEventListener('click', run);
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { io.disconnect(); if (!hasRun) setTimeout(function () { if (!hasRun) run(); }, 500); } }, { threshold: .35 });
+    io.observe($('#cmp'));
+  }
+
+  /* ---------- speculation rules snippet ---------- */
+  var SNIP = {
+    landing:
+      '<span class="t">&lt;script</span> <span class="a">type</span>=<span class="s">"speculationrules"</span><span class="t">&gt;</span>\n' +
+      '{\n' +
+      '  <span class="k">"prerender"</span>: [{\n' +
+      '    <span class="k">"where"</span>: { <span class="k">"href_matches"</span>: <span class="s">"/register*"</span> },\n' +
+      '    <span class="k">"eagerness"</span>: <span class="s">"moderate"</span>\n' +
+      '  }],\n' +
+      '  <span class="k">"prefetch"</span>: [{\n' +
+      '    <span class="k">"urls"</span>: [<span class="s">"/register"</span>],\n' +
+      '    <span class="k">"eagerness"</span>: <span class="s">"moderate"</span>\n' +
+      '  }]\n' +
+      '}\n' +
+      '<span class="t">&lt;/script&gt;</span>\n' +
+      '<span class="c">&lt;!-- Used on: homepage, campaign and affiliate landing pages --&gt;</span>',
+    success:
+      '<span class="t">&lt;script</span> <span class="a">type</span>=<span class="s">"speculationrules"</span><span class="t">&gt;</span>\n' +
+      '{\n' +
+      '  <span class="k">"prefetch"</span>: [{\n' +
+      '    <span class="k">"urls"</span>: [<span class="s">"https://my.xmtrading.com/login"</span>],\n' +
+      '    <span class="k">"eagerness"</span>: <span class="s">"moderate"</span>\n' +
+      '  }]\n' +
+      '}\n' +
+      '<span class="t">&lt;/script&gt;</span>\n' +
+      '<span class="c">&lt;!-- Used on: register success page. Cross-site, so prefetch the\n     document and warm the connection; no prerender. --&gt;</span>'
+  };
+  var PLAIN = {
+    landing: '<script type="speculationrules">\n{\n  "prerender": [{\n    "where": { "href_matches": "/register*" },\n    "eagerness": "moderate"\n  }],\n  "prefetch": [{\n    "urls": ["/register"],\n    "eagerness": "moderate"\n  }]\n}\n<\/script>',
+    success: '<script type="speculationrules">\n{\n  "prefetch": [{\n    "urls": ["https://my.xmtrading.com/login"],\n    "eagerness": "moderate"\n  }]\n}\n<\/script>'
+  };
+  var tab = 'landing';
+  function showTab(t, hop) {
+    tab = t; $('#snippet').innerHTML = SNIP[t];
+    $$('#tabs button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-t') === t); });
+    var hit = false;
+    $$('.hop').forEach(function (h, i) { var on = hop === undefined ? (!hit && h.getAttribute('data-t') === t) : i === hop; if (on) hit = true; h.classList.toggle('on', on); });
+  }
+  $$('#tabs button').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-t')); }); });
+  $('#copy').addEventListener('click', function () {
+    var done = function () { XM.toast('Snippet copied'); };
+    if (navigator.clipboard) navigator.clipboard.writeText(PLAIN[tab]).then(done, done); else done();
+  });
+
+  /* live demo: injects a real <script type="speculationrules"> for this prototype's own pages */
+  var supported = !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules'));
+  var liveEl = null;
+  function chips() {
+    var on = !!liveEl;
+    $('#chips').innerHTML =
+      '<span class="st ' + (supported ? 'ok' : 'warn') + '">' + (supported ? 'Supported in this browser' : 'Not supported here, ignored safely') + '</span>' +
+      '<span class="st ' + (on ? 'ok' : '') + '">' + (on ? '2 rule sets active' : 'Rules off') + '</span>' +
+      '<span class="st">eagerness: moderate</span>' +
+      (document.prerendering ? '<span class="st ok">This page was prerendered</span>' : '');
+  }
+  $('#live').addEventListener('change', function () {
+    if (this.checked) {
+      liveEl = document.createElement('script'); liveEl.type = 'speculationrules'; liveEl.id = 'xm-live-rules';
+      liveEl.textContent = JSON.stringify({
+        prerender: [{ urls: [XM.url('ideas/02-hero-email/register.html')], eagerness: 'moderate' }],
+        prefetch: [{ urls: [XM.url('ideas/05-success-handoff/index.html')], eagerness: 'moderate' }]
+      });
+      document.head.appendChild(liveEl);
+      XM.toast(supported ? 'Speculation rules active on this page' : 'Added, but this browser ignores them');
+    } else { if (liveEl) liveEl.remove(); liveEl = null; XM.toast('Speculation rules removed'); }
+    chips();
+  });
+  $('#testLink').href = XM.url('ideas/02-hero-email/register.html');
+  chips(); showTab('landing');
+
+  /* ---------- bfcache fixes ---------- */
+  var FIX = [
+    { t: 'No unload handlers', bad: 'Page has <code>unload</code> / <code>beforeunload</code> listeners', fix: 'Use <code>pagehide</code> instead', },
+    { t: 'Cache-Control is not no-store', bad: 'Main document sends <code>Cache-Control: no-store</code>', fix: 'Use <code>no-cache</code> or a short max-age', },
+    { t: 'Avoid window.opener', bad: 'Links open with a live <code>window.opener</code> reference', fix: 'Add <code>rel="noopener"</code> to external links', }
+  ];
+  var fx = [false, false, false];
+  function renderFix() {
+    $('#fixes').innerHTML = FIX.map(function (f, i) {
+      return '<div class="fix"><div><b>' + f.t + '</b><small>' + (fx[i] ? f.fix : f.bad) + '</small></div><label class="sw2"><input type="checkbox" data-i="' + i + '"' + (fx[i] ? ' checked' : '') + ' aria-label="' + f.t + '"><i></i></label><div class="chip2"><span class="tag ' + (fx[i] ? '' : 'red-l') + '">' + (fx[i] ? 'Fixed' : 'Blocks bfcache') + '</span></div></div>';
+    }).join('');
+    $$('#fixes input').forEach(function (inp) { inp.addEventListener('change', function () { var i = inp.getAttribute('data-i'); fx[+i] = inp.checked; renderFix(); var again = $('#fixes input[data-i="' + i + '"]'); if (again) again.focus(); }); });
+    var n = fx.filter(function (x) { return !x; }).length;
+    $('#bfAll').checked = n === 0;
+    var r = $('#bfRes'); r.classList.toggle('ok', n === 0);
+    r.innerHTML = n === 0
+      ? '<div><b class="up" style="color:var(--g)">~40 ms</b><small>Back button restores the page from memory</small></div><span class="tag">Eligible for bfcache</span>'
+      : '<div><b>~900 ms</b><small>Back button reloads the page from the network</small></div><span class="tag red-l">' + n + ' issue' + (n > 1 ? 's' : '') + ' blocking</span>';
+  }
+  $('#bfAll').addEventListener('change', function () { fx = [this.checked, this.checked, this.checked]; renderFix(); });
+  renderFix();
+
+  /* ---------- where it applies ---------- */
+  function pg(x, label, accent) {
+    return '<g transform="translate(' + x + ' 0)"><rect width="92" height="118" rx="12" fill="#fff" stroke="' + (accent ? '#008454' : '#d6d9de') + '" stroke-width="' + (accent ? 2 : 1.5) + '"/><rect x="0" y="0" width="92" height="18" rx="12" fill="' + (accent ? '#e6f3ed' : '#f1f2f4') + '"/><rect x="0" y="12" width="92" height="6" fill="' + (accent ? '#e6f3ed' : '#f1f2f4') + '"/>' +
+      '<circle cx="9" cy="9" r="2.4" fill="#ff5f57"/><circle cx="17" cy="9" r="2.4" fill="#febc2e"/><circle cx="25" cy="9" r="2.4" fill="#28c840"/>' +
+      '<rect x="10" y="30" width="48" height="7" rx="3.5" fill="#1d2024"/><rect x="10" y="44" width="70" height="4" rx="2" fill="#d6d9de"/><rect x="10" y="52" width="58" height="4" rx="2" fill="#d6d9de"/>' +
+      (accent ? '<rect x="10" y="66" width="72" height="14" rx="5" fill="#f1f2f4"/><rect x="10" y="85" width="72" height="14" rx="5" fill="#f1f2f4"/><rect x="10" y="104" width="72" height="8" rx="4" fill="#008454"/>' : '<rect x="10" y="68" width="40" height="14" rx="7" fill="#008454"/><rect x="10" y="90" width="30" height="4" rx="2" fill="#e5e7ea"/>') +
+      '<text x="46" y="136" text-anchor="middle" font-family="Poppins,sans-serif" font-size="10.5" font-weight="600" fill="#4a5058">' + label + '</text></g>';
+  }
+  function flow(a, b, kind) {
+    return '<svg class="flow" viewBox="0 0 300 146" aria-hidden="true">' + pg(6, a, false) + pg(202, b, true) +
+      '<path class="pf" d="M104 58 H192" stroke="#008454" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M188 52 l8 6 l-8 6" stroke="#008454" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<rect x="116" y="68" width="68" height="20" rx="10" fill="#e6f3ed"/><text x="150" y="82" text-anchor="middle" font-family="Poppins,sans-serif" font-size="10" font-weight="700" fill="#006b44">' + kind + '</text></svg>';
+  }
+  var HOPS = [
+    { t: 'landing', n: 1, h: 'Homepage to Register', a: 'Homepage', b: 'Register', k: 'prerender', p: 'The hero button and header Register link are the most clicked elements on the site.' },
+    { t: 'success', n: 2, h: 'Register success to PWA login', a: 'Success', b: 'PWA login', k: 'prefetch', p: 'The last step of onboarding. The login document is already fetched when the visitor taps Log in.' },
+    { t: 'landing', n: 3, h: 'Landing to Register', a: 'Landing', b: 'Register', k: 'prerender', p: 'Campaign and affiliate pages send paid traffic straight to the form. Every second counts.' }
+  ];
+  $('#where').innerHTML = HOPS.map(function (h) {
+    return '<button class="hop" type="button" data-t="' + h.t + '">' + flow(h.a, h.b, h.k) + '<h4><span class="nb">' + h.n + '</span>' + h.h + '</h4><p>' + h.p + '</p></button>';
+  }).join('');
+  $$('.hop').forEach(function (h, i) { h.addEventListener('click', function () { showTab(h.getAttribute('data-t'), i); $('#snippet').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); }); });
+  showTab('landing');
+
+  /* ---------- meters ---------- */
+  if ('IntersectionObserver' in window) {
+    var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { $$('.meter', e.target).forEach(function (m) { m.classList.add('go'); }); io2.disconnect(); } }); }, { threshold: .3 });
+    io2.observe($('#meas'));
+  } else $$('.meter').forEach(function (m) { m.classList.add('go'); });
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="06"></script>
+</body>
+</html>

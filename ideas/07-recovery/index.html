@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abandoned registration and verification recovery · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 07 · Recovery: the PWA saves every answer as a state; an email re-opens the exact screen with that state
+   ===================================================================== */
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+[data-ic] { display: inline-flex; }
+[data-ic] svg { width: 16px; height: 16px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 72px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+:where(button, a, select, input, [tabindex]):focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+.hd7 { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: center; padding: 44px 0 30px; }
+.hd7 h1 { font-size: clamp(32px, 4vw, 52px); line-height: 1.06; font-weight: 700; letter-spacing: -.03em; margin-top: 12px; max-width: 16ch; animation: fadeUp .7s both; }
+.hd7 .lead { margin-top: 16px; max-width: 54ch; animation: fadeUp .7s .08s both; }
+.hd7 .eyebrow { animation: fadeUp .6s both; }
+.hd7 .tabs-row { margin-top: 28px; animation: fadeUp .7s .16s both; }
+.pill-tabs { box-shadow: 0 1px 2px rgba(16, 24, 40, .05); max-width: 100%; }
+.pill-tabs button { display: inline-flex; align-items: center; gap: 8px; transition: all .2s; white-space: nowrap; }
+.pill-tabs button i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; background: var(--soft); color: var(--mut); font-size: 11px; font-weight: 700; display: grid; place-items: center; transition: all .2s; }
+.pill-tabs button.on { background: var(--ink); color: #fff; }
+.pill-tabs button.on i { background: var(--g); color: #fff; }
+.pill-tabs button:not(.on):hover { color: var(--ink); background: var(--soft); }
+
+.how { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 26px 28px; box-shadow: 0 24px 60px -36px rgba(16, 24, 40, .3); animation: fadeUp .8s .12s both; }
+.how .eb { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--g); }
+.how ol { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 0; position: relative; }
+.how li { display: grid; grid-template-columns: 34px 1fr; gap: 14px; padding: 12px 0; position: relative; }
+.how li + li { border-top: 1px solid var(--line); }
+.how li u { text-decoration: none; width: 34px; height: 34px; border-radius: 50%; background: var(--g-l); color: var(--g-d); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+.how li b { display: block; font-size: 15px; font-weight: 600; }
+.how li span { display: block; font-size: 13px; color: var(--mut); line-height: 1.45; margin-top: 2px; }
+
+/* ---------- scenes ---------- */
+.scene { animation: fadeUp .5s both; margin-top: 8px; }
+.sgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 22px; align-items: start; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 28px; box-shadow: 0 24px 60px -40px rgba(16, 24, 40, .25); }
+.panel h2 { font-size: 22px; line-height: 1.2; font-weight: 700; letter-spacing: -.02em; }
+.panel .sub { margin-top: 8px; font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+.stage { background: #eceef1; border-radius: var(--r-xl); padding: 24px 16px 28px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.seg { display: inline-flex; padding: 4px; border-radius: 999px; background: #fff; border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(16, 24, 40, .05); }
+.seg button { border: 0; background: none; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--mut); cursor: pointer; transition: all .2s; }
+.seg button.on { background: var(--ink); color: #fff; }
+.nums { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.nums button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line-2); background: #fff; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; transition: all .2s; }
+.nums button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.nums button:not(.on):hover { border-color: var(--ink); }
+.ncap { font-size: 12.5px; color: var(--mut); text-align: center; }
+.acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- phone ---------- */
+.pw { width: 316px; max-width: 100%; padding: 10px; border-radius: 46px; background: #15171a; box-shadow: 0 30px 60px -30px rgba(16, 24, 40, .55); }
+.scr { position: relative; height: 600px; border-radius: 36px; background: #fff; overflow: hidden; display: flex; flex-direction: column; }
+.sb { height: 36px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 12px; font-weight: 600; }
+.sb .isl { width: 78px; height: 20px; border-radius: 12px; background: #15171a; }
+.pt { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 18px 8px; }
+.pt .lg svg { height: 15px; width: auto; display: block; }
+.svc { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; border-radius: 999px; background: var(--g-l); color: var(--g-d); font-size: 11.5px; font-weight: 600; transition: background .3s, color .3s; }
+.svc i { width: 7px; height: 7px; border-radius: 50%; background: var(--g); }
+.svc.ing { background: var(--amber-l); color: #8a5300; } .svc.ing i { background: var(--amber); animation: blink .6s infinite alternate; }
+@keyframes blink { to { opacity: .25; } }
+.bn { flex: none; margin: 0 14px 6px; padding: 10px 12px; border-radius: 12px; background: var(--g-l); color: var(--g-d); font-size: 12.5px; line-height: 1.4; animation: fadeUp .5s both; }
+.bn b { display: block; font-size: 13px; }
+.pb { flex: 1; overflow: auto; padding: 4px 18px 8px; scrollbar-width: none; }
+.pb::-webkit-scrollbar { display: none; }
+.pb .st { font-size: 11px; color: var(--mut); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.pb .segs { display: flex; gap: 4px; margin: 8px 0 14px; }
+.pb .segs i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.pb .segs i.on { background: var(--g); }
+.pb h3 { font-size: 21px; font-weight: 700; letter-spacing: -.02em; margin: 0 0 14px; }
+.fld { margin-bottom: 12px; }
+.fld label { display: block; font-size: 12px; font-weight: 600; color: var(--mut); margin-bottom: 4px; }
+.fld input, .fld select { width: 100%; height: 44px; border: 1.5px solid var(--line-2); border-radius: 12px; padding: 0 12px; font: inherit; font-size: 14.5px; color: var(--ink); background: #fff; transition: border-color .2s, background .6s; }
+.fld input:focus, .fld select:focus { border-color: var(--g); outline: 0; }
+.fld.rest input, .fld.rest select, .fld.rest .upl.on { background: #eafaf2; border-color: #9fdfc0; }
+.fld .hint { font-size: 11.5px; color: var(--mut); margin-top: 4px; display: flex; gap: 5px; align-items: center; }
+.fld .hint svg { width: 12px; height: 12px; }
+.upl { width: 100%; height: 44px; border-radius: 12px; border: 1.5px dashed var(--line-2); background: #fff; font: inherit; font-size: 14px; font-weight: 600; color: var(--ink-2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.upl.on { border-style: solid; border-color: var(--g); color: var(--g-d); background: var(--g-l); }
+.pf { flex: none; display: flex; gap: 8px; padding: 10px 18px 20px; }
+.pf button { height: 48px; border-radius: 14px; border: 0; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+.pf .pback { padding: 0 16px; background: var(--soft); color: var(--ink-2); }
+.pf .pgo { flex: 1; background: var(--blue); color: #fff; }
+.pf .pback[disabled] { opacity: .4; cursor: default; }
+.splash { position: absolute; inset: 0; background: #0b0d10; display: grid; place-items: center; z-index: 5; transition: opacity .45s; }
+.splash.out { opacity: 0; pointer-events: none; }
+.splash svg { height: 22px; width: auto; }
+
+/* ---------- state inspector ---------- */
+.insp { margin-top: 18px; border-radius: 16px; background: #0f1215; color: #cfd5dc; overflow: hidden; }
+.insp .ih { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 16px; border-bottom: 1px solid rgba(255, 255, 255, .08); font-size: 12px; color: #8d96a3; }
+.insp .ih b { color: #fff; font-weight: 600; }
+.insp .ih .live { display: inline-flex; align-items: center; gap: 6px; color: #3ddc97; }
+.insp .ih .live i { width: 7px; height: 7px; border-radius: 50%; background: #3ddc97; }
+.insp pre { margin: 0; padding: 14px 16px 16px; font: 12.5px/1.65 ui-monospace, 'SF Mono', Menlo, Consolas, monospace; white-space: pre-wrap; word-break: break-word; max-height: 340px; overflow: auto; }
+.insp .ln { display: block; border-radius: 4px; padding: 0 6px; margin: 0 -6px; }
+.insp .k { color: #8ab4ff; }
+.insp .ln.hot { background: rgba(61, 220, 151, .16); animation: hotln 1.4s ease-out both; }
+@keyframes hotln { from { background: rgba(61, 220, 151, .4); } to { background: rgba(61, 220, 151, .08); } }
+.keep { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.keep > div { padding: 12px 14px; border-radius: 14px; background: var(--soft); font-size: 12.5px; line-height: 1.5; color: var(--ink-2); }
+.keep b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+.keep .y b { color: var(--g-d); } .keep .n b { color: var(--red); }
+.warn { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: var(--amber-l); color: #6b4300; font-size: 13px; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
+.warn svg { width: 16px; height: 16px; margin-top: 2px; flex: none; }
+
+/* ---------- email ---------- */
+.em { width: 100%; max-width: 440px; background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 24px 50px -30px rgba(16, 24, 40, .45); border: 1px solid var(--line); }
+.em .mh { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.em .mh b { display: block; font-size: 15px; line-height: 1.3; }
+.em .mh span { display: block; font-size: 12px; color: var(--mut); margin-top: 3px; }
+.em .hb { background: #0b0d10; padding: 16px 18px; } .em .hb svg { height: 16px; width: auto; display: block; }
+.em .mb { padding: 20px 18px 18px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.em h5 { font-size: 16px; color: var(--ink); margin: 0 0 6px; }
+.em .mp { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--soft); font-size: 13px; }
+.em .mp ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.em .mp li { display: flex; gap: 8px; align-items: center; color: var(--ink-2); }
+.em .mp li svg { width: 14px; height: 14px; color: var(--g); flex: none; }
+.em .mp li.cur { color: var(--ink); font-weight: 600; } .em .mp li.cur u { text-decoration: none; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--blue); flex: none; }
+.em .mp li.todo { color: var(--mut); } .em .mp li.todo u { text-decoration: none; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-2); flex: none; }
+.rs { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 13px 22px; border-radius: 999px; background: var(--g); color: #fff; font-weight: 700; font-size: 14.5px; text-decoration: none; transition: transform .2s, box-shadow .2s; box-shadow: 0 10px 24px -12px rgba(0, 132, 84, .7); }
+.rs svg, .upl svg { width: 16px; height: 16px; flex: none; }
+.rs:hover { transform: translateY(-1px); }
+.rs:focus-visible { outline-color: var(--ink); }
+.em .ft { margin-top: 14px; font-size: 12px; color: var(--mut); }
+.empty { padding: 26px 20px; text-align: center; color: var(--ink-2); font-size: 14px; line-height: 1.55; }
+
+.rules { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.rules li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 12px 14px; border-radius: 14px; background: var(--soft); }
+.rules .ic { width: 34px; height: 34px; border-radius: 10px; background: #fff; display: grid; place-items: center; color: var(--g); }
+.rules b { display: block; font-size: 14px; } .rules span { font-size: 13px; color: var(--ink-2); line-height: 1.5; display: block; margin-top: 1px; }
+.link { margin-top: 16px; padding: 14px 16px; border-radius: 14px; background: #0f1215; color: #cfd5dc; font: 12.5px/1.7 ui-monospace, 'SF Mono', Menlo, Consolas, monospace; word-break: break-all; }
+.link .h { color: #8d96a3; } .link .a { color: #8ab4ff; } .link .b { color: #3ddc97; } .link .c { color: #ffcb6b; }
+.legend { margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--mut); }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+
+/* resume steps */
+.rsteps { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
+.rsteps li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--soft); opacity: .35; transform: translateY(6px); transition: all .45s; }
+.rsteps li.on { opacity: 1; transform: none; }
+.rsteps u { text-decoration: none; width: 28px; height: 28px; border-radius: 50%; background: var(--g); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+.rsteps b { display: block; font-size: 14px; } .rsteps span { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; display: block; margin-top: 1px; }
+
+.guard { margin-top: 18px; padding: 14px 18px; border-radius: 16px; background: #fff; border: 1px solid var(--line); display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+.guard svg { width: 18px; height: 18px; color: var(--g); flex: none; margin-top: 2px; }
+
+@media (max-width: 980px) {
+  .hd7 { grid-template-columns: 1fr; gap: 28px; }
+  .sgrid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .wrap { padding: 0 16px; }
+  .panel { padding: 22px 18px; }
+  .keep { grid-template-columns: 1fr; }
+  .pill-tabs button { padding: 8px 12px; font-size: 13px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main class="wrap">
+  <section class="hd7">
+    <div>
+      <span class="eyebrow">Idea 07 · Recovery</span>
+      <h1>Pick up exactly where they stopped.</h1>
+      <p class="lead">Inside the PWA, registration and verification save every answer as a state while the user types. If they leave, an email brings them back to the same screen, with everything still filled in.</p>
+      <div class="tabs-row">
+        <div class="pill-tabs" role="tablist" aria-label="Scenes" id="tabs">
+          <button type="button" role="tab" data-t="save" class="on" aria-controls="sc-save"><i>1</i>Saved as they type</button>
+          <button type="button" role="tab" data-t="email" aria-controls="sc-email"><i>2</i>The email</button>
+          <button type="button" role="tab" data-t="resume" aria-controls="sc-resume"><i>3</i>Back on the screen</button>
+        </div>
+      </div>
+    </div>
+    <div class="how" aria-label="How it works">
+      <span class="eb">How it works</span>
+      <ol>
+        <li><u>1</u><div><b>Type</b><span>Each answer in registration or verification is written to a saved state.</span></div></li>
+        <li><u>2</u><div><b>Leave</b><span>The state keeps the last screen and every value entered so far.</span></div></li>
+        <li><u>3</u><div><b>Email</b><span>A reminder names that screen. Its button is a link to it, carrying the state.</span></div></li>
+        <li><u>4</u><div><b>Return</b><span>The link opens the PWA on that screen with the answers filled in.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== Scene 1: saved as they type ===== -->
+  <section class="scene" id="sc-save" aria-label="Saved as they type">
+    <div class="sgrid">
+      <div class="stage">
+        <div class="seg" id="flowSeg" role="group" aria-label="Flow"><button type="button" data-f="reg">Registration</button><button type="button" data-f="ver" class="on">Verification</button></div>
+        <div id="phoneA"></div>
+        <div class="nums" id="nums" role="group" aria-label="Screen"></div>
+        <div class="ncap" id="ncap"></div>
+      </div>
+      <div class="panel">
+        <span class="tag">Inside the PWA</span>
+        <h2 style="margin-top:12px">Every answer is kept as a state</h2>
+        <p class="sub">Type in any field, choose a value or add a photo. The state below updates with each change. Switch screens to see it follow the user.</p>
+        <div class="insp" aria-live="polite">
+          <div class="ih"><span><b>Saved state</b> &middot; <span id="inspWho"></span></span><span class="live"><i></i>live</span></div>
+          <pre id="inspPre"></pre>
+        </div>
+        <div class="keep" id="keep"></div>
+        <div class="warn" id="noMail" hidden><span data-ic="mail"></span><span><b>No email yet.</b> Re-targeting needs an address, so registration is recoverable once the user has typed their email on screen 1.</span></div>
+        <div class="acts" style="margin-top:20px;justify-content:flex-start">
+          <button class="btn btn-dark" type="button" id="leave"><span data-ic="arrow"></span>Leave the app</button>
+          <span class="ncap" style="align-self:center;text-align:left">Closes the app here. The next step is the email.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Scene 2: the email ===== -->
+  <section class="scene" id="sc-email" aria-label="The email" hidden>
+    <div class="sgrid">
+      <div class="stage">
+        <div class="seg" id="emSeg" role="group" aria-label="Email"><button type="button" data-e="1" class="on">Email 1 &middot; 1 hour</button><button type="button" data-e="2">Email 2 &middot; next day</button></div>
+        <div class="em" id="emBox"></div>
+        <div class="ncap">Press the button to follow the link.</div>
+      </div>
+      <div class="panel">
+        <span class="tag blue">Re-targeting</span>
+        <h2 style="margin-top:12px">The email is built from the state</h2>
+        <p class="sub">It names the screen the user left, lists what is already saved and links straight back to it.</p>
+        <div class="link" id="lnk" aria-label="Deep link"></div>
+        <div class="legend"><span><i style="background:#8ab4ff"></i>Which flow</span><span><i style="background:#3ddc97"></i>Which screen</span><span><i style="background:#ffcb6b"></i>Token that finds the saved state</span></div>
+        <ul class="rules">
+          <li><span class="ic" data-ic="bolt"></span><div><b>Trigger</b><span>A saved state exists, the flow is not completed and there has been no activity for 1 hour. Timings are illustrative.</span></div></li>
+          <li><span class="ic" data-ic="mail"></span><div><b>Content</b><span>The screen name, the steps already saved and the steps left. Nothing sensitive is written in the email.</span></div></li>
+          <li><span class="ic" data-ic="shield"></span><div><b>Stops</b><span>When the flow is completed, the user unsubscribes, or the saved state expires.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Scene 3: back on the screen ===== -->
+  <section class="scene" id="sc-resume" aria-label="Back on the screen" hidden>
+    <div class="sgrid">
+      <div class="stage">
+        <div id="phoneB"></div>
+        <div class="acts"><button class="btn btn-outline btn-sm" type="button" id="replay">Open the link again</button><button class="btn btn-ghost btn-sm" type="button" id="toEmail">Back to the email</button></div>
+      </div>
+      <div class="panel">
+        <span class="tag">Opens with the state</span>
+        <h2 style="margin-top:12px" id="rsH">The link opens the exact screen</h2>
+        <p class="sub" id="rsSub"></p>
+        <ol class="rsteps" id="rsteps"></ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="guard"><span data-ic="shield"></span><span><b>Proposed guard rails.</b> The password is never saved, so it is set again on return. The link carries a token, never the answers. The state expires after 7 days and the emails stop once the flow is completed.</span></div>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$, esc = XM.esc;
+  $$('[data-ic]').forEach(function (n) { n.innerHTML = XM.icon(n.getAttribute('data-ic')); });
+
+  var COUNTRIES = ['Thailand', 'Japan', 'Vietnam', 'Spain', 'Germany', 'Malaysia'];
+  var FLOWS = {
+    reg: { key: 'registration', label: 'Create account', steps: [
+      { id: 'details', nm: 'Your details', fields: [
+        { k: 'email', l: 'Email', t: 'email', ph: 'name@example.com' },
+        { k: 'country', l: 'Country of residence', t: 'select', opts: COUNTRIES }] },
+      { id: 'password', nm: 'Password', fields: [
+        { k: 'password', l: 'Password', t: 'password', secret: true, hint: 'Never saved. Set again on return.' }] }
+    ] },
+    ver: { key: 'verification', label: 'Verify account', steps: [
+      { id: 'personal-details', nm: 'Personal details', fields: [
+        { k: 'firstName', l: 'First name', t: 'text' }, { k: 'lastName', l: 'Last name', t: 'text' }, { k: 'dob', l: 'Date of birth', t: 'text', ph: 'DD/MM/YYYY' }] },
+      { id: 'address', nm: 'Address', fields: [
+        { k: 'street', l: 'Street', t: 'text' }, { k: 'city', l: 'City', t: 'text' }, { k: 'postcode', l: 'Postcode', t: 'text' }] },
+      { id: 'tax-residency', nm: 'Tax residency', fields: [
+        { k: 'taxCountry', l: 'Country of tax residence', t: 'select', opts: COUNTRIES }, { k: 'tin', l: 'Tax identification number', t: 'text', ph: 'Enter your TIN' }] },
+      { id: 'financial-information', nm: 'Financial information', fields: [
+        { k: 'employment', l: 'Employment', t: 'select', opts: ['Employed', 'Self-employed', 'Retired', 'Student'] },
+        { k: 'income', l: 'Annual income', t: 'select', opts: ['Under 20,000', '20,000 - 50,000', '50,000 - 100,000', 'Over 100,000'] }] },
+      { id: 'trading-experience', nm: 'Trading experience', fields: [
+        { k: 'experience', l: 'CFD trading experience', t: 'select', opts: ['None', 'Under 1 year', '1 - 3 years', 'Over 3 years'] }] },
+      { id: 'identity-document', nm: 'Identity document', fields: [
+        { k: 'idType', l: 'Document type', t: 'select', opts: ['Passport', 'ID card', 'Driving licence'] },
+        { k: 'idFile', l: 'Photo of the document', t: 'file', file: 'id-front.jpg' }] },
+      { id: 'proof-of-address', nm: 'Proof of address', fields: [
+        { k: 'poaType', l: 'Document type', t: 'select', opts: ['Utility bill', 'Bank statement'] },
+        { k: 'poaFile', l: 'Photo or PDF', t: 'file', file: 'address-proof.pdf' }] }
+    ] }
+  };
+  var S = {
+    flow: 'ver', step: { reg: 2, ver: 3 }, last: '', savedAt: new Date(), token: 'k9Q2x7',
+    f: {
+      reg: { email: 'alex@example.com', country: 'Thailand' },
+      ver: { firstName: 'Alex', lastName: 'Morgan', dob: '14/03/1991', street: '12 Sukhumvit Road', city: 'Bangkok', postcode: '10110', taxCountry: 'Thailand' }
+    }
+  };
+  var snap = { flow: 'ver', step: 3 };
+
+  function who() { return (S.f.ver.firstName || '').trim() || 'there'; }
+  function hasMail() { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((S.f.reg.email || '').trim()); }
+  function mailTo() { return hasMail() ? S.f.reg.email.trim() : 'alex@example.com'; }
+  function hhmmss(d) { return [d.getHours(), d.getMinutes(), d.getSeconds()].map(function (n) { return (n < 10 ? '0' : '') + n; }).join(':'); }
+
+  /* ---------- phone ---------- */
+  function Phone(root, o) {
+    var flow = o.flow, step = o.step, rest = false, timer = null;
+    root.innerHTML = '<div class="pw"><div class="scr">' +
+      '<div class="sb"><span>9:41</span><span class="isl"></span><span>LTE</span></div>' +
+      '<div class="pt"><span class="lg">' + XM.logo(false) + '</span><span class="svc"><i></i><b>Saved</b></span></div>' +
+      '<div class="bn" hidden></div><div class="pb"></div>' +
+      '<div class="pf"><button type="button" class="pback">Back</button><button type="button" class="pgo"></button></div>' +
+      '<div class="splash out">' + XM.logo(true) + '</div></div></div>';
+    var pb = $('.pb', root), chip = $('.svc', root), bn = $('.bn', root), back = $('.pback', root), go = $('.pgo', root), sp = $('.splash', root);
+    function fields() { return FLOWS[flow].steps[step - 1].fields; }
+    function render() {
+      var F = FLOWS[flow], s = F.steps[step - 1], n = F.steps.length, h = '';
+      for (var i = 1; i <= n; i++) h += '<i' + (i <= step ? ' class="on"' : '') + '></i>';
+      var out = '<div class="st">' + F.label + ' &middot; Step ' + step + ' of ' + n + '</div><div class="segs">' + h + '</div><h3>' + esc(s.nm) + '</h3>';
+      s.fields.forEach(function (fd) {
+        var v = S.f[flow][fd.k] || '', cls = 'fld' + (rest && v ? ' rest' : '');
+        out += '<div class="' + cls + '"><label for="f-' + root.id + fd.k + '">' + esc(fd.l) + '</label>';
+        if (fd.t === 'select') {
+          out += '<select id="f-' + root.id + fd.k + '" data-k="' + fd.k + '"><option value="">Select</option>' + fd.opts.map(function (x) { return '<option' + (x === v ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('') + '</select>';
+        } else if (fd.t === 'file') {
+          out += '<button type="button" class="upl' + (v ? ' on' : '') + '" data-k="' + fd.k + '" data-file="' + fd.file + '" id="f-' + root.id + fd.k + '">' + (v ? XM.icon('check') + esc(v) : 'Add photo') + '</button>';
+        } else {
+          out += '<input id="f-' + root.id + fd.k + '" data-k="' + fd.k + '" type="' + (fd.t === 'password' ? 'password' : fd.t === 'email' ? 'email' : 'text') + '" value="' + esc(v) + '" placeholder="' + esc(fd.ph || '') + '" autocomplete="off"' + (fd.secret ? ' data-secret="1"' : '') + '>';
+        }
+        if (fd.hint) out += '<div class="hint">' + XM.icon('lock') + esc(fd.hint) + '</div>';
+        out += '</div>';
+      });
+      pb.innerHTML = out; pb.scrollTop = 0;
+      back.disabled = step === 1;
+      go.textContent = step === n ? (flow === 'reg' ? 'Create account' : 'Submit for review') : 'Continue';
+      if (o.onChange) o.onChange(flow, step, false);
+    }
+    function saved(k, v, secret) {
+      if (!secret) { S.f[flow][k] = v; S.last = k; S.savedAt = new Date(); }
+      S.flow = flow; S.step[flow] = step;
+      chip.className = 'svc ing'; $('b', chip).textContent = secret ? 'Not saved' : 'Saving';
+      clearTimeout(timer);
+      timer = setTimeout(function () { chip.className = 'svc'; $('b', chip).textContent = 'Saved'; }, 450);
+      if (o.onChange) o.onChange(flow, step, true);
+    }
+    pb.addEventListener('input', function (e) { var t = e.target; if (t.matches('input')) saved(t.getAttribute('data-k'), t.value, !!t.getAttribute('data-secret')); });
+    pb.addEventListener('change', function (e) { var t = e.target; if (t.matches('select')) { saved(t.getAttribute('data-k'), t.value); } });
+    pb.addEventListener('click', function (e) {
+      var b = e.target.closest('.upl'); if (!b) return;
+      var k = b.getAttribute('data-k'), on = !S.f[flow][k];
+      saved(k, on ? b.getAttribute('data-file') : '');
+      b.classList.toggle('on', on); b.innerHTML = on ? XM.icon('check') + esc(b.getAttribute('data-file')) : 'Add photo';
+    });
+    back.addEventListener('click', function () { if (step > 1) { step--; S.step[flow] = step; S.flow = flow; render(); } });
+    go.addEventListener('click', function () {
+      var n = FLOWS[flow].steps.length;
+      if (step < n) { step++; S.step[flow] = step; S.flow = flow; render(); }
+      else XM.toast(flow === 'reg' ? 'Account created (demo). Recovery stops here.' : 'Submitted for review (demo). Recovery stops here.');
+    });
+    return {
+      go: function (f, s) { flow = f; step = s; rest = false; bn.hidden = true; render(); },
+      get: function () { return { flow: flow, step: step }; },
+      launch: function (f, s) {
+        flow = f; step = s; rest = true; render();
+        if (f === 'reg') bn.innerHTML = '<b>Welcome back.</b>We kept your email and country. Set your password to finish.';
+        else bn.innerHTML = '<b>Welcome back, ' + esc(who()) + '.</b>We kept your answers. You are on ' + esc(FLOWS.ver.steps[s - 1].nm) + '.';
+        bn.hidden = false; bn.style.animation = 'none'; void bn.offsetWidth; bn.style.animation = '';
+        sp.classList.remove('out');
+        setTimeout(function () { sp.classList.add('out'); }, 900);
+      }
+    };
+  }
+
+  /* ---------- scene 1 ---------- */
+  var phA, nums = $('#nums');
+  function paintNums() {
+    var F = FLOWS[S.flow], h = '';
+    F.steps.forEach(function (s, i) { h += '<button type="button" data-n="' + (i + 1) + '" aria-label="Screen ' + (i + 1) + ', ' + esc(s.nm) + '">' + (i + 1) + '</button>'; });
+    nums.innerHTML = h;
+    var st = S.step[S.flow];
+    $$('button', nums).forEach(function (b) { var on = +b.getAttribute('data-n') === st; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+    $('#ncap').textContent = 'Screen ' + st + ' of ' + F.steps.length + ' \u00b7 ' + F.steps[st - 1].nm;
+    $$('#flowSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-f') === S.flow); });
+  }
+  function stateObj(flow, step) {
+    var F = FLOWS[flow], fields = {}, never = [];
+    F.steps.forEach(function (s) { s.fields.forEach(function (fd) {
+      if (fd.secret) { never.push(fd.k); return; }
+      var v = S.f[flow][fd.k]; if (v) fields[fd.k] = fd.t === 'file' ? v + ' (upload reference)' : v;
+    }); });
+    var o = { flow: F.key, screen: F.steps[step - 1].id, step: step + ' of ' + F.steps.length, fields: fields };
+    if (never.length) o.never_stored = never;
+    o.saved_at = hhmmss(S.savedAt);
+    return o;
+  }
+  function paintState(flow, step) {
+    var o = stateObj(flow, step), lines = JSON.stringify(o, null, 2).split('\n');
+    $('#inspPre').innerHTML = lines.map(function (ln) {
+      var m = ln.match(/^(\s*)"([^"]+)":(.*)$/), hot = m && m[2] === S.last && S.last;
+      var html = esc(ln);
+      if (m) html = esc(m[1]) + '<span class="k">"' + esc(m[2]) + '"</span>:' + esc(m[3]);
+      return '<span class="ln' + (hot ? ' hot' : '') + '">' + html + '</span>';
+    }).join('');
+    $('#inspWho').textContent = flow === 'reg' ? (hasMail() ? S.f.reg.email.trim() : 'no email yet') : S.f.reg.email;
+    $('#noMail').hidden = !(flow === 'reg' && !hasMail());
+    $('#keep').innerHTML = flow === 'reg'
+      ? '<div class="y"><b>Saved</b>Email and country, as soon as they are entered.</div><div class="n"><b>Not saved</b>The password. It is set again on return.</div>'
+      : '<div class="y"><b>Saved</b>Every answer and the reference to each uploaded document.</div><div class="n"><b>Not in the link</b>The answers themselves. The link only carries a token.</div>';
+  }
+  phA = Phone($('#phoneA'), { flow: 'ver', step: 3, onChange: function (f, s, typed) { if (!typed) { S.flow = f; S.step[f] = s; S.last = ''; } paintNums(); paintState(f, s); } });
+  nums.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) phA.go(S.flow, +b.getAttribute('data-n')); });
+  $('#flowSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; var f = b.getAttribute('data-f'); S.flow = f; phA.go(f, S.step[f]); });
+  $('#leave').addEventListener('click', function () { setTab('email'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  /* ---------- scene 2 ---------- */
+  var emN = 1;
+  function linkOf() { var F = FLOWS[snap.flow]; return { flow: F.key, screen: F.steps[snap.step - 1].id }; }
+  function paintEmail() {
+    var F = FLOWS[snap.flow], n = F.steps.length, s = F.steps[snap.step - 1], left = n - snap.step + 1, box = $('#emBox'), L = linkOf();
+    $('#lnk').innerHTML = '<span class="h">https://my.xmtrading.com/resume</span><br>?flow=<span class="a">' + L.flow + '</span><br>&amp;screen=<span class="b">' + L.screen + '</span><br>&amp;t=<span class="c">' + S.token + '</span>';
+    if (snap.flow === 'reg' && !hasMail()) {
+      box.innerHTML = '<div class="empty"><b>No email to send to.</b><br>The user left before typing an email address on screen 1, so there is nothing to re-target yet.</div>';
+      return;
+    }
+    var ver = snap.flow === 'ver', todo = '';
+    var list = F.steps.map(function (st, i) {
+      var k = i + 1;
+      return k < snap.step ? '<li>' + XM.icon('check') + esc(st.nm) + ' saved</li>' : k === snap.step ? '<li class="cur"><u></u>' + esc(st.nm) + ' &middot; you stopped here</li>' : '<li class="todo"><u></u>' + esc(st.nm) + '</li>';
+    });
+    if (list.length > 5) list = list.slice(0, 1).concat(list.slice(Math.max(1, snap.step - 2), snap.step + 2));
+    var subj = emN === 1
+      ? (ver ? 'Continue verifying your account at ' + s.nm : 'Finish creating your XMTrading account')
+      : (ver ? 'Your verification is ' + left + (left === 1 ? ' step' : ' steps') + ' from done' : 'Your XMTrading account is almost ready');
+    var lead = emN === 1
+      ? (ver ? 'You stopped at <b>' + esc(s.nm) + '</b> (step ' + snap.step + ' of ' + n + '). Your answers are saved.' : 'You stopped at <b>' + esc(s.nm) + '</b>. Your email and country are saved.')
+      : (ver ? 'A reminder: your answers are still saved, and <b>' + esc(s.nm) + '</b> is next.' : 'A reminder: your details are still saved. Set a password to finish.');
+    box.innerHTML = '<div class="mh"><b>' + esc(subj) + '</b><span>From XMTrading &middot; to ' + esc(mailTo()) + '</span></div><div class="hb">' + XM.logo(true) + '</div>' +
+      '<div class="mb"><h5>Hi ' + esc(who() === 'there' ? 'there' : who()) + ',</h5>' + lead +
+      '<div class="mp"><b style="color:var(--ink)">Your progress</b><ul>' + list.join('') + '</ul></div>' +
+      '<a class="rs" id="emGo" href="#" title="https://my.xmtrading.com/resume?flow=' + L.flow + '&amp;screen=' + L.screen + '&amp;t=' + S.token + '">Continue at ' + esc(s.nm) + XM.icon('arrow') + '</a>' +
+      '<div class="ft">The link works for 7 days. Not you? Ignore this email.</div></div>';
+  }
+  $('#emSeg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; emN = +b.getAttribute('data-e'); $$('#emSeg button').forEach(function (x) { x.classList.toggle('on', x === b); }); paintEmail(); });
+  $('#emBox').addEventListener('click', function (e) { var a = e.target.closest('#emGo'); if (!a) return; e.preventDefault(); setTab('resume'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  /* ---------- scene 3 ---------- */
+  var phB = Phone($('#phoneB'), { flow: 'ver', step: 3, onChange: function () { } });
+  var rt = [];
+  function paintResume() {
+    var F = FLOWS[snap.flow], s = F.steps[snap.step - 1], L = linkOf(), cnt = Object.keys(stateObj(snap.flow, snap.step).fields).length;
+    $('#rsSub').textContent = snap.flow === 'ver'
+      ? 'The user opens the link on any device. The PWA loads the saved state and lands on ' + s.nm + ', not on the start.'
+      : 'The user opens the link. The PWA loads the saved state and lands on the password screen, not on the start.';
+    var items = [
+      ['Link opened', '/resume?flow=' + L.flow + '&screen=' + L.screen],
+      ['Token matched the saved state', 'Saved ' + (emN === 1 ? '1 hour' : 'a day') + ' ago, still inside 7 days.'],
+      ['Screen opened', s.nm + ' \u00b7 step ' + snap.step + ' of ' + F.steps.length],
+      ['Answers filled in', cnt + (cnt === 1 ? ' value' : ' values') + ' restored' + (snap.flow === 'reg' ? '. The password is entered again.' : '. Uploaded documents stay attached.')]
+    ];
+    $('#rsteps').innerHTML = items.map(function (it, i) { return '<li><u>' + (i + 1) + '</u><div><b>' + esc(it[0]) + '</b><span>' + esc(it[1]) + '</span></div></li>'; }).join('');
+    rt.forEach(clearTimeout); rt = [];
+    $$('#rsteps li').forEach(function (li, i) { rt.push(setTimeout(function () { li.classList.add('on'); }, 350 + i * 450)); });
+    phB.launch(snap.flow, snap.step);
+  }
+  $('#replay').addEventListener('click', paintResume);
+  $('#toEmail').addEventListener('click', function () { setTab('email'); });
+
+  /* ---------- tabs ---------- */
+  var TABS = ['save', 'email', 'resume'], cur = '';
+  function setTab(t, noHash) {
+    if (TABS.indexOf(t) < 0) t = 'save';
+    cur = t;
+    $$('#tabs button').forEach(function (b) { var on = b.getAttribute('data-t') === t; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    TABS.forEach(function (x) { var s = $('#sc-' + x); s.hidden = x !== t; if (x === t) { s.style.animation = 'none'; void s.offsetWidth; s.style.animation = ''; } });
+    if (!noHash) history.replaceState(null, '', '#' + t);
+    if (t !== 'save') snap = { flow: S.flow, step: S.step[S.flow] };
+    if (t === 'email') paintEmail();
+    if (t === 'resume') paintResume();
+  }
+  $('#tabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setTab(b.getAttribute('data-t')); });
+  $('#tabs').addEventListener('keydown', function (e) {
+    var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (!d) return;
+    var t = TABS[(TABS.indexOf(cur) + d + TABS.length) % TABS.length]; setTab(t); $('#tabs button[data-t="' + t + '"]').focus(); e.preventDefault();
+  });
+
+  /* ---------- boot ---------- */
+  phA.go('ver', 3);
+  setTab((location.hash || '').replace('#', '') || 'save', true);
+
+  XM.notes({
+    title: 'Abandoned registration and verification recovery',
+    today: 'A user who leaves the PWA part way through registration or verification loses what they typed and gets no reminder. They start again, or never come back.',
+    proposed: 'The PWA saves every answer as a state while the user types, in registration and in verification. If they leave, an email names the screen they stopped at and links back to it. The link opens that screen with the saved answers already filled in.',
+    why: 'These users already did most of the work. Returning them to the exact screen, with nothing to retype, is the lowest-effort way to win them back.',
+    metric: 'Share of abandoned registrations and verifications that complete after the email; email click-through; time from email to completion.'
+  });
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="07"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email verified · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* Landing page of the email link (opened in a new tab or on another device). It tells the original tab to continue. */
+body { background: #f5f5f5; min-height: 100vh; }
+.rg-hdr { display: flex; align-items: center; justify-content: space-between; max-width: 1320px; margin: 0 auto; padding: 18px 28px 6px; }
+.rg-hdr .xm-logo svg { height: 24px; }
+.c { max-width: 460px; margin: 40px auto 0; background: #fff; border-radius: 22px; padding: 44px 36px 36px; text-align: center; box-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 30px 70px -30px rgba(16, 24, 40, .22); animation: fadeUp .5s both; }
+.tick { width: 84px; height: 84px; margin: 0 auto 18px; }
+.tick circle { stroke: var(--g); stroke-width: 3; fill: var(--g-l); stroke-dasharray: 170; stroke-dashoffset: 170; animation: dash .7s cubic-bezier(.65, 0, .35, 1) forwards; transform-origin: center; transform: rotate(-90deg); }
+.tick path { stroke: var(--g); stroke-width: 4.2; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 44; stroke-dashoffset: 44; animation: dash .45s .55s cubic-bezier(.65, 0, .35, 1) forwards; }
+@keyframes dash { to { stroke-dashoffset: 0; } }
+h1 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+p { margin-top: 10px; color: var(--ink-2); font-size: 14.5px; line-height: 1.6; }
+.sync { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 8px 16px; border-radius: 999px; background: var(--g-l); color: var(--g); font-size: 13px; font-weight: 600; }
+.btn { margin-top: 22px; }
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div class="rg-hdr"><a class="xm-logo" href="#" id="logo"></a></div>
+<main>
+  <div class="c">
+    <svg class="tick" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="m15 27 8 8 15-17"/></svg>
+    <h1>Email verified</h1>
+    <p id="t">You can close this tab. The screen you started on continues automatically.</p>
+    <span class="sync"><span class="dot live"></span><span id="s">Syncing with your other tab</span></span><br>
+    <a class="btn btn-outline" id="go" href="#">Continue here instead</a>
+  </div>
+</main>
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  XM.$('#logo').innerHTML = XM.logo(false);
+  var em = (XM.qs('email') || '').trim().slice(0, 120) || XM.flow.get().email || '';
+  var go = XM.$('#go');
+  go.href = XM.url('ideas/05-success-handoff/index.html') + (em ? '?email=' + encodeURIComponent(em) : '');
+  go.addEventListener('click', function () { XM.flow.set({ email: em || undefined, verified: true, step: 'verified', verifiedVia: 'link' }); });
+  /* the waiting tab answers with an ack; without one (other device, tab closed) we say so and make this page the way forward */
+  function noTab() { XM.$('#s').textContent = 'No other tab found'; XM.$('#t').textContent = 'Continue on this device to finish setting up your account.'; go.className = 'btn btn-primary'; XM.$('.sync .dot').classList.remove('live'); }
+  var ackT = setTimeout(noTab, 2500);
+  /* tell any waiting tab on this browser that the link was used (BroadcastChannel + storage event fallback) */
+  try { if ('BroadcastChannel' in window) { var bc = new BroadcastChannel('xm-verify'); bc.onmessage = function (e) { if (e.data && e.data.type === 'ack') { clearTimeout(ackT); XM.$('#s').textContent = 'Your other tab is continuing'; } }; bc.postMessage({ type: 'verified', via: 'link', t: Date.now() }); setTimeout(function () { bc.close(); }, 2600); } } catch (e) {}
+  try { localStorage.setItem('xm.verify.ok', String(Date.now())); setTimeout(function () { localStorage.removeItem('xm.verify.ok'); }, 800); } catch (e) {}
+});
+</script>
+</body>
+</html>

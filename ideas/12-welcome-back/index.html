@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome back campaign · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 12 · /welcome-back  (dated promotion + incentive for inactive clients)
+   ===================================================================== */
+:root { --gl: #00c27c; --gl2: #3ddc97; --bd: rgba(255, 255, 255, .1); --amb: #ffd98a; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; margin-top: 96px; }
+svg.i { width: 1em; height: 1em; flex: none; }
+.pill { border-radius: 999px; }
+
+/* ---------- hero ---------- */
+.hero { margin-top: 10px; padding: 52px 40px 0; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: min(900px, calc(100vh - 96px)); }
+.hero::before { background: radial-gradient(70% 62% at 50% -6%, rgba(0, 200, 125, .42), rgba(0, 132, 84, .14) 48%, transparent 72%); }
+.hero::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .08) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 55%); mask-image: linear-gradient(180deg, #000, transparent 55%); }
+.kick { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; animation: fadeUp .7s both; }
+.xmk { width: 28px; height: 28px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 11px; letter-spacing: -.5px; }
+.bdg { background: #fff; color: #0b0d10; font-weight: 700; font-size: 12px; letter-spacing: .08em; padding: 6px 11px; border-radius: 8px; }
+.hero h1 { font-size: clamp(38px, 5.2vw, 68px); line-height: 1.04; letter-spacing: -.035em; font-weight: 700; max-width: 22ch; animation: fadeUp .8s .05s both; }
+.hero h1 em { font-style: normal; background: linear-gradient(95deg, #3ddc97, #00c27c 55%, #9ff0c8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.dated { display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 8px 16px 8px 12px; border-radius: 999px; background: rgba(245, 170, 40, .1); border: 1px solid rgba(245, 170, 40, .32); color: var(--amb); font-size: 14px; font-weight: 500; animation: fadeUp .8s .12s both; }
+.dated svg { width: 18px; height: 18px; }
+.dated em { font-style: normal; opacity: .7; font-weight: 400; }
+.cd { display: flex; align-items: center; gap: 8px; margin-top: 20px; animation: fadeUp .8s .18s both; }
+.cd-u { min-width: 74px; padding: 10px 10px 9px; border-radius: 16px; background: rgba(255, 255, 255, .06); border: 1px solid var(--bd); backdrop-filter: blur(6px); }
+.cd-u b { display: block; font-size: 30px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cd-u span { display: block; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8e97a3; margin-top: 2px; }
+.cd-sep { color: #4a525c; font-weight: 700; font-size: 22px; margin-top: -10px; }
+.cd-cap { margin-top: 10px; font-size: 11.5px; color: #6f7885; animation: fadeUp .8s .2s both; }
+.hact { margin-top: 22px; min-height: 58px; animation: fadeUp .8s .24s both; }
+.btn-xl { padding: 16px 36px; font-size: 16px; }
+.glow-btn { box-shadow: 0 10px 34px rgba(0, 132, 84, .45), inset 0 1px 0 rgba(255, 255, 255, .25); background: linear-gradient(180deg, #00a064, #008454); color: #fff; }
+.glow-btn:hover { background: linear-gradient(180deg, #00b06d, #007a4d); box-shadow: 0 14px 40px rgba(0, 150, 95, .6); transform: translateY(-1px); }
+.btn-glass { background: rgba(255, 255, 255, .08); color: #fff; border-color: rgba(255, 255, 255, .22); }
+.btn-glass:hover { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .45); }
+.btn svg { width: 18px; height: 18px; }
+
+/* entered state */
+.in-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: fadeUp .5s both; }
+.in-top { display: inline-flex; align-items: center; gap: 12px; text-align: left; }
+.in-ok { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #00c27c, #008454); display: grid; place-items: center; box-shadow: 0 0 0 8px rgba(0, 194, 124, .16); animation: pop .5s cubic-bezier(.2, 1.4, .4, 1) both; }
+.in-ok svg { width: 22px; height: 22px; }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: none; opacity: 1; } }
+.in-top b { display: block; font-size: 22px; letter-spacing: -.02em; }
+.in-top span { color: #a9b0ba; font-size: 14px; }
+.serial { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: linear-gradient(135deg, rgba(0, 194, 124, .22), rgba(0, 194, 124, .08)); border: 1px solid rgba(0, 194, 124, .45); font-size: 15px; font-weight: 500; }
+.serial svg { width: 18px; height: 18px; color: var(--gl2); }
+.serial b { font-size: 18px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.in-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+/* offer visual */
+.vis { margin-top: auto; padding-top: 30px; width: 100%; animation: fadeUp 1s .35s both; }
+.ofsw { display: inline-flex; padding: 4px; gap: 2px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid var(--bd); margin-bottom: 20px; }
+.ofsw button { border: 0; background: none; color: #aab2bc; padding: 7px 18px; border-radius: 999px; font-weight: 600; font-size: 13px; transition: .15s; }
+.ofsw button.on { background: #fff; color: #000; }
+.tk-host { position: relative; max-width: 800px; margin: 0 auto; filter: drop-shadow(0 30px 50px rgba(0, 0, 0, .55)) drop-shadow(0 0 60px rgba(0, 190, 130, .18)); }
+.ticket { --sw: 210px; display: grid; grid-template-columns: 1fr var(--sw); height: 278px; text-align: left; border-radius: 22px 22px 0 0; overflow: hidden;
+  -webkit-mask: radial-gradient(circle 15px at calc(100% - var(--sw)) 0, #0000 97%, #000) 0 0 / 100% 100% no-repeat, radial-gradient(circle 15px at calc(100% - var(--sw)) 100%, #0000 97%, #000) 0 0 / 100% 100% no-repeat; -webkit-mask-composite: source-in;
+  mask: radial-gradient(circle 15px at calc(100% - var(--sw)) 0, #0000 97%, #000) 0 0 / 100% 100% no-repeat, radial-gradient(circle 15px at calc(100% - var(--sw)) 100%, #0000 97%, #000) 0 0 / 100% 100% no-repeat; mask-composite: intersect; }
+.tk-main { position: relative; padding: 34px 40px; overflow: hidden; background: radial-gradient(90% 120% at 0% 0%, #0d9a62, transparent 60%), linear-gradient(135deg, #064a33, #0a8658 70%, #12a56a); }
+.tk-main::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255, 255, 255, .16) 1px, transparent 1.2px); background-size: 16px 16px; -webkit-mask-image: linear-gradient(100deg, #000, transparent 70%); mask-image: linear-gradient(100deg, #000, transparent 70%); opacity: .55; }
+.tk-main > * { position: relative; }
+.tk-lab { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 700; letter-spacing: .14em; color: rgba(255, 255, 255, .78); }
+.tk-lab i { width: 6px; height: 6px; border-radius: 50%; background: #9ff0c8; box-shadow: 0 0 10px #9ff0c8; }
+.tk-big { font-size: clamp(76px, 9vw, 112px); font-weight: 800; line-height: .95; letter-spacing: -.05em; margin-top: 10px; background: linear-gradient(180deg, #fff 30%, #bff5da); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tk-big sup { display: inline-block; font-size: .42em; vertical-align: top; margin: .12em 6px 0 0; font-weight: 700; }
+.tk-t { font-size: clamp(18px, 2vw, 24px); font-weight: 600; letter-spacing: -.01em; margin-top: 8px; }
+.tk-d { color: rgba(255, 255, 255, .72); font-size: 13.5px; margin-top: 4px; }
+.tk-art { position: absolute !important; right: -30px; top: 50%; transform: translateY(-50%); width: 300px; height: 300px; opacity: .9; }
+.tk-stub { position: relative; padding: 26px 24px; background: linear-gradient(180deg, #171d25, #10151b); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); display: flex; flex-direction: column; justify-content: space-between; border-left: 2px dashed rgba(255, 255, 255, .22); }
+.tk-stub small { display: block; font-size: 10.5px; letter-spacing: .14em; color: #7d8794; font-weight: 600; }
+.tk-no { font-size: 38px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1.1; margin-top: 6px; transition: color .3s; }
+.tk-no.live { background: linear-gradient(95deg, #3ddc97, #9ff0c8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tk-of { color: #8e97a3; font-size: 13px; }
+.tk-bar { height: 40px; width: 100%; opacity: .8; }
+.tk-swap { animation: swapIn .45s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes swapIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- layout ---------- */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 40px; margin-top: 96px; align-items: start; }
+.sh { margin-bottom: 28px; }
+.main { min-width: 0; }
+.sh .h-l { margin-top: 10px; font-size: clamp(26px, 3vw, 38px); }
+.sh .lead { margin-top: 10px; max-width: 56ch; }
+.sec + .sec { margin-top: 88px; }
+
+/* steps */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; position: relative; }
+.step { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 24px 22px 26px; box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 20px 50px -34px rgba(16, 24, 40, .3); transition: transform .25s, box-shadow .25s; }
+.step:hover { transform: translateY(-4px); box-shadow: 0 26px 60px -28px rgba(16, 24, 40, .3); }
+.step .n { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 700; font-size: 13px; transition: background .3s; }
+.step.done .n { background: var(--g); }
+.step .art { height: 96px; margin: 18px 0 16px; border-radius: 16px; background: var(--bg); display: grid; place-items: center; }
+.step .art svg { width: 78px; height: 78px; }
+.step h4 { font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
+.step p { color: var(--ink-2); font-size: 14.5px; margin-top: 6px; line-height: 1.55; }
+.step .go { position: absolute; right: -16px; top: 50%; width: 16px; height: 2px; background: var(--line-2); z-index: 1; }
+.step:last-child .go { display: none; }
+
+/* eligibility */
+.elig { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 28px; overflow: hidden; background: #fff; border: 1px solid var(--line); box-shadow: 0 30px 70px -40px rgba(16, 24, 40, .35); }
+.el-l { padding: 32px 32px 30px; }
+.el-l h3 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; margin-top: 10px; }
+.el-l p { color: var(--ink-2); margin-top: 8px; font-size: 14.5px; }
+.el-f { display: flex; gap: 10px; margin-top: 22px; }
+.el-f .inp { flex: 1; min-width: 0; height: 50px; font-family: inherit; }
+.el-q { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; align-items: center; font-size: 12.5px; color: var(--mut); }
+.el-q button.chip { padding: 5px 12px; font-size: 12.5px; transition: .15s; } .el-q button.chip:hover { border-color: var(--g); color: var(--g); }
+.el-r { padding: 32px; background: #0b0d10; color: #fff; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; min-height: 250px; }
+.el-r::before { content: ''; position: absolute; inset: 0; background: radial-gradient(70% 70% at 100% 0%, rgba(0, 194, 124, .25), transparent 70%); transition: background .4s; }
+.el-r.no::before { background: radial-gradient(70% 70% at 100% 0%, rgba(245, 170, 40, .22), transparent 70%); }
+.el-r > * { position: relative; }
+.el-idle { color: #8e97a3; text-align: center; font-size: 14.5px; } .el-idle svg { width: 44px; height: 44px; margin: 0 auto 12px; color: #4a525c; }
+.el-res { animation: fadeUp .4s both; }
+.el-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 8px; border-radius: 999px; font-weight: 600; font-size: 14px; background: rgba(0, 194, 124, .16); color: var(--gl2); }
+.el-badge i { width: 22px; height: 22px; border-radius: 50%; background: var(--gl); color: #04130c; display: grid; place-items: center; } .el-badge svg { width: 13px; height: 13px; }
+.no .el-badge { background: rgba(245, 170, 40, .16); color: var(--amb); } .no .el-badge i { background: #f5a623; color: #2b1c00; }
+.el-res h4 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-top: 14px; line-height: 1.15; }
+.el-res p { color: #a9b0ba; font-size: 14px; margin-top: 8px; line-height: 1.55; }
+.el-meter { margin-top: 18px; } .el-meter .tr { height: 8px; border-radius: 8px; background: rgba(255, 255, 255, .1); position: relative; overflow: visible; }
+.el-meter .fl { height: 100%; border-radius: 8px; background: linear-gradient(90deg, #00a064, #3ddc97); transition: width .8s cubic-bezier(.2, .7, .2, 1); }
+.no .el-meter .fl { background: linear-gradient(90deg, #d08a1e, #ffd98a); }
+.el-meter .th { position: absolute; top: -5px; width: 2px; height: 18px; background: #fff; border-radius: 2px; }
+.el-meter .lb { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11.5px; color: #8e97a3; }
+.el-res .btn { margin-top: 18px; }
+.err-t { color: #ff8a90; font-size: 13px; margin-top: 8px; min-height: 18px; }
+.el-offer { margin-top: 16px; padding: 16px 18px 18px; border-radius: 18px; background: linear-gradient(135deg, rgba(0, 194, 124, .24), rgba(0, 194, 124, .06)); border: 1px solid rgba(0, 194, 124, .42); animation: swapIn .5s both; }
+.el-offer small { display: flex; justify-content: space-between; gap: 10px; font-size: 10.5px; letter-spacing: .14em; color: #8e97a3; font-weight: 600; }
+.el-offer small b { color: var(--gl2); font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.el-offer .big { display: block; margin-top: 6px; font-size: 48px; font-weight: 800; letter-spacing: -.04em; line-height: 1; background: linear-gradient(180deg, #fff 30%, #9ff0c8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.el-offer .tt { display: block; margin-top: 6px; font-size: 15px; font-weight: 600; }
+.el-offer .tt2 { display: inline-flex; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: rgba(255, 255, 255, .1); font-size: 12.5px; font-weight: 600; color: #dff7ec; }
+.el-load { display: flex; align-items: center; gap: 12px; color: #a9b0ba; font-size: 14.5px; }
+.el-load .spin { border-color: rgba(255, 255, 255, .2); border-top-color: var(--gl2); width: 22px; height: 22px; }
+.el-r .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* series */
+.series { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity; padding: 6px 4px 20px; margin: 0 -4px; -webkit-overflow-scrolling: touch; }
+.series::-webkit-scrollbar { height: 6px; } .series::-webkit-scrollbar-thumb { background: #d6d9de; border-radius: 6px; }
+.sc { flex: 0 0 236px; scroll-snap-align: start; background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 20px 20px 22px; position: relative; overflow: hidden; transition: transform .25s, box-shadow .25s; }
+.sc:hover { transform: translateY(-4px); box-shadow: 0 22px 50px -26px rgba(16, 24, 40, .35); }
+.sc .no { font-size: 58px; font-weight: 800; letter-spacing: -.05em; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px #c9ced5; font-variant-numeric: tabular-nums; }
+.sc small { display: block; margin-top: 10px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--mut); font-weight: 600; }
+.sc h5 { font-size: 17px; font-weight: 600; margin: 4px 0 0; letter-spacing: -.01em; }
+.sc .of { color: var(--ink-2); font-size: 13.5px; margin-top: 4px; }
+.sc .pb { height: 6px; border-radius: 6px; background: var(--soft); margin-top: 18px; overflow: hidden; } .sc .pb i { display: block; height: 100%; border-radius: 6px; background: var(--ink); }
+.sc .cl { margin-top: 8px; font-size: 12px; color: var(--mut); font-variant-numeric: tabular-nums; }
+.sc.live { background: #0b0d10; color: #fff; border-color: #0b0d10; }
+.sc.live::before { content: ''; position: absolute; inset: 0; background: radial-gradient(80% 60% at 100% 0%, rgba(0, 194, 124, .35), transparent 70%); }
+.sc.live > * { position: relative; }
+.sc.live .no { -webkit-text-stroke: 0; background: linear-gradient(180deg, #fff, #7fe7b8); -webkit-background-clip: text; background-clip: text; }
+.sc.live small, .sc.live .cl { color: #8e97a3; } .sc.live .of { color: #cfd5dc; } .sc.live .pb { background: rgba(255, 255, 255, .12); } .sc.live .pb i { background: var(--gl); transition: width .6s; }
+.sc .tag { position: absolute; right: 16px; top: 18px; }
+.sc.live .tag { background: rgba(0, 194, 124, .18); color: var(--gl2); }
+
+/* faq */
+.faq { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 6px 28px; }
+.faq details { border-bottom: 1px solid var(--line); } .faq details:last-child { border-bottom: 0; }
+.faq summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; font-weight: 600; font-size: 16.5px; cursor: pointer; letter-spacing: -.005em; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary i { width: 28px; height: 28px; border-radius: 50%; background: var(--soft); display: grid; place-items: center; transition: transform .25s, background .2s; flex: none; }
+.faq summary i svg { width: 14px; height: 14px; }
+.faq details[open] summary i { transform: rotate(180deg); background: var(--g-l); color: var(--g); }
+.faq details p { padding: 0 44px 22px 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.65; animation: fadeUp .3s both; }
+.fine { margin-top: 16px; font-size: 12px; color: var(--mut); }
+
+/* aside: homepage banner slot */
+.aside { position: sticky; top: 88px; display: grid; gap: 16px; }
+.slotc { background: #fff; border: 1px solid var(--line); border-radius: 26px; padding: 20px; box-shadow: 0 20px 50px -34px rgba(16, 24, 40, .3); }
+.slotc h4 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+.slotc .sub { font-size: 13px; color: var(--mut); margin: 4px 0 14px; line-height: 1.5; }
+.mini { border-radius: 14px; overflow: hidden; border: 1px solid var(--line-2); background: #fff; font-size: 10px; }
+.mini .mb { height: 22px; background: #eceef1; display: flex; align-items: center; gap: 4px; padding: 0 8px; border-bottom: 1px solid var(--line); }
+.mini .mb i { width: 6px; height: 6px; border-radius: 50%; background: #c9ccd1; } .mini .mb span { margin: 0 auto; background: #fff; border-radius: 5px; padding: 1px 14px; color: #7b828b; font-size: 8.5px; }
+.slot { position: relative; margin: 0; padding: 8px 10px; display: flex; align-items: center; gap: 8px; background: linear-gradient(95deg, #064a33, #0a8658); color: #fff; cursor: pointer; transition: max-height .4s, padding .4s, opacity .3s; max-height: 60px; overflow: hidden; }
+.slot::after { content: ''; position: absolute; inset: 2px; border: 1.5px dashed rgba(255, 255, 255, .7); border-radius: 6px; pointer-events: none; animation: dash 1.6s linear infinite alternate; }
+@keyframes dash { from { opacity: .35; } to { opacity: 1; } }
+.slot b { font-size: 10px; font-weight: 600; flex: 1; line-height: 1.25; } .slot b small { display: block; font-weight: 400; opacity: .75; font-size: 8.5px; }
+.slot em { font-style: normal; background: #fff; color: #064a33; font-weight: 700; padding: 4px 9px; border-radius: 999px; font-size: 8.5px; white-space: nowrap; }
+.slot.off { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
+.mini .nv { display: flex; align-items: center; gap: 6px; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+.mini .nv .lg { width: 50px; height: 8px; border-radius: 3px; background: var(--ink); transform: skewX(-12deg); }
+.mini .nv .ln { flex: 1; display: flex; gap: 6px; justify-content: center; } .mini .nv .ln i { width: 22px; height: 5px; border-radius: 3px; background: #d9dce1; }
+.mini .nv .bt { width: 26px; height: 12px; border-radius: 4px; background: var(--g); }
+.mini .hr { margin: 8px; border-radius: 12px; background: #0b0d10; padding: 18px 12px 0; text-align: center; position: relative; overflow: hidden; height: 128px; }
+.mini .hr::before { content: ''; position: absolute; inset: 0; background: radial-gradient(70% 70% at 50% -10%, rgba(0, 194, 124, .5), transparent 70%); }
+.mini .hr i { display: block; position: relative; margin: 0 auto; border-radius: 4px; background: #fff; height: 8px; } .mini .hr i.a { width: 62%; } .mini .hr i.b { width: 42%; margin-top: 5px; background: rgba(255, 255, 255, .75); } .mini .hr i.c { width: 38px; height: 12px; border-radius: 999px; margin-top: 10px; background: var(--g); }
+.mini .hr .dv { position: absolute; left: 22%; right: 22%; bottom: 0; height: 40px; background: #181d24; border-radius: 8px 8px 0 0; border: 1px solid rgba(255, 255, 255, .1); border-bottom: 0; }
+.slot-tag { margin-top: 12px; display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--ink-2); }
+.slot-tag .seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--soft); border-radius: 999px; }
+.slot-tag .seg button { border: 0; background: none; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--mut); }
+.slot-tag .seg button.on { background: #fff; color: var(--ink); font-weight: 600; box-shadow: var(--sh-s); }
+.rules { background: #0b0d10; color: #fff; border-radius: 24px; padding: 20px; position: relative; overflow: hidden; }
+.rules::before { content: ''; position: absolute; inset: 0; background: radial-gradient(70% 60% at 0% 0%, rgba(0, 194, 124, .2), transparent 70%); }
+.rules > * { position: relative; }
+.rules h4 { font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.rules ul { margin-top: 12px; display: grid; gap: 9px; font-size: 13px; color: #cfd5dc; }
+.rules li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.4; } .rules li svg { width: 15px; height: 15px; color: var(--gl2); margin-top: 2px; flex: none; }
+
+/* login modal */
+.mdl { max-width: 440px; padding: 34px 32px 28px; }
+.mdl .lg { height: 22px; margin-bottom: 22px; } .mdl .lg svg { height: 22px; width: auto; }
+.mdl h3 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.mdl .sub { color: var(--ink-2); font-size: 14px; margin: 6px 0 20px; }
+.mdl .sub b { color: var(--g); font-weight: 600; }
+.mdl form { display: grid; gap: 14px; }
+.mdl .btn { height: 50px; }
+.mdl .row { display: flex; justify-content: space-between; font-size: 13px; } .mdl .row a { color: var(--g); font-weight: 500; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--mut); font-size: 12px; margin: 16px 0; } .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.btn-pk { border: 1.5px solid var(--line-2); background: #fff; width: 100%; } .btn-pk:hover { border-color: var(--g); background: var(--g-l); }
+.btn-pk svg { color: var(--g); }
+.spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(127, 127, 127, .35); border-top-color: currentColor; animation: sp .7s linear infinite; }
+.btn-primary .spin { border-color: rgba(255, 255, 255, .4); border-top-color: #fff; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.mdl .demo { font-size: 11.5px; color: var(--mut); text-align: center; margin-top: 16px; }
+.mdl .x { display: grid; place-items: center; } .mdl .x svg { width: 16px; height: 16px; }
+
+/* responsive */
+@media (max-width: 1180px) { .layout { grid-template-columns: minmax(0, 1fr); } .aside { position: static; grid-template-columns: 1fr 1fr; align-items: start; } .layout { gap: 56px; } }
+@media (max-width: 900px) { .steps { grid-template-columns: 1fr; } .step .go { display: none; } .elig { grid-template-columns: 1fr; } .aside { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 720px) {
+  .wrap { padding: 0 12px; } .hero { padding: 48px 18px 0; min-height: 0; }
+  .cd-u { min-width: 62px; padding: 8px 6px; } .cd-u b { font-size: 24px; } .cd { gap: 5px; } .cd-sep { display: none; }
+  .ticket { --sw: 104px; height: 230px; } .tk-main { padding: 24px 20px; } .tk-art { width: 200px; height: 200px; right: -50px; opacity: .55; } .tk-stub { padding: 20px 12px; } .tk-no { font-size: 24px; } .tk-d { max-width: 22ch; }
+  .tk-bar { height: 26px; }
+  .layout { margin-top: 64px; } .sec + .sec { margin-top: 64px; }
+  .el-l, .el-r { padding: 24px 20px; } .el-f { flex-direction: column; } .el-f .inp { flex: none; } .faq { padding: 4px 18px; } .faq details p { padding-right: 0; }
+  .in-top { flex-direction: column; text-align: center; }
+  .mdl { padding: 28px 22px 22px; }
+}
+@media (max-width: 520px) { .xm-lang, .xm-hdr [data-login] { display: none; } }
+button:focus-visible, a:focus-visible, summary:focus-visible, .slot:focus-visible { outline: 2px solid var(--g); outline-offset: 2px; }
+.hero button:focus-visible { outline-color: #fff; }
+@media (max-width: 1180px) {
+  .ofsw button, .el-q button.chip, .slot-tag .seg button { min-height: 40px; }
+  .mdl .x { width: 40px; height: 40px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Promotions"></div>
+
+<main class="wrap">
+  <!-- ================= HERO ================= -->
+  <section class="block hero" id="hero">
+    <span class="kick"><b class="xmk">XM</b><span class="bdg">WELCOME BACK</span></span>
+    <h1>Welcome back.<br><em>Your offer</em> is waiting.</h1>
+    <div class="dated">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+      <span>Offer runs 1 &ndash; 30 June 2026 <em>(illustrative)</em></span>
+    </div>
+    <div class="cd" id="cd" role="timer" aria-label="Time left in the offer">
+      <div class="cd-u"><b id="cdD">12</b><span>Days</span></div><i class="cd-sep">:</i>
+      <div class="cd-u"><b id="cdH">11</b><span>Hours</span></div><i class="cd-sep">:</i>
+      <div class="cd-u"><b id="cdM">59</b><span>Min</span></div><i class="cd-sep">:</i>
+      <div class="cd-u"><b id="cdS">59</b><span>Sec</span></div>
+    </div>
+    <div class="cd-cap">Demo clock set to 18 June 2026</div>
+
+    <div class="hact" id="hact">
+      <button class="btn btn-primary btn-lg btn-xl pill glow-btn" id="enter" type="button">Log in to enter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="hact" id="hin" hidden>
+      <div class="in-wrap">
+        <div class="in-top"><span class="in-ok"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span><div><b>You are in</b><span>Your offer is reserved. Make a deposit by 30 June to activate it.</span></div></div>
+        <span class="serial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg>Your offer <b>#1,284</b> of 5,000</span>
+        <div class="in-btns">
+          <button class="btn btn-primary pill glow-btn" id="deposit" type="button">Make a deposit</button>
+          <button class="btn btn-glass pill" id="addCal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v4M10 15h4"/></svg>Add to calendar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="vis">
+      <div class="ofsw" role="tablist" aria-label="Offer type"><button class="on" data-of="bonus" role="tab">Deposit bonus</button><button data-of="xmp" role="tab">XMP &times;2</button></div>
+      <div class="tk-host">
+        <div class="ticket" id="ticket">
+          <div class="tk-main" id="tkMain"></div>
+          <div class="tk-stub">
+            <div><small>OFFER NO.</small><div class="tk-no" id="tkNo">#&mdash;</div><div class="tk-of">of 5,000</div></div>
+            <div>
+              <svg class="tk-bar" viewBox="0 0 160 40" preserveAspectRatio="none" id="barcode"></svg>
+              <small style="margin-top:8px">WELCOME BACK &middot; 2026</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div class="main">
+      <!-- ================= HOW IT WORKS ================= -->
+      <section class="sec" id="how">
+        <div class="sh reveal"><span class="eyebrow">How it works</span><h2 class="h-l">Three steps from dormant to trading.</h2></div>
+        <div class="steps" id="steps">
+          <div class="step reveal" data-st="1"><span class="n">1</span><div class="art">
+            <svg viewBox="0 0 80 80" fill="none"><rect x="14" y="30" width="52" height="38" rx="10" fill="#0b0d10"/><path d="M26 30v-6a14 14 0 0 1 28 0v6" stroke="#0b0d10" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="48" r="6" fill="#00c27c"/><path d="M40 52v8" stroke="#00c27c" stroke-width="3.5" stroke-linecap="round"/></svg></div>
+            <h4>Log in</h4><p>Use your existing XM details or your passkey. Your entry number is reserved instantly.</p><i class="go"></i></div>
+          <div class="step reveal" data-st="2" style="--d:1"><span class="n">2</span><div class="art">
+            <svg viewBox="0 0 80 80" fill="none"><rect x="10" y="22" width="60" height="40" rx="10" fill="#0b0d10"/><rect x="10" y="30" width="60" height="9" fill="#2a313b"/><circle cx="56" cy="52" r="8" fill="#00c27c"/><path d="M56 48v8M52.5 52h7" stroke="#04130c" stroke-width="2.4" stroke-linecap="round"/><path d="M18 52h20" stroke="#4a525c" stroke-width="3.5" stroke-linecap="round"/></svg></div>
+            <h4>Deposit</h4><p>Fund your account during the offer window. The bonus is credited on your next qualifying deposit.</p><i class="go"></i></div>
+          <div class="step reveal" data-st="3" style="--d:2"><span class="n">3</span><div class="art">
+            <svg viewBox="0 0 80 80" fill="none"><rect x="10" y="14" width="60" height="52" rx="10" fill="#0b0d10"/><path d="M18 52l12-14 10 8 14-18 8 6" stroke="#00c27c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="62" cy="34" r="4" fill="#fff"/></svg></div>
+            <h4>Trade</h4><p>Trade on the Portal, MT4 or MT5. Bonus and XMP progress show in your account overview.</p></div>
+        </div>
+      </section>
+
+      <!-- ================= ELIGIBILITY ================= -->
+      <section class="sec" id="check">
+        <div class="elig reveal">
+          <div class="el-l">
+            <span class="eyebrow">Offer finder</span>
+            <h3>Find your welcome-back offer.</h3>
+            <p>Enter the email on your XM account. We check your activity and generate the offer you qualify for. Nothing is stored.</p>
+            <form class="el-f" id="elF" novalidate>
+              <label class="sr" for="elEmail">Your XM account email</label>
+              <input class="inp" type="email" id="elEmail" autocomplete="email" placeholder="you@example.com">
+              <button class="btn btn-primary pill" type="submit" id="elBtn">Find my offer</button>
+            </form>
+            <div class="err-t" id="elErr" role="alert"></div>
+            <div class="el-q"><span>Try:</span><button class="chip" type="button" data-em="dormant@example.com">Dormant 4 months</button><button class="chip" type="button" data-em="longgone@example.com">Dormant 1+ year</button><button class="chip" type="button" data-em="active@example.com">Active client</button></div>
+          </div>
+          <div class="el-r" id="elR" aria-live="polite">
+            <div class="el-idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4"/></svg>Your result appears here.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PREVIOUS CAMPAIGNS ================= -->
+      <section class="sec" id="series">
+        <div class="sh reveal"><span class="eyebrow">Previous campaigns</span><h2 class="h-l">A numbered series, one every season.</h2><p class="lead">Every welcome-back campaign is capped, numbered and dated, so clients know exactly when the next one runs.</p></div>
+        <div class="series reveal" id="seriesRow"></div>
+      </section>
+
+      <!-- ================= FAQ ================= -->
+      <section class="sec" id="faq">
+        <div class="sh reveal"><span class="eyebrow">Questions</span><h2 class="h-l">Terms in plain language.</h2></div>
+        <div class="faq reveal">
+          <details open><summary>Who can enter? <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></i></summary><p>Existing clients whose last trade was at least 90 days ago. Illustrative rule for this prototype; final eligibility to be confirmed by Compliance.</p></details>
+          <details><summary>How is the 50% bonus calculated? <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></i></summary><p>Illustrative: 50% of your qualifying deposit, up to $500 in total. For example a $400 deposit would earn a $200 bonus. A bonus is not withdrawable until the trading-volume requirement is met.</p></details>
+          <details><summary>What does XMP &times;2 for 60 days mean? <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></i></summary><p>Illustrative alternative: instead of a deposit bonus, your XMP loyalty points accrue at double the normal rate for 60 days after you enter.</p></details>
+          <details><summary>What is the &ldquo;offer number&rdquo;? <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></i></summary><p>Each campaign is capped at 5,000 entries. Your number shows your place in the series, for example #1,284 of 5,000, and is confirmed when you log in.</p></details>
+          <details><summary>Can I combine this with other promotions? <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></i></summary><p>Illustrative: one welcome-back offer per client per campaign. It cannot be combined with another deposit bonus on the same deposit.</p></details>
+          <details><summary>What happens after 30 June? <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></i></summary><p>Entries close at 23:59:59 on the end date and unclaimed numbers return to the pool. The next campaign in the series is announced by email and on the Portal.</p></details>
+        </div>
+        <p class="fine">All figures, dates and terms on this page are illustrative and for strategy review only. They do not represent a real XM offer.</p>
+      </section>
+    </div>
+
+    <!-- ================= ASIDE: HOMEPAGE BANNER SLOT ================= -->
+    <aside class="aside">
+      <div class="slotc">
+        <h4>Homepage banner slot <span class="tag">Preview</span></h4>
+        <p class="sub">Where this campaign sits on the homepage. A slim strip above the hero, shown only to the right segment.</p>
+        <div class="mini" aria-label="Homepage preview">
+          <div class="mb"><i></i><i></i><i></i><span>xmtrading.com</span></div>
+          <div class="slot" id="slot" role="button" tabindex="0" aria-label="Banner slot: Welcome back offer"><b>Welcome back: extra 50% deposit bonus<small>Ends 30 June &middot; <span id="slotLeft">12d left</span></small></b><em>Log in to enter</em></div>
+          <div class="nv"><span class="lg"></span><span class="ln"><i></i><i></i><i></i><i></i></span><span class="bt"></span></div>
+          <div class="hr"><i class="a"></i><i class="b"></i><i class="c"></i><div class="dv"></div></div>
+        </div>
+        <div class="slot-tag"><span>Viewer:</span><span class="seg" id="seg"><button class="on" data-v="dormant">Dormant 90+ days</button><button data-v="active">Active client</button></span></div>
+      </div>
+      <div class="rules">
+        <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 8v6l-4-2v-4L4 5z"/></svg>Targeting rules (illustrative)</h4>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Recognised client, last trade 90+ days ago</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Strip appears once per visit, can be dismissed for 7 days</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Same message on email, push and the Portal</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- ================= LOGIN MODAL ================= -->
+<div class="modal-back" id="mb" aria-hidden="true">
+  <div class="modal mdl" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="x" type="button" id="mClose" aria-label="Close"></button>
+    <div class="lg" id="mLogo"></div>
+    <h3 id="mTitle">Log in to enter</h3>
+    <p class="sub">Entering <b>Welcome back &middot; 50% deposit bonus</b>. Use your existing XM login.</p>
+    <button class="btn btn-pk btn-lg" id="pk" type="button"></button>
+    <div class="or">or log in with email</div>
+    <form id="lf" novalidate>
+      <label class="field"><span>Email</span><input class="inp" id="lEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
+      <label class="field"><span>Password</span><input class="inp" id="lPass" type="password" autocomplete="current-password" placeholder="Password"></label>
+      <div class="err-msg" id="lErr" role="alert" hidden></div>
+      <div class="row"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" checked> Remember me</label><a href="#">Forgot password?</a></div>
+      <button class="btn btn-primary btn-lg btn-block" id="lGo" type="submit">Log in and enter</button>
+    </form>
+    <p class="demo">Prototype: any email and password will work.</p>
+  </div>
+</div>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$;
+  var KEY = 'xm.wb.in';
+  var END = Date.UTC(2026, 5, 30, 23, 59, 59), ANCHOR = Date.UTC(2026, 5, 18, 12, 0, 0), T0 = Date.now();
+  var SIM_TODAY = Date.UTC(2026, 5, 18);
+  var entered = false, offer = 'bonus';
+  var P = {
+    chev: XM.icon('chev'), check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v6M12 17v.01"/></svg>'
+  };
+
+  /* ---------- offer ticket ---------- */
+  var OFFERS = {
+    bonus: { lab: 'WELCOME BACK OFFER', big: '<sup>+</sup>50<span style="display:inline-block;font-size:.55em;letter-spacing:-.02em">%</span>', t: 'Extra deposit bonus', d: 'On your next deposit, up to $500 (illustrative)' },
+    xmp: { lab: 'LOYALTY BOOST', big: '<sup>&times;</sup><span style="display:inline-block">2</span>', t: 'XMP for 60 days', d: 'Double points on every lot traded (illustrative)' }
+  };
+  var ART = '<svg class="tk-art" viewBox="0 0 300 300" fill="none"><g stroke="rgba(255,255,255,.22)" stroke-width="1.5"><circle cx="150" cy="150" r="140"/><circle cx="150" cy="150" r="105"/><circle cx="150" cy="150" r="70"/></g>' +
+    '<circle cx="150" cy="150" r="48" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.5)" stroke-width="2"/><text x="150" y="166" text-anchor="middle" font-family="Poppins,sans-serif" font-weight="800" font-style="italic" font-size="46" fill="#fff" letter-spacing="-2">XM</text>' +
+    '<g fill="#9ff0c8"><circle cx="150" cy="10" r="5"/><circle cx="255" cy="150" r="4"/><circle cx="62" cy="248" r="5"/></g></svg>';
+  function drawOffer() {
+    var o = OFFERS[offer];
+    $('#tkMain').innerHTML = '<div class="tk-swap"><span class="tk-lab"><i></i>' + o.lab + '</span><div class="tk-big">' + o.big + '</div><div class="tk-t">' + o.t + '</div><div class="tk-d">' + o.d + '</div></div>' + ART;
+  }
+  function drawBarcode() {
+    var s = '', x = 0, seed = 7;
+    while (x < 156) { seed = (seed * 31 + 11) % 97; var w = 1 + seed % 4; s += '<rect x="' + x + '" y="0" width="' + w + '" height="40" fill="#fff"/>'; x += w + 1 + (seed % 3); }
+    $('#barcode').innerHTML = s;
+  }
+  $$('.ofsw button').forEach(function (b) { b.addEventListener('click', function () {
+    offer = b.getAttribute('data-of'); $$('.ofsw button').forEach(function (x) { x.classList.toggle('on', x === b); }); drawOffer();
+  }); });
+
+  /* ---------- countdown on a demo clock ---------- */
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function tick() {
+    var now = ANCHOR + (Date.now() - T0), left = Math.max(0, END - now), s = Math.floor(left / 1000);
+    var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    $('#cdD').textContent = pad(d); $('#cdH').textContent = pad(h); $('#cdM').textContent = pad(m); $('#cdS').textContent = pad(sec);
+    $('#slotLeft').textContent = d + 'd left';
+  }
+
+  /* ---------- state ---------- */
+  function render() {
+    $('#hact').hidden = entered; $('#hin').hidden = !entered;
+    var no = $('#tkNo'); no.textContent = entered ? '#1,284' : '#\u2014'; no.classList.toggle('live', entered);
+    $$('#steps .step')[0].classList.toggle('done', entered);
+    $$('#steps .step')[0].querySelector('.n').innerHTML = entered ? P.check.replace('<svg ', '<svg width="15" height="15" ') : '1';
+    var lc = $('#liveCard'); if (lc) { var n = entered ? 1284 : 1283; lc.querySelector('.cl').textContent = n.toLocaleString('en-US') + ' of 5,000 claimed'; lc.querySelector('.pb i').style.width = (n / 50) + '%'; }
+    var hl = XM.$('[data-login]'); if (hl) hl.textContent = entered ? 'Log out' : 'Log in';
+    renderResult();
+  }
+  function enter() { entered = true; try { localStorage.setItem(KEY, '1'); } catch (e) {} render(); }
+  function reset() { entered = false; try { localStorage.removeItem(KEY); } catch (e) {} render(); }
+
+  /* ---------- login modal ---------- */
+  var mb = $('#mb'), lastFocus = null;
+  function openM(email) {
+    if (entered) { reset(); XM.toast('Logged out (demo reset)'); return; }
+    if (typeof email === 'string' && email) $('#lEmail').value = email;
+    lastFocus = document.activeElement; mb.classList.add('open'); mb.setAttribute('aria-hidden', 'false'); setTimeout(function () { $('#lEmail').focus(); }, 60);
+  }
+  function closeM() { mb.classList.remove('open'); mb.setAttribute('aria-hidden', 'true'); if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  function loading(btn, label, ms, done) {
+    var orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>' + label;
+    setTimeout(function () { btn.disabled = false; btn.innerHTML = orig; done(); }, ms);
+  }
+  function finishLogin() { closeM(); enter(); XM.toast('You are in. Offer #1,284 reserved.'); var h = $('#hin'); h.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  function initModal() {
+    $('#mLogo').innerHTML = XM.logo(false);
+    $('#mClose').innerHTML = XM.icon('close');
+    $('#pk').innerHTML = XM.icon('fingerprint', 'w24') + 'Continue with passkey';
+    $('#pk').addEventListener('click', function () { loading(this, 'Waiting for Face ID\u2026', 1100, finishLogin); });
+    $('#mClose').addEventListener('click', closeM);
+    mb.addEventListener('mousedown', function (e) { if (e.target === mb) closeM(); });
+    document.addEventListener('keydown', function (e) {
+      if (!mb.classList.contains('open')) return;
+      if (e.key === 'Escape') { closeM(); return; }
+      if (e.key === 'Tab') {
+        var f = $$('button:not([disabled]), input, a[href]', mb).filter(function (x) { return x.offsetParent; });
+        if (!f.length) return; var a = f[0], z = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+      }
+    });
+    $('#lf').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var em = $('#lEmail'), pw = $('#lPass'), err = $('#lErr'), ok = true;
+      em.classList.remove('err'); pw.classList.remove('err'); err.hidden = true;
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em.value.trim())) { em.classList.add('err'); err.textContent = 'Enter a valid email address.'; err.hidden = false; em.focus(); ok = false; }
+      else if (!pw.value) { pw.classList.add('err'); err.textContent = 'Enter your password.'; err.hidden = false; pw.focus(); ok = false; }
+      if (ok) loading($('#lGo'), 'Logging in\u2026', 800, finishLogin);
+    });
+    $('#enter').addEventListener('click', function () { openM(); });
+    $('#slot').addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (entered) { XM.toast('You are already in. Offer #1,284 is reserved.'); return; }
+      setTimeout(openM, 450);
+    });
+    $('#slot').addEventListener('keydown', function (e) { if (e.key === 'Enter') this.click(); });
+    var hl = XM.$('[data-login]'); if (hl) hl.addEventListener('click', function (e) { e.preventDefault(); openM(); });
+  }
+
+  /* ---------- in-state actions ---------- */
+  function ics() {
+    var t = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    var txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//XMTrading prototype//EN', 'BEGIN:VEVENT', 'UID:welcome-back-1284@xm-prototype', 'DTSTAMP:' + t,
+      'DTSTART;VALUE=DATE:20260630', 'DTEND;VALUE=DATE:20260701', 'SUMMARY:XM Welcome back offer #1284 ends today', 'DESCRIPTION:Make your deposit before 23:59 to activate your offer (illustrative).',
+      'BEGIN:VALARM', 'TRIGGER:-P3D', 'ACTION:DISPLAY', 'DESCRIPTION:XM offer ends in 3 days', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/calendar' })); a.download = 'xm-welcome-back.ics';
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    XM.toast('Calendar event saved: offer ends 30 June');
+  }
+
+  /* ---------- eligibility ---------- */
+  /* The real lookup is server-side. Here the email maps to a demo profile: a few fixed demo addresses, otherwise a hash of the address. */
+  var lastRes = null, busy = false, DEMO = { 'dormant@example.com': 120, 'longgone@example.com': 410, 'active@example.com': 21 };
+  function fmtD(ms) { return new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }); }
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function profile(email) {
+    var e = email.toLowerCase(), h = hash(e), days;
+    if (DEMO.hasOwnProperty(e)) days = DEMO[e];
+    else { var b = h % 10; days = b < 2 ? 12 + h % 60 : b < 6 ? 90 + h % 90 : 180 + h % 500; }
+    var code = 'WB-26-' + (h % 1679616 + 1679616).toString(36).slice(-4).toUpperCase();
+    if (days < 90) return { email: email, kind: 'none', days: days };
+    return { email: email, kind: days >= 180 ? 'pack' : 'bonus', days: days, last: SIM_TODAY - days * 864e5, code: code };
+  }
+  function check(v) {
+    var err = $('#elErr'); err.textContent = '';
+    v = (v || '').trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { err.textContent = 'Enter a valid email address.'; $('#elEmail').focus(); return; }
+    if (busy) return; busy = true;
+    var btn = $('#elBtn'), orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Checking';
+    lastRes = { loading: true }; renderResult();
+    setTimeout(function () { busy = false; btn.disabled = false; btn.innerHTML = orig; lastRes = profile(v); renderResult(); }, 900);
+  }
+  function renderResult() {
+    var box = $('#elR'), r = lastRes;
+    if (!r) { box.className = 'el-r'; box.innerHTML = '<div class="el-idle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a3 3 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a3 3 0 0 0 0-6z"/><path d="M14 5v2M14 11v2M14 17v2"/></svg>Your offer appears here.</div>'; return; }
+    if (r.loading) { box.className = 'el-r'; box.innerHTML = '<div class="el-load"><span class="spin"></span>Checking your activity and generating your offer\u2026</div>'; return; }
+    var ok = r.kind !== 'none', em = XM.esc(r.email);
+    box.className = 'el-r' + (ok ? '' : ' no');
+    if (!ok) {
+      box.innerHTML = '<div class="el-res"><span class="el-badge"><i>' + P.warn + '</i>No offer for this email</span>' +
+        '<h4>There is no welcome-back offer for ' + em + ' right now.</h4>' +
+        '<p>Welcome-back offers are for existing clients with no trading for 90+ days. We show the same message whether or not an email has an account. Not a client yet? Open an account and see our current offers.</p>' +
+        '<div class="btn-row"><a class="btn btn-glass pill" href="' + XM.url('ideas/02-hero-email/register.html?email=' + encodeURIComponent(r.email) + '&src=welcome-back') + '">Open an account</a></div></div>';
+      return;
+    }
+    var pack = r.kind === 'pack';
+    box.innerHTML = '<div class="el-res"><span class="el-badge"><i>' + P.check + '</i>Eligible</span>' +
+      '<div class="el-offer"><small><span>' + (pack ? 'YOUR COMEBACK PACK' : 'YOUR OFFER') + '</span><b>' + r.code + '</b></small>' +
+      '<span class="big">+50%</span><span class="tt">Extra deposit bonus, up to &#36;500</span>' + (pack ? '<span class="tt2">+ XMP &times;2 for 60 days</span>' : '') + '</div>' +
+      '<p>Generated for ' + em + '. Last trade ' + fmtD(r.last) + ', ' + r.days + ' days ago' + (pack ? ', so the longer-absence pack applies' : '') + '. Valid until 30 June 2026. Example: a &#36;400 deposit earns a &#36;200 bonus.</p>' +
+      '<div class="btn-row">' + (entered ? '<button class="btn btn-primary pill glow-btn" type="button" id="elDep">Make a deposit</button>' : '<button class="btn btn-primary pill glow-btn" type="button" id="elGo">Log in to claim</button>') + '</div></div>';
+    var g = $('#elGo'); if (g) g.addEventListener('click', function () { openM(r.email); });
+    var d = $('#elDep'); if (d) d.addEventListener('click', function () { XM.toast('Opening my.xmtrading.com/deposit (prototype)'); });
+  }
+  function initElig() {
+    $('#elF').addEventListener('submit', function (e) { e.preventDefault(); check($('#elEmail').value); });
+    $$('.el-q [data-em]').forEach(function (b) { b.addEventListener('click', function () {
+      var v = b.getAttribute('data-em'); $('#elEmail').value = v; check(v);
+    }); });
+  }
+
+  /* ---------- series ---------- */
+  var SERIES = [
+    ['01', 'Spring Restart', '1 \u2013 31 Mar 2025', '30% deposit bonus', 3402, 4000],
+    ['02', 'Summer Comeback', '1 \u2013 30 Jun 2025', 'XMP \u00d72 for 45 days', 3911, 4000],
+    ['03', 'Autumn Return', '1 \u2013 31 Oct 2025', '40% deposit bonus', 4288, 5000],
+    ['04', 'New Year Reset', '1 \u2013 31 Jan 2026', 'XMP \u00d73 for 30 days', 4730, 5000],
+    ['05', 'Welcome Back', '1 \u2013 30 Jun 2026', '50% deposit bonus', 1283, 5000, 1]
+  ];
+  function drawSeries() {
+    $('#seriesRow').innerHTML = SERIES.map(function (s) {
+      return '<article class="sc' + (s[6] ? ' live' : '') + '"' + (s[6] ? ' id="liveCard"' : '') + '><span class="tag ' + (s[6] ? '' : 'grey') + '">' + (s[6] ? 'Live now' : 'Closed') + '</span><div class="no">' + s[0] + '</div><small>Campaign &middot; ' + s[2] + '</small><h5>' + s[1] + '</h5><div class="of">' + s[3] + '</div><div class="pb"><i style="width:' + (s[4] / s[5] * 100) + '%"></i></div><div class="cl">' + s[4].toLocaleString('en-US') + ' of ' + s[5].toLocaleString('en-US') + ' claimed</div></article>';
+    }).join('');
+  }
+
+  /* ---------- homepage banner preview ---------- */
+  function initSeg() {
+    $$('#seg button').forEach(function (b) { b.addEventListener('click', function () {
+      $$('#seg button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      $('#slot').classList.toggle('off', b.getAttribute('data-v') === 'active');
+    }); });
+  }
+
+  function init() {
+    try { entered = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    drawOffer(); drawBarcode(); drawSeries(); initModal(); initElig(); initSeg(); tick(); setInterval(tick, 1000);
+    $('#addCal').addEventListener('click', ics);
+    $$('a[href="#"]').forEach(function (a) { a.addEventListener('click', function (e) { if (!a.hasAttribute('data-login')) e.preventDefault(); }); });
+    $('#deposit').addEventListener('click', function () { XM.toast('Opening my.xmtrading.com/deposit (prototype)'); });
+    $$('.faq details').forEach(function (d) { d.addEventListener('toggle', function () { if (d.open) $$('.faq details').forEach(function (o) { if (o !== d) o.open = false; }); }); });
+    render();
+    XM.notes({
+      title: 'Welcome back campaign (idea 12)',
+      today: 'Dormant clients only see generic promotions; no dated, capped reason to come back and log in.',
+      proposed: 'A dedicated /welcome-back landing page with a dated offer, live countdown and a login gate that issues a numbered entry. A slim banner slot on the homepage routes the right segment here. An offer finder asks for the account email, checks activity and generates the offer (a bonus, or a longer-absence pack) with a personal code. The real lookup must not confirm whether an email has an account, so ineligible and unknown emails get the same message.',
+      why: 'Scarcity (5,000 numbered entries), a real deadline and a one-step gate make the reactivation ask concrete, and the series sets up repeat campaigns.',
+      metric: 'Reactivation rate: dormant 90+ day clients who log in and deposit during the window.'
+    });
+  }
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="12"></script>
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email verification · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 03 · Email verification: type a 6-digit code OR tap the link
+   Left: the real "Check your email" screen. Right: the inbox with the new email.
+   ===================================================================== */
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.sec { margin-top: 96px; }
+.sh { text-align: center; max-width: 720px; margin: 0 auto 40px; }
+.sh .h-l { margin-top: 12px; }
+.sh .lead { margin-top: 14px; }
+.pill { border-radius: 999px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; }
+
+/* ---------- dark stage ---------- */
+.stage-b { margin-top: 10px; padding: 72px 44px 40px; background: #090b0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.stage-b::before { background: radial-gradient(70% 60% at 50% -8%, rgba(0, 200, 125, .38), rgba(0, 132, 84, .12) 50%, transparent 72%); }
+.stage-b::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 50%); mask-image: linear-gradient(180deg, #000, transparent 50%); }
+.st-h { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.kick { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; animation: fadeUp .7s both; }
+.xmk { width: 28px; height: 28px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 11px; letter-spacing: -.5px; }
+.bdg { background: #fff; color: #0b0d10; font-weight: 700; font-size: 12px; letter-spacing: .08em; padding: 6px 11px; border-radius: 8px; }
+.st-h h1 { font-size: clamp(34px, 4.6vw, 58px); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; max-width: 17ch; animation: fadeUp .8s .05s both; }
+.st-h p { margin: 18px auto 0; max-width: 560px; color: #a9b0ba; font-size: clamp(15px, 1.4vw, 18px); line-height: 1.6; animation: fadeUp .8s .14s both; }
+.scope { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 820px; margin-top: 30px; text-align: left; animation: fadeUp .8s .2s both; }
+.sc { padding: 16px 20px 16px; border-radius: 16px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12); }
+.sc.in { background: rgba(0, 200, 125, .09); border-color: rgba(0, 200, 125, .4); }
+.sct { display: inline-block; margin-bottom: 10px; padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: rgba(255, 255, 255, .1); color: #c3cad3; }
+.sc.in .sct { background: #00a064; color: #fff; }
+.sc ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sc li { position: relative; padding-left: 24px; font-size: 14px; line-height: 1.45; color: #e6eaee; }
+.sc li::before { content: ''; position: absolute; left: 3px; top: 4px; width: 5px; height: 9px; border: solid #4ade9d; border-width: 0 2.2px 2.2px 0; transform: rotate(45deg); }
+.sc.out li { color: #9aa2ad; }
+.sc.out li::before { left: 2px; top: 9px; width: 10px; height: 0; border-width: 2px 0 0 0; border-color: #6b7380; transform: none; }
+@media (max-width: 720px) { .scope { grid-template-columns: 1fr; margin-top: 22px; } }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 28px; margin-top: 52px; animation: fadeUp .9s .25s both; align-items: stretch; }
+.col { display: flex; flex-direction: column; min-width: 0; }
+.lab { display: flex; align-items: center; gap: 10px; margin: 0 4px 14px; color: #c3cad3; font-size: 13.5px; font-weight: 500; }
+.lab b { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); font-size: 12px; color: #fff; }
+.lab span { color: #7f8894; font-weight: 400; }
+
+/* ---------- left: browser + XM "Check your email" ---------- */
+.win { flex: 1; display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; background: #fff; border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 90px rgba(0, 190, 130, .12); }
+.win .bar { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 14px; background: #eceef1; border-bottom: 1px solid var(--line); flex: none; }
+.win .bar i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.win .bar i:nth-child(1) { background: #ff5f57; } .win .bar i:nth-child(2) { background: #febc2e; } .win .bar i:nth-child(3) { background: #28c840; }
+.win .url { flex: 1; max-width: 420px; margin: 0 auto; height: 24px; border-radius: 8px; background: #fff; color: var(--ink-2); font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.win .url svg { width: 12px; height: 12px; }
+.vp { flex: 1; background: #f5f5f5; display: flex; flex-direction: column; }
+.vp-r { display: flex; align-items: center; gap: 8px; justify-content: center; background: #f1f1f1; color: #55595f; font-size: 11px; padding: 5px 12px; border-bottom: 1px solid var(--line); }
+.vp-r svg { width: 12px; height: 12px; color: #c0392b; flex: none; }
+.vp-h { display: flex; align-items: center; justify-content: space-between; padding: 14px 26px 0; }
+.vp-h .xm-logo svg { height: 20px; } .vp-h span { font-size: 12.5px; font-weight: 500; display: inline-flex; gap: 6px; align-items: center; } .vp-h span svg { width: 15px; height: 15px; }
+.vp-b { flex: 1; display: flex; align-items: center; justify-content: center; padding: 22px 18px 30px; }
+.vc { position: relative; width: 100%; max-width: 440px; background: #fff; border-radius: 22px; padding: 34px 34px 28px; box-shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 26px 60px -30px rgba(16, 24, 40, .25); text-align: center; }
+.pane { animation: fadeUp .4s both; }
+.ic-env { width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%; background: #f1f2f4; display: grid; place-items: center; color: var(--ink); position: relative; }
+.ic-env svg { width: 28px; height: 28px; }
+.ic-env::after { content: ''; position: absolute; inset: -7px; border-radius: 50%; border: 1.5px solid rgba(0, 132, 84, .3); animation: ring 2.4s ease-out infinite; }
+@keyframes ring { 0% { transform: scale(.88); opacity: .9; } 100% { transform: scale(1.25); opacity: 0; } }
+.vc h2 { font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: -.02em; }
+.vc .lede { margin-top: 8px; font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
+.vc .lede b { color: var(--g); font-weight: 600; word-break: break-all; }
+.lnk { background: none; border: 0; padding: 0; color: var(--g); font-weight: 600; font-size: inherit; }
+.lnk:hover:not(:disabled) { text-decoration: underline; }
+.lnk:disabled { color: var(--mut); cursor: default; }
+.chg-row { display: inline-flex; margin-left: 6px; font-size: 12.5px; }
+.chgf { display: flex; gap: 6px; margin: 10px auto 0; max-width: 340px; }
+.chgf input { flex: 1; min-width: 0; height: 40px; border-radius: 10px; border: 1.5px solid var(--line-2); background: #f5f5f5; padding: 0 12px; font-size: 13.5px; outline: 0; }
+.chgf input:focus { border-color: var(--g); background: #fff; box-shadow: 0 0 0 4px rgba(0, 132, 84, .12); }
+.chgf input.err { border-color: var(--red); background: var(--red-l); }
+.chgf .btn { height: 40px; padding: 0 14px; }
+.chgf .btn-outline { padding: 0 12px; }
+
+.otp { position: relative; display: flex; justify-content: center; align-items: center; gap: 9px; margin-top: 24px; }
+.otp .cell { position: relative; width: 100%; max-width: 54px; aspect-ratio: 54 / 64; min-width: 0; display: grid; place-items: center; font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; border-radius: 13px; border: 1.5px solid transparent; background: #f5f5f5; transition: border-color .15s, background .15s, box-shadow .15s, transform .15s; }
+.otp.focus .cell.cur { background: #fff; border-color: var(--g); box-shadow: 0 0 0 4px rgba(0, 132, 84, .14); transform: translateY(-1px); }
+.otp.focus .cell.cur:not(.f)::after { content: ''; width: 2px; height: 28px; border-radius: 2px; background: var(--g); animation: caret 1s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+.otp .cell.f { background: #f3faf6; border-color: rgba(0, 132, 84, .35); }
+.otp .sep { width: 10px; height: 2px; border-radius: 2px; background: #c5cad1; flex: none; }
+/* one real input sits on top of the visual cells: this is what lets iOS offer the emailed code above the keyboard */
+.otp-in { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; margin: 0; padding: 0; border: 0; outline: 0; background: transparent; color: transparent; caret-color: transparent; font-size: 16px; letter-spacing: 1em; text-align: center; cursor: text; -webkit-text-fill-color: transparent; }
+.otp-in::selection { background: transparent; }
+/* hide Safari's own autofill badge: it sits on top of the 6th cell */
+.otp-in::-webkit-credentials-auto-fill-button, .otp-in::-webkit-contacts-auto-fill-button { visibility: hidden; display: none !important; pointer-events: none; position: absolute; right: 0; }
+.otp.err .cell { border-color: var(--red); background: var(--red-l); color: var(--red); }
+.otp.shake { animation: shake .42s; }
+.otp.busy .cell { opacity: .65; }
+.otp-in:disabled { cursor: not-allowed; }
+.otp.dead .cell { opacity: .55; }
+.ioshint { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; padding: 8px 12px; border-radius: 10px; background: var(--g-l); color: var(--g); font-size: 12.5px; font-weight: 600; line-height: 1.4; text-align: left; }
+.ioshint svg { width: 16px; height: 16px; flex: none; }
+.qt { margin: 18px -34px -28px; padding-bottom: 8px; background: #d1d3d9; border-radius: 0 0 22px 22px; text-align: center; animation: fadeUp .35s both; user-select: none; -webkit-user-select: none; }
+.qt .cap { display: block; padding: 7px 0 0; font-size: 10.5px; color: #6b6f78; letter-spacing: .02em; }
+.qt .qbar { height: 46px; display: flex; align-items: center; justify-content: center; padding: 0 8px; border-bottom: 1px solid rgba(0, 0, 0, .08); }
+.qt .sg { width: 100%; max-width: 300px; height: 36px; border: 0; border-radius: 8px; background: #fff; box-shadow: 0 1px 0 rgba(0, 0, 0, .3); display: flex; align-items: center; justify-content: center; gap: 9px; font-size: 16px; color: #111; transition: transform .12s; animation: sgPulse 2s 1.2s ease-out infinite; }
+.qt .sg:active { transform: scale(.97); background: #e9eaee; }
+.qt .sg svg { width: 17px; height: 17px; color: #3478f6; }
+.qt .sg b { font-weight: 600; letter-spacing: .12em; font-variant-numeric: tabular-nums; }
+.qt .sg span { font-size: 11.5px; color: #6b6f78; }
+@keyframes sgPulse { 0% { box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 0 0 0 rgba(52, 120, 246, .55); } 60%, 100% { box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 0 0 10px rgba(52, 120, 246, 0); } }
+.kp { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 6px; padding: 8px 6px 0; }
+.kp button { height: 42px; border: 0; border-radius: 6px; background: #fff; box-shadow: 0 1px 0 rgba(0, 0, 0, .3); font-size: 22px; line-height: 1; color: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.kp button small { margin-top: 2px; font-size: 8.5px; font-weight: 700; letter-spacing: .14em; color: #111; }
+.kp button:active { background: #aeb3bd; }
+.kp .fn { background: #acb0ba; } .kp .fn svg { width: 22px; height: 22px; }
+.kp .gap { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .qt .sg { animation: none; } }
+.demo button.on { background: rgba(0, 200, 125, .18); border-color: rgba(0, 200, 125, .55); color: #fff; }
+@keyframes shake { 20% { transform: translateX(-9px); } 45% { transform: translateX(8px); } 70% { transform: translateX(-5px); } 90% { transform: translateX(2px); } }
+.msg { min-height: 20px; margin-top: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.msg svg { width: 15px; height: 15px; flex: none; }
+.msg.bad { color: var(--red); } .msg.ok { color: var(--g); }
+.meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; font-size: 12.5px; color: var(--mut); }
+.meta .exp { display: inline-flex; align-items: center; gap: 6px; }
+.meta .exp svg { width: 14px; height: 14px; }
+.meta .exp b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
+.meta .exp.low b { color: #c26a00; } .meta .exp.gone, .meta .exp.gone b { color: var(--red); }
+.pasteb { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line-2); background: #fff; font-size: 12.5px; font-weight: 600; color: var(--ink); transition: .15s; }
+.pasteb:hover { border-color: var(--g); color: var(--g); }
+.pasteb svg { width: 14px; height: 14px; }
+.pasteb.hot { border-color: var(--g); color: var(--g); background: var(--g-l); animation: hot 1.6s infinite; }
+@keyframes hot { 0% { box-shadow: 0 0 0 0 rgba(0, 132, 84, .35); } 70% { box-shadow: 0 0 0 8px rgba(0, 132, 84, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 132, 84, 0); } }
+.vbtn { margin-top: 16px; height: 52px; border-radius: 12px; font-size: 15.5px; gap: 10px; }
+.vbtn .spin { display: none; width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: rot .7s linear infinite; }
+.vbtn.busy .spin { display: block; } .vbtn.busy { pointer-events: none; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.rs { margin-top: 14px; font-size: 13px; color: var(--mut); }
+.wait { margin-top: 18px; padding: 13px 14px; border-radius: 14px; background: #f5f5f5; display: flex; gap: 12px; align-items: center; text-align: left; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+.wait .lk { width: 34px; height: 34px; border-radius: 10px; background: #fff; display: grid; place-items: center; color: var(--g); flex: none; box-shadow: var(--sh-s); }
+.wait .lk svg { width: 17px; height: 17px; }
+.wait b { color: var(--ink); font-weight: 600; }
+.wait .live { display: inline-flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 11.5px; color: var(--g); font-weight: 600; }
+
+/* success */
+.tick { width: 84px; height: 84px; margin: 4px auto 18px; }
+.tick circle { stroke: var(--g); stroke-width: 3; fill: var(--g-l); stroke-dasharray: 170; stroke-dashoffset: 170; animation: dash .7s cubic-bezier(.65, 0, .35, 1) forwards; transform-origin: center; transform: rotate(-90deg); }
+.tick path { stroke: var(--g); stroke-width: 4.2; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 44; stroke-dashoffset: 44; animation: dash .45s .55s cubic-bezier(.65, 0, .35, 1) forwards; }
+@keyframes dash { to { stroke-dashoffset: 0; } }
+.pop { animation: pop .5s .3s both; }
+@keyframes pop { 0% { transform: scale(.8); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.go-bar { height: 4px; border-radius: 4px; background: var(--line); margin: 22px auto 0; max-width: 220px; overflow: hidden; }
+.go-bar i { display: block; height: 100%; width: 0; background: var(--g); border-radius: 4px; }
+.via { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 5px 12px; border-radius: 999px; background: var(--g-l); color: var(--g); font-size: 12px; font-weight: 600; }
+.via svg { width: 13px; height: 13px; }
+
+/* lock */
+.ic-lock { width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%; background: var(--amber-l); color: var(--amber); display: grid; place-items: center; } .ic-lock svg { width: 28px; height: 28px; }
+.lt { margin: 18px auto 4px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 14px; background: #f5f5f5; font-size: 13px; color: var(--ink-2); }
+.lt b { font-size: 22px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+/* ---------- right: inbox ---------- */
+.inbox { flex: 1; position: relative; display: flex; flex-direction: column; min-height: 0; border-radius: 18px; overflow: hidden; background: #fff; border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 90px rgba(47, 98, 240, .1); }
+.ib-top { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #f6f8fc; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.ib-top .search { flex: 1; min-width: 120px; height: 38px; border-radius: 999px; background: #eaf1fb; display: flex; align-items: center; gap: 8px; padding: 0 14px; color: #5f6b7a; font-size: 13px; }
+.ib-top .search svg { width: 16px; height: 16px; }
+.sim { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 999px; border: 0; background: var(--g); color: #fff; font-size: 13px; font-weight: 600; transition: .15s; box-shadow: 0 6px 18px rgba(0, 132, 84, .3); white-space: nowrap; }
+.sim:hover { background: var(--g-d); transform: translateY(-1px); }
+.sim svg { width: 15px; height: 15px; }
+.ib-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 6px; font-size: 13px; font-weight: 600; }
+.ib-h span { font-weight: 400; color: var(--mut); font-size: 12px; }
+.ib-list { flex: none; }
+.ib-row { display: flex; align-items: center; gap: 12px; padding: 0 16px; height: 54px; border-bottom: 1px solid #eef0f3; font-size: 13px; overflow: hidden; }
+.ib-row .av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 11px; font-weight: 700; flex: none; }
+.ib-row .tx { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--mut); }
+.ib-row .tx b { color: var(--ink); font-weight: 500; margin-right: 6px; }
+.ib-row .tm { font-size: 11.5px; color: var(--mut); flex: none; }
+.ib-row.xm { background: #eef7f2; box-shadow: inset 3px 0 0 var(--g); cursor: pointer; }
+.ib-row.xm .tx b { font-weight: 700; } .ib-row.xm .tx { color: #4a5058; } .ib-row.xm .tm { color: var(--g); font-weight: 600; }
+.ib-row.in { animation: rowIn .6s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes rowIn { 0% { height: 0; opacity: 0; transform: translateY(-14px); } 55% { height: 54px; opacity: 1; } 100% { height: 54px; opacity: 1; transform: none; } }
+.ib-read { position: relative; flex: 1; min-height: 0; overflow: auto; padding: 14px 16px 18px; background: #fff; }
+.ib-empty { height: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--mut); font-size: 13px; gap: 12px; }
+.ib-empty .dots { display: inline-flex; gap: 5px; } .ib-empty .dots i { width: 7px; height: 7px; border-radius: 50%; background: #c5cad1; animation: blink 1.2s infinite; } .ib-empty .dots i:nth-child(2) { animation-delay: .2s; } .ib-empty .dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 60%, 100% { opacity: .3; transform: none; } 30% { opacity: 1; transform: translateY(-3px); } }
+.ib-sub { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ib-sub h4 { font-size: 16.5px; font-weight: 500; letter-spacing: -.005em; }
+.ib-sub .tag { font-size: 11px; padding: 2px 9px; }
+.ib-from { display: flex; align-items: center; gap: 10px; margin: 10px 0 12px; font-size: 12.5px; color: var(--mut); }
+.ib-from .av { width: 34px; height: 34px; border-radius: 50%; background: #000; color: #fff; font-size: 11px; font-weight: 800; font-style: italic; display: grid; place-items: center; flex: none; }
+.ib-from b { color: var(--ink); font-weight: 600; font-size: 13px; }
+.mail { background: #eceef1; border-radius: 12px; padding: 14px; animation: fadeUp .5s both; }
+.mail.flash { animation: flash 1s; }
+@keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(0, 132, 84, .5); } 100% { box-shadow: 0 0 0 14px rgba(0, 132, 84, 0); } }
+.em { max-width: 420px; margin: 0 auto; border-radius: 14px; overflow: hidden; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #111; }
+.em-h { background: #000; padding: 14px 0; display: grid; place-items: center; } .em-h svg { height: 24px; width: auto; }
+.em-b { padding: 22px 24px 20px; text-align: center; }
+.em-b h5 { font-size: 18px; font-weight: 700; margin: 0; }
+.em-b p { font-size: 13.5px; line-height: 1.55; color: #333; margin: 8px 0 0; }
+.code { position: relative; margin: 10px auto 0; display: inline-flex; flex-direction: column; align-items: center; padding: 8px 22px 7px; border-radius: 12px; background: #f4f6f5; border: 1.5px dashed #c9d3ce; cursor: pointer; transition: background .15s, border-color .15s; user-select: all; }
+.code:hover { background: #ecf5f0; border-color: var(--g); }
+.code b { font-size: 28px; line-height: 1.15; letter-spacing: .12em; font-weight: 700; font-variant-numeric: tabular-nums; padding-left: .12em; }
+.ios-n { margin: 10px auto 0; display: flex; align-items: flex-start; justify-content: center; gap: 6px; font-size: 12px; line-height: 1.45; color: #4a5058; text-align: left; max-width: 300px; }
+.ios-n svg { width: 14px; height: 14px; flex: none; margin-top: 1px; color: #008454; }
+.code small { font-size: 11px; color: #6a727b; display: inline-flex; align-items: center; gap: 5px; } .code small svg { width: 12px; height: 12px; }
+.copied { position: absolute; left: 50%; top: -14px; transform: translate(-50%, 6px); opacity: 0; pointer-events: none; white-space: nowrap; background: var(--g); color: #fff; font-family: var(--font); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px; box-shadow: 0 8px 22px rgba(0, 132, 84, .4); display: inline-flex; align-items: center; gap: 6px; transition: .3s; }
+.copied svg { width: 13px; height: 13px; stroke-width: 3; }
+.copied.show { opacity: 1; transform: translate(-50%, 0); }
+.or-l { margin: 14px 0 2px; font-size: 11.5px; color: #8a9199; letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.or-l::before, .or-l::after { content: ''; flex: 1; height: 1px; background: #e4e6e9; }
+.vm { display: block; margin-top: 14px; background: #008454; color: #fff !important; font-weight: 700; font-size: 15px; letter-spacing: .02em; padding: 16px 34px; border-radius: 8px; text-transform: uppercase; box-shadow: 0 6px 16px rgba(0, 132, 84, .3); transition: .15s; }
+.vm:hover { background: #006b44; transform: translateY(-1px); }
+.em-b .fine { margin-top: 14px; font-size: 11.5px; color: #6a727b; line-height: 1.5; }
+.em-b .sig { margin-top: 12px; font-size: 12.5px; text-align: left; color: #333; border-top: 1px solid #eceef1; padding-top: 12px; }
+.ib-foot { padding: 10px 16px; border-top: 1px solid var(--line); background: #fafbfc; font-size: 12px; color: var(--mut); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.ib-foot a { color: var(--g); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; } .ib-foot a:hover { text-decoration: underline; }
+.ib-foot svg { width: 13px; height: 13px; }
+
+/* simulated "new tab" when the link is clicked */
+.tabsim { position: absolute; inset: 0; z-index: 4; background: rgba(12, 14, 18, .5); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .25s both; }
+.tabsim .w { width: 100%; max-width: 330px; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 30px 70px rgba(0, 0, 0, .5); animation: fadeUp .4s both; }
+.tabsim .tb { display: flex; align-items: center; gap: 6px; background: #dfe3e8; padding: 7px 8px 0; }
+.tabsim .tb span { background: #fff; border-radius: 9px 9px 0 0; padding: 6px 12px; font-size: 11.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; } .tabsim .tb svg { width: 12px; height: 12px; color: var(--g); }
+.tabsim .ub { background: #fff; padding: 7px 10px; border-bottom: 1px solid var(--line); font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; } .tabsim .ub svg { width: 11px; height: 11px; }
+.tabsim .bd { padding: 24px 20px 22px; text-align: center; }
+.tabsim .bd h5 { font-size: 17px; font-weight: 700; margin: 10px 0 4px; } .tabsim .bd p { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+.tabsim .tick { width: 64px; height: 64px; margin: 0 auto; }
+.tabsim .sync { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; font-size: 11.5px; font-weight: 600; color: var(--g); }
+.tabsim .sync i { width: 7px; height: 7px; border-radius: 50%; background: var(--g); animation: pulse 1.4s infinite; }
+
+.demo { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 30px; color: #7f8894; font-size: 12.5px; }
+.demo button { height: 34px; padding: 0 14px; border-radius: 999px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .13); color: #c3cad3; font-size: 12.5px; font-weight: 500; transition: .15s; display: inline-flex; align-items: center; gap: 7px; }
+.demo button:hover { background: rgba(255, 255, 255, .11); color: #fff; border-color: rgba(255, 255, 255, .3); }
+.demo button svg { width: 14px; height: 14px; }
+
+/* ---------- safety strip ---------- */
+.sf { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.sf-c { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 26px 24px 24px; transition: transform .25s, box-shadow .25s; box-shadow: 0 20px 50px -38px rgba(16, 24, 40, .3); }
+.sf-c:hover { transform: translateY(-5px); box-shadow: 0 26px 56px -30px rgba(16, 24, 40, .25); }
+.sf-i { width: 44px; height: 44px; border-radius: 13px; background: var(--g-l); color: var(--g); display: grid; place-items: center; } .sf-i svg { width: 22px; height: 22px; }
+.sf-v { margin-top: 20px; font-size: 34px; line-height: 1.05; font-weight: 700; letter-spacing: -.035em; }
+.sf-v i { font-style: normal; color: var(--g); font-size: 20px; letter-spacing: -.01em; margin-left: 3px; }
+.sf-c h3 { margin-top: 6px; font-size: 16px; font-weight: 600; }
+.sf-c p { margin-top: 8px; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+.fine { margin-top: 18px; font-size: 12px; color: var(--mut); text-align: center; }
+
+/* ---------- the gap: login has a code, registration doesn't ---------- */
+#gap .sh { max-width: 880px; }
+.gp { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: stretch; }
+.gp-c { position: relative; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 26px 24px 24px; box-shadow: 0 20px 50px -38px rgba(16, 24, 40, .3); }
+.gp-c .chip { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: var(--soft); color: #5b636d; }
+.gp-c .chip.live { background: rgba(18, 165, 106, .12); color: #0a7a4d; }
+.gp-c .chip.gap { background: var(--amber-l); color: var(--amber); }
+.gp-c .chip.new { background: var(--g); color: #fff; }
+.gp-c h3 { margin-top: 16px; font-size: 20px; line-height: 1.25; font-weight: 700; letter-spacing: -.02em; }
+.gp-c p { margin-top: 10px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.gp-v { margin-top: auto; padding-top: 20px; display: flex; align-items: center; gap: 12px; }
+.gp-v i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--g-l); color: var(--g); flex: none; } .gp-v i svg { width: 21px; height: 21px; }
+.gp-v .digits { display: inline-flex; gap: 5px; } .gp-v .digits b { width: 26px; height: 32px; border-radius: 8px; background: #f3faf6; border: 1.5px solid rgba(0, 132, 84, .3); display: grid; place-items: center; font-size: 15px; font-weight: 700; }
+.gp-v .btn1 { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 8px; background: #008454; color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.gp-v .btn1.dim { background: #c9d3ce; }
+.gp-v small { font-size: 12px; color: var(--mut); }
+.gp-c.me { border-color: rgba(0, 132, 84, .5); background: linear-gradient(180deg, #f3faf6, #fff 60%); box-shadow: 0 0 0 4px rgba(0, 132, 84, .08), 0 26px 56px -34px rgba(0, 132, 84, .5); }
+.gp-c:not(:last-child)::after { content: ''; position: absolute; right: -13px; top: 50%; width: 10px; height: 10px; border-top: 2px solid #b6bec8; border-right: 2px solid #b6bec8; transform: translateY(-50%) rotate(45deg); z-index: 1; }
+.bel { display: flex; align-items: flex-start; gap: 14px; margin-top: 18px; padding: 18px 22px; border-radius: 20px; background: #0b0d10; color: #e6eaee; font-size: 15px; line-height: 1.6; }
+.bel i { width: 38px; height: 38px; border-radius: 11px; background: rgba(0, 200, 125, .16); color: #4ade9d; display: grid; place-items: center; flex: none; } .bel i svg { width: 20px; height: 20px; }
+.bel b { color: #fff; font-weight: 600; }
+
+/* ---------- journeys: what iPhone users do, before and after ---------- */
+.jr { background: #fff; border: 1px solid var(--line); border-radius: 28px; padding: 8px 28px; box-shadow: 0 30px 70px -40px rgba(16, 24, 40, .25); max-width: 1040px; margin: 0 auto; }
+.jr-r { display: grid; grid-template-columns: 150px 1fr auto; align-items: center; gap: 20px; padding: 24px 0; }
+.jr-r + .jr-r { border-top: 1px solid var(--line); }
+.jr-l b { display: block; font-size: 15px; font-weight: 700; } .jr-l small { display: block; margin-top: 3px; color: var(--mut); font-size: 12.5px; line-height: 1.4; }
+.jr-s { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 6px; list-style: none; padding: 0; margin: 0; }
+.jr-s li { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 12px; background: var(--soft); font-size: 13px; font-weight: 500; color: var(--ink); }
+.jr-s li svg { width: 15px; height: 15px; flex: none; color: var(--mut); }
+.jr-s li.out { background: var(--amber-l); color: #8a5300; } .jr-s li.out svg { color: var(--amber); }
+.jr-s li.in { background: var(--g-l); color: #0a6b45; font-weight: 600; } .jr-s li.in svg { color: var(--g); }
+.jr-s li + li::before { content: ''; width: 0; }
+.jr-s .ar { width: 14px; height: 14px; color: #b6bec8; flex: none; } .jr-s .ar svg { width: 14px; height: 14px; }
+.jr-k { text-align: center; min-width: 92px; } .jr-k strong { display: block; font-size: 30px; line-height: 1; font-weight: 700; letter-spacing: -.03em; }
+.jr-k span { display: block; margin-top: 6px; font-size: 11.5px; color: var(--mut); line-height: 1.3; }
+.jr-r.new .jr-k strong { color: var(--g); }
+.jr-r.old .jr-k strong { color: var(--amber); }
+@media (max-width: 1100px) { .gp { grid-template-columns: 1fr; } .gp-c:not(:last-child)::after { right: auto; left: 50%; top: auto; bottom: -13px; transform: translateX(-50%) rotate(135deg); } .jr-r { grid-template-columns: 1fr; gap: 14px; } .jr-k { text-align: left; display: flex; align-items: baseline; gap: 10px; } .jr-k span { margin: 0; } }
+
+@media (max-width: 1100px) { .stage { grid-template-columns: 1fr; } .sf { grid-template-columns: repeat(2, 1fr); } .ib-read { max-height: 560px; } }
+@media (max-width: 720px) {
+  .wrap { padding: 0 12px; } .sec { margin-top: 72px; }
+  .stage-b { padding: 48px 14px 26px; border-radius: 22px; }
+  .stage { margin-top: 36px; gap: 22px; }
+  .vc { padding: 28px 18px 22px; } .vp-b { padding: 16px 10px 20px; } .vp-h { padding: 12px 16px 0; }
+  .otp { gap: 6px; } .otp .cell { font-size: 22px; border-radius: 11px; } .otp .sep { width: 6px; }
+  .qt { margin: 16px -18px -22px; }
+  .meta { flex-wrap: wrap; justify-content: center; }
+  .win .url { font-size: 11px; }
+  .em-b { padding: 20px 14px 18px; } .code b { font-size: 26px; } .code { padding: 8px 16px 7px; }
+  .sf { grid-template-columns: 1fr; }
+  .demo { margin-top: 22px; }
+  .pasteb { height: 40px; } .lnk { padding: 10px 4px; margin: -10px 0; }
+}
+@media (max-width: 520px) { .xm-lang, .xm-hdr [data-login] { display: none; } .ib-top .search { display: none; } .sim { width: 100%; justify-content: center; } }
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main>
+  <div class="wrap">
+    <section class="block stage-b" id="stageB">
+      <div class="st-h">
+        <span class="kick"><b class="xmk">XM</b><span class="bdg">VERIFICATION</span></span>
+        <h1>Registration gets the code login already has.</h1>
+        <p>Login verifies with a 6-digit code. Registration still relies on one link button. Add the code, and iPhone users, most of our traffic, finish from the keyboard without leaving the screen.</p>
+        <div class="scope" aria-label="Scope of this prototype">
+          <div class="sc in"><span class="sct">In scope</span><ul><li>6-digit code on the &ldquo;Check your email&rdquo; screen</li><li>Same code in the email and its subject line</li><li>iPhone suggests the code above the keyboard</li><li>Expiry, resend and attempt limits</li></ul></div>
+          <div class="sc out"><span class="sct">Not in scope</span><ul><li>Login code flow (already live)</li><li>SMS or phone verification</li><li>Android auto-fill: copy the code or tap the button</li><li>Removing the link button</li></ul></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <!-- ========== LEFT: the real screen ========== -->
+        <div class="col">
+          <div class="lab"><b>1</b>On xmtrading.com <span>&middot; the waiting screen</span></div>
+          <div class="win">
+            <div class="bar"><i></i><i></i><i></i><div class="url" id="winUrl"></div></div>
+            <div class="vp">
+              <div class="vp-r" id="vpRisk"></div>
+              <div class="vp-h"><a class="xm-logo" href="#" id="vpLogo"></a><span id="vpLang"></span></div>
+              <div class="vp-b">
+                <div class="vc" id="vc">
+
+                  <!-- waiting / enter code -->
+                  <div class="pane" id="pWait">
+                    <div class="ic-env" id="icEnv"></div>
+                    <h2>Check your email</h2>
+                    <p class="lede">We sent a 6-digit code to <b id="em">alex@example.com</b><span class="chg-row"><button class="lnk" type="button" id="chg">Change email</button></span></p>
+                    <form class="chgf" id="chgF" hidden novalidate>
+                      <input id="chgI" type="email" inputmode="email" autocomplete="email" aria-label="New email address" placeholder="you@example.com">
+                      <button class="btn btn-primary btn-sm" type="submit">Save</button><button class="btn btn-outline btn-sm" type="button" id="chgX">Cancel</button>
+                    </form>
+
+                    <div class="otp" id="otp" role="group" aria-label="6-digit verification code"></div>
+                    <div class="ioshint" id="iosHint" hidden><span id="iosI"></span><span>Tap the code suggested above your keyboard. No need to open your email.</span></div>
+                    <div class="msg" id="msg" aria-live="polite"></div>
+                    <div class="meta">
+                      <span class="exp" id="expW"><span id="clk"></span>Code expires in <b id="exp">10:00</b></span>
+                      <button class="pasteb" type="button" id="paste"><span id="pIco"></span>Paste code</button>
+                    </div>
+                    <button class="btn btn-primary btn-block vbtn" type="button" id="vbtn" disabled><span class="spin"></span><span id="vlbl">Verify</span></button>
+                    <div class="rs"><span id="rsT">Didn&rsquo;t get it?</span> <button class="lnk" type="button" id="rs">Resend code</button></div>
+                    <div class="wait"><span class="lk" id="lkI"></span><div><b>Prefer a link?</b> Tap the green button in the email, on any device. This screen continues by itself.<br><span class="live"><span class="dot live"></span>Listening for confirmation</span></div></div>
+                    <div class="qt" id="qt" hidden><small class="cap">iPhone keyboard (simulated)</small><div class="qbar"><button class="sg" type="button" id="qtB" aria-label="Fill the code from Mail"><span id="qtI"></span><b id="qtC"></b><span>From Mail</span></button></div><div class="kp" id="kp" aria-hidden="true"></div></div>
+                  </div>
+
+                  <!-- success -->
+                  <div class="pane" id="pOk" role="status" hidden>
+                    <svg class="tick" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="m15 27 8 8 15-17"/></svg>
+                    <h2 class="pop">Email verified</h2>
+                    <p class="lede" id="okTxt">Taking you to your account&hellip;</p>
+                    <span class="via" id="via"></span>
+                    <div class="go-bar"><i id="goBar"></i></div>
+                    <p class="rs" style="margin-top:14px"><button class="lnk" type="button" id="goNow">Continue now</button></p>
+                  </div>
+
+                  <!-- rate limited -->
+                  <div class="pane" id="pLock" role="alert" hidden>
+                    <div class="ic-lock" id="icLock"></div>
+                    <h2>Too many attempts</h2>
+                    <p class="lede">For your security, code entry is paused.<br>Your email link still works.</p>
+                    <div class="lt" id="ltW"><span>Try again in</span><b id="lt">15:00</b></div>
+                    <button class="btn btn-outline btn-block vbtn" type="button" disabled style="margin-top:14px">Send a new code after the pause</button>
+                    <div class="wait"><span class="lk" id="lkI2"></span><div><b>Quickest way in:</b> open the email and tap the green VERIFY button.</div></div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== RIGHT: inbox ========== -->
+        <div class="col">
+          <div class="lab"><b>2</b>In the inbox <span>&middot; type the code or tap the link</span></div>
+          <aside class="inbox" id="inbox" aria-label="Mock inbox">
+            <div class="ib-top"><div class="search" id="ibSearch"></div><button class="sim" type="button" id="sim"><span id="simI"></span><span id="simL">Simulate: new email arrives</span></button></div>
+            <div class="ib-h">Inbox <span id="ibTo">alex@example.com</span></div>
+            <div class="ib-list" id="ibList">
+              <div class="ib-row"><span class="av" style="background:#8a3fd1">MR</span><div class="tx"><b>Maya Rossi</b>Lunch on Thursday? Found a new place near the office</div><span class="tm">9:12</span></div>
+              <div class="ib-row"><span class="av" style="background:#2f62f0">CA</span><div class="tx"><b>Calendar</b>Reminder: product sync starts at 15:00</div><span class="tm">8:40</span></div>
+            </div>
+            <div class="ib-read" id="ibRead"></div>
+            <div class="ib-foot"><span>Same email, same code, same link: nothing new to install.</span><a href="#" id="realTab" target="_blank" rel="noopener"><span id="rtI"></span>Open the link in a real new tab</a></div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="demo"><span>Demo controls</span>
+        <button type="button" id="dIos"><span data-i="phone"></span><span id="dIosL">Preview as iPhone</span></button>
+        <button type="button" id="dExp"><span data-i="clock"></span>Expire the code</button>
+        <button type="button" id="dLock"><span data-i="lock"></span>Trigger the attempt limit</button>
+        <button type="button" id="dReset"><span data-i="arrow"></span>Reset demo</button>
+      </div>
+    </section>
+
+    <!-- ================= THE GAP ================= -->
+    <section class="sec" id="gap">
+      <div class="sh reveal">
+        <span class="eyebrow">Why add it</span>
+        <h2 class="h-l">Login has a code. Registration doesn&rsquo;t.</h2>
+        <p class="lead">Customers already know the pattern. The registration email is the one place it&rsquo;s missing.</p>
+      </div>
+      <div class="gp">
+        <article class="gp-c reveal">
+          <span class="chip live">Login &middot; live</span>
+          <h3>A 6-digit code</h3>
+          <p>Returning customers already get a code to sign in. The pattern is built, understood and trusted.</p>
+          <div class="gp-v"><span class="digits"><b>4</b><b>8</b><b>3</b><b>9</b><b>2</b><b>0</b></span></div>
+        </article>
+        <article class="gp-c reveal" style="transition-delay:.06s">
+          <span class="chip gap">Registration &middot; today</span>
+          <h3>One link button</h3>
+          <p>On iPhone that means leaving the form, opening Mail, tapping the button, landing in a new tab and finding the way back.</p>
+          <div class="gp-v"><span class="btn1 dim">Verify email</span><small>No code to type</small></div>
+        </article>
+        <article class="gp-c me reveal" style="transition-delay:.12s">
+          <span class="chip new">Registration &middot; proposed</span>
+          <h3>Button plus code</h3>
+          <p>The same code, next to the button and in the subject. The field is autofill-ready, so iPhone suggests the code above the keyboard.</p>
+          <div class="gp-v"><span class="btn1">Verify email</span><span class="digits"><b>4</b><b>8</b><b>3</b></span><small>&hellip;</small></div>
+        </article>
+      </div>
+      <div class="bel reveal"><i class="ic" data-i="phone"></i><div><b>What we believe:</b> most of our customers are on iOS. If they can finish verification without leaving the screen, more of them complete registration. Android customers keep today&rsquo;s way: copy the code or tap the button.</div></div>
+    </section>
+
+    <!-- ================= JOURNEYS ================= -->
+    <section class="sec" id="paths" style="margin-top:88px">
+      <div class="sh reveal">
+        <span class="eyebrow">The iPhone journey</span>
+        <h2 class="h-l">Fewer steps. No other app.</h2>
+        <p class="lead">The email still arrives, and the code is already visible in the subject and notification. The keyboard does the rest.</p>
+      </div>
+      <div class="jr reveal">
+        <div class="jr-r old">
+          <div class="jr-l"><b>iPhone today</b><small>Link only</small></div>
+          <ul class="jr-s" data-steps="old"></ul>
+          <div class="jr-k"><strong>3</strong><span>times the screen<br>is left</span></div>
+        </div>
+        <div class="jr-r new">
+          <div class="jr-l"><b>iPhone proposed</b><small>Code autofill</small></div>
+          <ul class="jr-s" data-steps="new"></ul>
+          <div class="jr-k"><strong>0</strong><span>times the screen<br>is left</span></div>
+        </div>
+        <div class="jr-r">
+          <div class="jr-l"><b>Android and desktop</b><small>Same as today, one more option</small></div>
+          <ul class="jr-s" data-steps="alt"></ul>
+          <div class="jr-k"><strong>2</strong><span>ways to<br>finish</span></div>
+        </div>
+      </div>
+      <p class="fine">Step counts are from the prototype flow, not measured data. Autofill from email depends on the iOS version and Mail app; the code stays visible in the email as a fallback.</p>
+    </section>
+
+    <!-- ================= WHY THIS IS SAFE ================= -->
+    <section class="sec" id="safe">
+      <div class="sh reveal">
+        <span class="eyebrow">Why this is safe</span>
+        <h2 class="h-l">Easier for customers. Not easier to abuse.</h2>
+        <p class="lead">Four guard rails sit behind the friendlier screen.</p>
+      </div>
+      <div class="sf">
+        <article class="sf-c reveal"><div class="sf-i" data-i="clock"></div><div class="sf-v">10<i>min</i></div><h3>Short expiry</h3><p>Code and link both expire quickly. Today&rsquo;s link stays live for 24 hours.</p></article>
+        <article class="sf-c reveal" style="transition-delay:.06s"><div class="sf-i" data-i="check"></div><div class="sf-v">1<i>use</i></div><h3>Single-use</h3><p>Once verified, the code and the link stop working. A new request voids the old one.</p></article>
+        <article class="sf-c reveal" style="transition-delay:.12s"><div class="sf-i" data-i="shield"></div><div class="sf-v">5<i>tries</i></div><h3>Attempt limits</h3><p>Five wrong codes pause entry. Resends are rate-limited to one every 30 seconds.</p></article>
+        <article class="sf-c reveal" style="transition-delay:.18s"><div class="sf-i" data-i="lock"></div><div class="sf-v">1<i>session</i></div><h3>Same-session binding</h3><p>The code is tied to the sign-up that requested it, so a forwarded code is useless elsewhere.</p></article>
+      </div>
+      <p class="fine">Illustrative values for the prototype. Final limits to be set with Security.</p>
+    </section>
+  </div>
+</main>
+
+<div style="height:56px"></div>
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var $ = XM.$, esc = XM.esc;
+  var keep = /[?&]present=1/.test(location.search) ? 'present=1' : (XM.embedded ? 'embed=1' : '');
+  var NEXT_BASE = XM.url('ideas/05-success-handoff/index.html'), LINK_BASE = XM.url('ideas/03-verification/link.html');
+  function nextUrl() { return NEXT_BASE + '?email=' + encodeURIComponent(S.email) + (keep ? '&' + keep : ''); }
+  function linkUrl() { return LINK_BASE + '?email=' + encodeURIComponent(S.email); }
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var EXPIRY = 10 * 60 * 1000, COOL = 30 * 1000, LOCK = 15 * 60 * 1000, MAXTRY = 5;
+
+  /* ---------- static icons ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-i]'), function (e) { e.innerHTML = e.getAttribute('data-i') === 'clock' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>' : XM.icon(e.getAttribute('data-i')); if (e.className === '') { e.style.display = 'inline-flex'; e.style.width = '14px'; e.style.height = '14px'; } });
+  $('#winUrl').innerHTML = XM.icon('lock') + 'xmtrading.com/register/verify';
+  $('#vpRisk').innerHTML = XM.icon('warn') + 'Forex and derivative trading involves significant risk and can result in the loss of your invested capital.';
+  $('#vpLogo').innerHTML = XM.logo(false);
+  $('#vpLang').innerHTML = XM.icon('globe') + 'EN';
+  $('#icEnv').innerHTML = XM.icon('mail');
+  $('#clk').innerHTML = XM.icon('bolt');
+  $('#pIco').innerHTML = XM.icon('copy');
+  $('#lkI').innerHTML = XM.icon('share'); $('#lkI2').innerHTML = XM.icon('mail');
+  $('#icLock').innerHTML = XM.icon('lock');
+  $('#ibSearch').innerHTML = XM.icon('search') + 'Search mail';
+  $('#simI').innerHTML = XM.icon('bolt'); $('#rtI').innerHTML = XM.icon('arrow');
+
+  /* ---------- state ---------- */
+  var flow = XM.flow.get();
+  var S = { email: flow.email || 'alex@example.com', code: '483920', expiresAt: 0, attempts: 0, locked: false, lockUntil: 0, coolUntil: 0, done: false, busy: false, arrived: false, lastCopied: null };
+  var fmtCode = function (c) { return c.slice(0, 3) + ' ' + c.slice(3); };
+  var mmss = function (ms) { ms = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(ms / 60) + ':' + ('0' + (ms % 60)).slice(-2); };
+  function setEmail(v) { S.email = v; $('#em').textContent = v; $('#ibTo').textContent = v; $('#realTab').href = linkUrl(); }
+  setEmail(S.email);
+  function issue(first) {
+    if (first) S.code = '483920';
+    else { var c; do { c = String(Math.floor(100000 + Math.random() * 900000)); } while (c === S.code || /(\d)\1{5}/.test(c)); S.code = c; }
+    S.expiresAt = Date.now() + EXPIRY; S.attempts = 0; S.lastCopied = null;
+    $('#paste').classList.remove('hot');
+  }
+  issue(true); S.coolUntil = Date.now() + COOL;
+
+  /* ---------- OTP: one real input (autocomplete=one-time-code) + six visual cells ----------
+     iOS offers the emailed code above the keyboard only for a single focused field, so the
+     cells are just a rendering of that input's value. Paste, autofill and typing all land in it. */
+  var otp = $('#otp'), cells = [], inp = document.createElement('input');
+  for (var i = 0; i < 6; i++) {
+    if (i === 3) { var sp = document.createElement('span'); sp.className = 'sep'; sp.setAttribute('aria-hidden', 'true'); otp.appendChild(sp); }
+    var c = document.createElement('span'); c.className = 'cell'; c.setAttribute('aria-hidden', 'true'); otp.appendChild(c); cells.push(c);
+  }
+  inp.className = 'otp-in'; inp.id = 'otpIn'; inp.type = 'text'; inp.name = 'otp'; inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('pattern', '[0-9]*');
+  inp.setAttribute('autocomplete', 'one-time-code'); inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('autocorrect', 'off'); inp.spellcheck = false;
+  inp.setAttribute('aria-label', '6-digit verification code'); inp.setAttribute('enterkeyhint', 'go');
+  otp.appendChild(inp);
+  function val() { return inp.value; }
+  function renderCells() {
+    var v = val(), cur = Math.min(v.length, 5);
+    cells.forEach(function (x, k) { x.textContent = v[k] || ''; x.classList.toggle('f', !!v[k]); x.classList.toggle('cur', k === cur); });
+    return v;
+  }
+  function sync() {
+    var v = renderCells();
+    $('#vbtn').disabled = !(v.length === 6) && !isExpired();
+    otp.classList.remove('err');
+    if (!isExpired()) { var m = $('#msg'); if (m.classList.contains('bad')) setMsg('', ''); }
+    $('#paste').classList.toggle('hot', !!S.lastCopied && !v && !isExpired());
+    renderIos();
+    return v;
+  }
+  var subT;
+  function autoSubmit() { clearTimeout(subT); subT = setTimeout(verify, 280); }
+  function endCaret() { try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {} }
+  function setCode(d) { inp.value = (d || '').replace(/\D/g, '').slice(0, 6); sync(); if (inp.value.length === 6) autoSubmit(); }
+  inp.addEventListener('input', function () { setCode(inp.value); });
+  inp.addEventListener('focus', function () { otp.classList.add('focus'); endCaret(); });
+  inp.addEventListener('blur', function () { otp.classList.remove('focus'); });
+  inp.addEventListener('click', endCaret); inp.addEventListener('select', endCaret);
+  inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); verify(); } });
+  function focusIn() { try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); } }
+  function clearBoxes() { inp.value = ''; sync(); }
+  /* ---------- iPhone guidance ---------- */
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var iosPreview = !isIOS;
+  function renderIos() {
+    var on = isIOS || iosPreview;
+    $('#iosHint').hidden = !on || S.done || S.locked;
+    $('#paste').hidden = on;
+    $('#qt').hidden = !(iosPreview && !isIOS) || S.done || S.locked || isExpired();
+    $('#qtB').hidden = !S.arrived || !!val();
+    $('#qtC').textContent = fmtCode(S.code);
+  }
+  $('#iosI').innerHTML = XM.icon('phone'); $('#qtI').innerHTML = XM.icon('mail');
+  $('#dIos').classList.toggle('on', iosPreview); $('#dIosL').textContent = iosPreview ? 'iPhone preview: on' : 'Preview as iPhone';
+  var LET = { 2: 'ABC', 3: 'DEF', 4: 'GHI', 5: 'JKL', 6: 'MNO', 7: 'PQRS', 8: 'TUV', 9: 'WXYZ' };
+  $('#kp').innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (n) { return '<button type="button" data-k="' + n + '">' + n + (LET[n] ? '<small>' + LET[n] + '</small>' : '') + '</button>'; }).join('') +
+    '<span class="gap"></span><button type="button" data-k="0">0</button><button type="button" class="fn" data-k="del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h11v14H9l-6-7 6-7z"/><path d="m12.5 9.5 5 5m0-5-5 5"/></svg></button>';
+  $('#qt').addEventListener('mousedown', function (e) { e.preventDefault(); });
+  $('#kp').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-k]'); if (!b || S.locked || S.done || S.busy || isExpired()) return;
+    var k = b.getAttribute('data-k'); setCode(k === 'del' ? val().slice(0, -1) : val() + k);
+  });
+  $('#qtB').addEventListener('click', function () { if (S.locked || S.done || isExpired()) return; setCode(S.code); });
+  $('#dIos').addEventListener('click', function () {
+    iosPreview = !iosPreview; this.classList.toggle('on', iosPreview);
+    $('#dIosL').textContent = iosPreview ? 'iPhone preview: on' : 'Preview as iPhone';
+    if (iosPreview) focusIn(); renderIos();
+  });
+  function setMsg(t, cls) { var m = $('#msg'); m.className = 'msg' + (cls ? ' ' + cls : ''); m.innerHTML = t ? (cls === 'bad' ? XM.icon('warn') : XM.icon('check')) + esc(t) : ''; }
+  function isExpired() { return Date.now() >= S.expiresAt; }
+
+  $('#paste').addEventListener('click', function () {
+    if (S.locked || S.done || isExpired()) return;
+    function use(t) {
+      t = (t || '').replace(/\D/g, '').slice(0, 6);
+      if (t.length === 6) { setCode(t); }
+      else XM.toast('Nothing to paste yet. Copy the code from the email first.');
+    }
+    if (S.lastCopied) { use(S.lastCopied); return; }
+    if (navigator.clipboard && navigator.clipboard.readText) navigator.clipboard.readText().then(use, function () { focusIn(); XM.toast('Press Cmd/Ctrl + V to paste the code'); });
+    else { focusIn(); XM.toast('Press Cmd/Ctrl + V to paste the code'); }
+  });
+
+  /* ---------- verify ---------- */
+  $('#vbtn').addEventListener('click', function () { if (isExpired()) resend(true); else verify(); });
+  function verify() {
+    if (S.done || S.busy || S.locked || isExpired()) return;
+    var v = val();
+    if (v.length < 6) { otp.classList.remove('shake'); void otp.offsetWidth; otp.classList.add('shake'); setMsg('Enter all 6 digits.', 'bad'); return; }
+    S.busy = true; otp.classList.add('busy'); $('#vbtn').classList.add('busy'); $('#vlbl').textContent = 'Verifying\u2026';
+    inp.disabled = true;
+    setTimeout(function () {
+      S.busy = false; otp.classList.remove('busy'); $('#vbtn').classList.remove('busy'); $('#vlbl').textContent = 'Verify';
+      inp.disabled = false;
+      if (S.done) return;
+      if (v === S.code) { success('code'); return; }
+      S.attempts++;
+      var left = MAXTRY - S.attempts;
+      otp.classList.add('err'); otp.classList.remove('shake'); void otp.offsetWidth; otp.classList.add('shake');
+      if (left <= 0) { setTimeout(lock, 520); return; }
+      setMsg('That code isn\u2019t right. ' + left + (left === 1 ? ' attempt' : ' attempts') + ' left.', 'bad');
+      setTimeout(function () { if (val() !== v) return; inp.value = ''; renderCells(); $('#vbtn').disabled = true; focusIn(); }, 520);
+    }, RM ? 100 : 950);
+  }
+
+  /* ---------- states ---------- */
+  function show(id) { ['pWait', 'pOk', 'pLock'].forEach(function (p) { $('#' + p).hidden = p !== id; }); }
+  function success(via) {
+    if (S.done) return; S.done = true;
+    show('pOk');
+    $('#via').innerHTML = via === 'link' ? XM.icon('share') + 'Confirmed from your email link' : XM.icon('check') + 'Confirmed with your code';
+    XM.flow.set({ email: S.email, verified: true, step: 'verified', verifiedVia: via });
+    var ms = via === 'link' ? 3200 : 2200, bar = $('#goBar');
+    bar.style.transition = 'width ' + ms + 'ms linear'; requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = '100%'; }); });
+    function go() { if (XM.qs('hold') === '1') return; location.href = nextUrl(); }
+    var t = setTimeout(go, ms);
+    $('#goNow').onclick = function () { clearTimeout(t); go(); };
+    if (XM.qs('hold') === '1') $('#okTxt').textContent = 'Demo hold: not redirecting.';
+  }
+  function lock() {
+    S.locked = true; S.lockUntil = Date.now() + LOCK; show('pLock');
+  }
+
+  /* ---------- timers: expiry, resend cool-down, lock ---------- */
+  function tick() {
+    if (S.done) return;
+    var now = Date.now();
+    if (S.locked) { var r = S.lockUntil - now; $('#lt').textContent = mmss(r); if (r <= 0) { S.locked = false; issue(false); show('pWait'); clearBoxes(); setMsg('', ''); } return; }
+    var left = S.expiresAt - now, w = $('#expW');
+    $('#exp').textContent = left > 0 ? mmss(left) : '0:00';
+    w.classList.toggle('low', left > 0 && left < 60000); w.classList.toggle('gone', left <= 0);
+    var expired = left <= 0;
+    if (expired !== otp.classList.contains('dead')) setExpired(expired);
+    var c = S.coolUntil - now, rs = $('#rs');
+    if (c > 0) { $('#rsT').textContent = 'Resend in ' + mmss(c); rs.hidden = true; }
+    else { $('#rsT').textContent = 'Didn\u2019t get it?'; rs.hidden = false; }
+  }
+  function setExpired(on) {
+    otp.classList.toggle('dead', on);
+    inp.disabled = on; if (on) inp.value = '';
+    $('#vlbl').textContent = on ? 'Send a new code' : 'Verify';
+    $('#vbtn').disabled = false; if (!on) $('#vbtn').disabled = val().length < 6;
+    $('#paste').disabled = on; $('#paste').style.opacity = on ? .4 : '';
+    setMsg(on ? 'This code has expired. Send a new one.' : '', on ? 'bad' : '');
+    renderCells(); renderIos();
+  }
+  setInterval(tick, 250); tick();
+
+  /* ---------- resend + change email ---------- */
+  function resend(force) {
+    if (S.locked || S.done) return;
+    if (!force && Date.now() < S.coolUntil) return;
+    issue(false); S.coolUntil = Date.now() + COOL;
+    setExpired(false); clearBoxes(); setMsg('', ''); otp.classList.remove('err');
+    XM.toast('New code sent to ' + esc(S.email));
+    arrive(true);
+    tick();
+    focusIn();
+  }
+  $('#rs').addEventListener('click', function () { resend(false); });
+
+  $('#chg').addEventListener('click', function () {
+    var f = $('#chgF'); f.hidden = false; $('#chgI').value = S.email; $('#chgI').focus(); $('#chgI').select(); $('#chg').parentNode.hidden = true;
+  });
+  $('#chgX').addEventListener('click', function () { $('#chgF').hidden = true; $('#chg').parentNode.hidden = false; $('#chgI').classList.remove('err'); });
+  $('#chgF').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = $('#chgI').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { $('#chgI').classList.add('err'); return; }
+    $('#chgI').classList.remove('err');
+    setEmail(v); XM.flow.set({ email: v });
+    $('#chgF').hidden = true; $('#chg').parentNode.hidden = false;
+    issue(false); S.coolUntil = Date.now() + COOL; setExpired(false); clearBoxes(); setMsg('', '');
+    XM.toast('Code sent to ' + esc(v)); arrive(true); tick();
+  });
+
+  /* ---------- mock inbox ---------- */
+  var list = $('#ibList'), read = $('#ibRead'), hintT;
+  function emptyRead() {
+    read.innerHTML = '<div class="ib-empty"><span class="dots"><i></i><i></i><i></i></span><span>Waiting for the verification email&hellip;</span></div>';
+  }
+  function mailHtml() {
+    return '<div class="ib-sub"><h4>' + fmtCode(S.code) + ' is your XMTrading verification code</h4><span class="tag">Code in the subject</span></div>' +
+      '<div class="ib-from"><span class="av">XM</span><div><b>XMTrading</b> &lt;site@xmtrading.com&gt;<br>to ' + esc(S.email) + '</div></div>' +
+      '<div class="mail" id="mailBox"><div class="em"><div class="em-h">' + XM.logo(true) + '</div><div class="em-b">' +
+      '<h5>Verify your email</h5><p>Tap the button to confirm your email. It works on any device.</p>' +
+      '<a class="vm" id="vm" href="' + linkUrl() + '" target="_blank" rel="noopener">Verify email</a>' +
+      '<div class="or-l">or enter this code</div>' +
+      '<div class="code" id="codeBox" title="Click to copy"><span class="copied" id="copied">' + XM.icon('check') + 'Copied. Paste it</span><b>' + fmtCode(S.code) + '</b><small>' + XM.icon('copy') + 'Tap to copy</small></div>' +
+      '<div class="ios-n">' + XM.icon('phone') + '<span>On iPhone, open the sign-up page and tap this code when it appears above your keyboard.</span></div>' +
+      '<p class="fine">The code and the button expire in 10 minutes and can be used once. If you didn&rsquo;t sign up, ignore this email.</p>' +
+      '<div class="sig"><b>Kind Regards,</b><br>The XMTrading Team</div></div></div></div>';
+  }
+  function xmRow(fresh) {
+    var r = document.createElement('div'); r.className = 'ib-row xm' + (fresh ? ' in' : ''); r.id = 'xmRow';
+    r.innerHTML = '<span class="av" style="background:#000;font-style:italic">XM</span><div class="tx"><b>XMTrading</b>' + fmtCode(S.code) + ' is your verification code &middot; Enter it, or tap Verify</div><span class="tm">now</span>';
+    r.addEventListener('click', function () { renderMail(false); });
+    return r;
+  }
+  function renderMail(flash) {
+    read.innerHTML = mailHtml();
+    if (flash) $('#mailBox').classList.add('flash');
+    $('#codeBox').addEventListener('click', function () { copyCode(true); });
+    $('#vm').addEventListener('click', function (e) { e.preventDefault(); simulateLink(); });
+  }
+  function copyCode(user) {
+    S.lastCopied = S.code; if (!val() && !isExpired() && !S.locked) $('#paste').classList.add('hot');
+    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(S.code).catch(function () {}); } catch (e) {}
+    var c = $('#copied'); if (c) { c.classList.add('show'); clearTimeout(hintT); hintT = setTimeout(function () { c.classList.remove('show'); }, user ? 1800 : 5200); }
+  }
+  function arrive(replace) {
+    S.arrived = true;
+    var old = $('#xmRow'); if (old) old.remove();
+    list.insertBefore(xmRow(!XM.embedded || replace), list.firstChild);
+    renderMail(true);
+    if (!XM.embedded || replace) copyCode(false); else { S.lastCopied = null; }
+    renderIos();
+  }
+  var arriveT;
+  $('#sim').addEventListener('click', function () {
+    clearTimeout(arriveT);
+    var old = $('#xmRow'); if (old) old.remove();
+    emptyRead(); S.arrived = false; S.lastCopied = null;
+    if (!isExpired() && !S.locked && !S.done) { /* keep the current code: the email is simply re-delivered */ }
+    setTimeout(function () { arrive(true); }, RM ? 50 : 650);
+  });
+  emptyRead();
+  if (!XM.embedded) focusIn();
+  renderIos();
+  if (XM.embedded) arrive(false); else arriveT = setTimeout(function () { arrive(false); }, RM ? 300 : 2600);
+
+  /* ---------- magic link: same page + real cross-tab ---------- */
+  var bcSend = null, bcGet = null;
+  try { if ('BroadcastChannel' in window) { bcGet = new BroadcastChannel('xm-verify'); bcGet.onmessage = function (e) { if (e.data && e.data.type === 'verified') { success('link'); try { bcGet.postMessage({ type: 'ack' }); } catch (x) {} } }; } } catch (e) {}
+  window.addEventListener('storage', function (e) { if (e.key === 'xm.verify.ok' && e.newValue) success('link'); });
+  function simulateLink() {
+    if (S.done) return;
+    var ov = document.createElement('div'); ov.className = 'tabsim';
+    ov.innerHTML = '<div class="w"><div class="tb"><span>' + XM.icon('check') + 'XMTrading</span></div><div class="ub">' + XM.icon('lock') + 'xmtrading.com/verify?token=\u2022\u2022\u2022\u2022\u2022\u2022</div>' +
+      '<div class="bd"><svg class="tick" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="m15 27 8 8 15-17"/></svg><h5>Email verified</h5><p>You can close this tab. Your original screen continues on its own.</p><span class="sync"><i></i>Syncing with your other tab</span></div></div>';
+    $('#inbox').appendChild(ov);
+    setTimeout(function () {
+      try { if ('BroadcastChannel' in window) { bcSend = bcSend || new BroadcastChannel('xm-verify'); bcSend.postMessage({ type: 'verified', via: 'link', t: Date.now() }); } } catch (e) {}
+      success('link');
+    }, RM ? 100 : 1300);
+  }
+
+  /* ---------- demo controls ---------- */
+  $('#dExp').addEventListener('click', function () { if (S.done || S.locked) return; S.expiresAt = Date.now() - 1; S.coolUntil = 0; tick(); XM.toast('Code expired (simulated)'); });
+  $('#dLock').addEventListener('click', function () { if (S.done) return; lock(); });
+  $('#dReset').addEventListener('click', function () { location.reload(); });
+
+  /* ---------- notes ---------- */
+  XM.reveal();
+
+  /* journey steps */
+  var ar = '<span class="ar">' + XM.icon('arrow') + '</span>';
+  var steps = {
+    old: [['', 'form', 'Fill the form'], ['out', 'mail', 'Open Mail'], ['out', 'share', 'Tap the button'], ['out', 'globe', 'New tab opens'], ['', 'arrow', 'Back to the form']],
+    'new': [['', 'form', 'Fill the form'], ['in', 'phone', 'Code appears above the keyboard'], ['in', 'check', 'Tap it. Verified']],
+    alt: [['', 'mail', 'Open the email'], ['', 'copy', 'Copy or type the code'], ['', 'share', 'or tap the button']]
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('[data-steps]'), function (ul) {
+    ul.innerHTML = steps[ul.getAttribute('data-steps')].map(function (s) {
+      return '<li class="' + s[0] + '">' + (s[1] === 'form' ? XM.icon('user') : XM.icon(s[1])) + s[2] + '</li>';
+    }).join(ar);
+  });
+
+  XM.notes({
+    title: 'Idea 03 · Email verification',
+    today: 'Login already verifies with a 6-digit code, but the registration email has only a confirm button. On iPhone that sends the customer out of the form into Mail and a new tab, and back again. If the mail lands on another device or in spam, they are stuck on a static "Please check your email" page.',
+    proposed: 'A 6-digit code (also in the subject line) next to the confirm button; the button stays the primary action. The code field is one real one-time-code input, so iPhone users get the code above the keyboard and never leave the page. Android users copy the code or tap the button as today.',
+    why: 'Removes the context switch between inbox and browser, works across devices, and keeps short expiry, single-use and attempt limits.',
+    metric: 'Verification completion rate, time to verify, resend rate and support tickets about missing emails.'
+  });
+});
+</script>
+<script src="../../assets/js/review.js" data-idea="03"></script>
+</body>
+</html>

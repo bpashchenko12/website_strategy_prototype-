@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refer a friend · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 16 · Refer a friend for a NON-registered visitor.
+   Generate a code + link with just an email and a first name, share it, track it.
+   ===================================================================== */
+:root { --gl: #00c27c; --gl2: #3ddc97; --ui-ln: rgba(255, 255, 255, .08); --ui-mut: #8a93a0; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.sec { margin-top: 88px; }
+.sh { text-align: center; max-width: 720px; margin: 0 auto 36px; }
+.sh .h-l { margin-top: 10px; }
+.sh .lead { margin-top: 12px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { margin-top: 88px; padding-bottom: 92px; }
+.ic { display: inline-grid; place-items: center; width: 18px; height: 18px; flex: none; }
+.ic svg { width: 100%; height: 100%; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgba(0, 160, 100, .55); outline-offset: 2px; }
+.w-form .sample { padding: 10px 0; }
+
+/* ---------- hero ---------- */
+.hero { margin-top: 10px; padding: 72px 48px 0; text-align: center; background: #090b0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.hero::before { background: radial-gradient(70% 60% at 50% -6%, rgba(0, 200, 125, .4), rgba(0, 132, 84, .12) 50%, transparent 72%); }
+.hero::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 55%); mask-image: linear-gradient(180deg, #000, transparent 55%); }
+.kick { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px; animation: fadeUp .7s both; }
+.xmk { width: 28px; height: 28px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 11px; letter-spacing: -.5px; }
+.bdg { background: rgba(255, 255, 255, .1); color: #e9edf1; font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .14); }
+.hero h1 { font-size: clamp(38px, 5.4vw, 72px); line-height: 1.04; letter-spacing: -.035em; font-weight: 700; max-width: 14ch; margin: 0 auto; animation: fadeUp .8s .05s both; }
+.hero h1 em { font-style: normal; color: var(--gl2); }
+.hero .sub { margin: 20px auto 30px; max-width: 520px; color: #a9b0ba; font-size: clamp(16px, 1.5vw, 19px); line-height: 1.6; animation: fadeUp .8s .14s both; }
+.hero .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; animation: fadeUp .8s .22s both; }
+.btn-xl { padding: 16px 34px; font-size: 16px; border-radius: 999px; }
+.glow-btn { box-shadow: 0 10px 34px rgba(0, 132, 84, .45), inset 0 1px 0 rgba(255, 255, 255, .25); background: linear-gradient(180deg, #00a064, #008454); }
+.glow-btn:hover { background: linear-gradient(180deg, #00b06d, #007a4d); transform: translateY(-1px); }
+.btn-glass { background: rgba(255, 255, 255, .07); color: #fff; border-color: rgba(255, 255, 255, .2); border-radius: 999px; }
+.btn-glass:hover { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .4); }
+.hero .ill { margin: 28px auto 0; max-width: 920px; animation: fadeUp 1s .3s both; }
+.hero .ill svg { width: 100%; height: auto; }
+.coin-float { animation: bob 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes bob { 50% { transform: translateY(-8px); } }
+.dash-flow { stroke-dasharray: 3 9; animation: dashmove 1.4s linear infinite; }
+@keyframes dashmove { to { stroke-dashoffset: -24; } }
+.twinkle { animation: tw 2.4s ease-in-out infinite; }
+@keyframes tw { 50% { opacity: .25; } }
+
+/* ---------- widget ---------- */
+.widget { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 30px 70px -40px rgba(16, 24, 40, .3); overflow: hidden; }
+.w-form { padding: 40px 40px 36px; display: flex; flex-direction: column; gap: 16px; }
+.w-form h3 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+.w-form > p { color: var(--mut); font-size: 14.5px; margin-top: -6px; }
+.w-form .inp { height: 52px; border-radius: 12px; }
+.w-form .btn { margin-top: 4px; }
+.w-form .fine { font-size: 12px; color: var(--mut); line-height: 1.55; display: flex; gap: 8px; align-items: flex-start; }
+.w-form .fine .ic { width: 15px; height: 15px; margin-top: 2px; color: var(--g); }
+.w-form .sample { background: none; border: 0; padding: 0; color: var(--g); font-size: 12.5px; font-weight: 600; text-align: left; align-self: flex-start; }
+.w-form .sample:hover { text-decoration: underline; }
+.w-form .again { display: none; }
+.widget.ready .w-form .again { display: inline-flex; }
+.w-out { background: #0c0f13; color: #fff; padding: 40px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; min-height: 440px; isolation: isolate; }
+.w-out::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(70% 60% at 85% 0%, rgba(0, 190, 120, .26), transparent 70%); }
+.w-empty { text-align: center; color: #8a93a0; display: grid; justify-items: center; gap: 18px; }
+.w-empty .ghost-code { font-size: clamp(22px, 3vw, 34px); font-weight: 700; letter-spacing: .08em; color: rgba(255, 255, 255, .16); font-variant-numeric: tabular-nums; }
+.w-empty p { max-width: 280px; font-size: 14px; line-height: 1.6; }
+.w-res { display: none; }
+.widget.ready .w-res { display: block; animation: fadeUp .5s both; }
+.widget.ready .w-empty { display: none; }
+.lbl { font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: #8a93a0; font-weight: 600; }
+.code { margin-top: 10px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.code-t { font-size: clamp(30px, 4vw, 48px); font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1.1; color: #fff; text-shadow: 0 0 40px rgba(0, 194, 124, .35); }
+.code-t .sep { color: var(--gl2); }
+.code-t.scr { color: #9aa4b0; }
+.copy-b { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .07); color: #fff; font-size: 13px; font-weight: 600; transition: background .15s, border-color .15s; }
+.copy-b:hover { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .4); }
+.copy-b.ok { background: var(--g); border-color: var(--g); }
+.linkrow { margin-top: 20px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 16px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); border-radius: 14px; }
+.linkrow .ic { color: var(--gl2); }
+.linkrow code { flex: 1; min-width: 0; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 14px; color: #dbe1e8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.res-grid { margin-top: 24px; display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; }
+.qr { width: 150px; background: #fff; border-radius: 16px; padding: 10px; }
+.qr svg { width: 100%; height: auto; display: block; }
+.qr rect { fill: #0b0d10; transform-box: fill-box; transform-origin: center; animation: qrIn .45s both; }
+@keyframes qrIn { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: none; } }
+.qr-cap { font-size: 11px; color: #8a93a0; text-align: center; margin-top: 8px; }
+.shares { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.sh-b { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .05); color: #fff; font-size: 13px; font-weight: 600; text-align: left; transition: background .15s, transform .12s, border-color .15s; min-width: 0; }
+.sh-b:hover { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); transform: translateY(-1px); }
+.sh-b i { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; flex: none; }
+.sh-b i .ic { width: 15px; height: 15px; }
+.sh-b .more { background: #3a424d; }
+.sh-hint { margin-top: 12px; font-size: 12px; color: #8a93a0; }
+
+/* ---------- tracker ---------- */
+.trk { padding: 56px 48px 48px; background: #090b0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.trk::before { background: radial-gradient(70% 50% at 20% 0%, rgba(0, 194, 124, .26), transparent 70%), radial-gradient(50% 40% at 100% 100%, rgba(47, 98, 240, .18), transparent 70%); }
+.trk-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 34px; }
+.trk-head h2 { font-size: clamp(28px, 3.4vw, 44px); line-height: 1.08; letter-spacing: -.03em; font-weight: 700; max-width: 18ch; margin-top: 12px; }
+.trk-head p { color: #a9b0ba; margin-top: 12px; max-width: 520px; font-size: 15.5px; line-height: 1.6; }
+.eyebrow.lt { color: var(--gl2); }
+.trk-act { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.trk-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 20px; align-items: start; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tile { background: #12161b; border: 1px solid var(--ui-ln); border-radius: 18px; padding: 18px; position: relative; overflow: hidden; transition: border-color .3s, background .3s; }
+.tile .ti { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, .06); color: #aeb6c1; margin-bottom: 14px; transition: background .3s, color .3s; }
+.tile .ti .ic { width: 18px; height: 18px; }
+.tile b { display: block; font-size: 38px; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.tile span { display: block; margin-top: 8px; font-size: 13px; color: #8a93a0; }
+.tile.hit { border-color: rgba(0, 194, 124, .6); background: #0f1a16; }
+.tile.hit .ti { background: rgba(0, 194, 124, .2); color: var(--gl2); }
+.tile.pop b { animation: pop .5s; }
+@keyframes pop { 40% { transform: scale(1.25); color: var(--gl2); } }
+.reward { margin-top: 12px; background: linear-gradient(135deg, #0f2a20, #0e1418 70%); border: 1px solid rgba(0, 194, 124, .25); border-radius: 18px; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.reward .rv { font-size: clamp(38px, 5vw, 56px); font-weight: 700; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
+.reward .rl { font-size: 13px; color: #a9b0ba; margin-top: 8px; max-width: 34ch; line-height: 1.5; }
+.reward .ill-tag { align-self: flex-start; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; background: rgba(245, 170, 40, .16); color: #f5b04a; }
+.feed { margin-top: 12px; background: #12161b; border: 1px solid var(--ui-ln); border-radius: 18px; padding: 8px; min-height: 148px; }
+.feed .none { color: #6f7885; font-size: 14px; padding: 22px 16px; text-align: center; }
+.fi { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; font-size: 14px; animation: fadeUp .35s both; }
+.fi + .fi { border-top: 1px solid rgba(255, 255, 255, .05); }
+.fi .fd { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .07); color: #aeb6c1; flex: none; }
+.fi .fd .ic { width: 15px; height: 15px; }
+.fi.dep .fd { background: rgba(0, 194, 124, .2); color: var(--gl2); }
+.fi .ft { flex: 1; min-width: 0; color: #dfe4ea; }
+.fi .ft small { display: block; color: #7d8794; font-size: 12px; }
+.fi .fa { font-size: 12.5px; font-weight: 600; color: var(--gl2); white-space: nowrap; }
+.mail { background: #fff; color: var(--ink); border-radius: 18px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, .5); transition: opacity .4s, transform .4s; }
+.mail.off { opacity: .35; transform: scale(.985); filter: grayscale(.6); }
+.mail .mh { background: #000; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+.mail .mh svg { height: 20px; width: auto; }
+.mail .mh small { color: #8a93a0; font-size: 11.5px; }
+.mail .mm { padding: 14px 20px 0; border-bottom: 1px solid var(--line); padding-bottom: 14px; font-size: 12.5px; color: var(--mut); }
+.mail .mm b { display: block; color: var(--ink); font-size: 15px; margin: 6px 0 2px; line-height: 1.35; }
+.mail .mb { padding: 22px 20px 24px; font-size: 14.5px; line-height: 1.6; color: #3b4149; }
+.mail .mb h4 { font-size: 20px; letter-spacing: -.01em; color: var(--ink); margin-bottom: 8px; }
+.mail .amt { margin: 16px 0; border-radius: 14px; background: var(--g-l); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; color: var(--g-d); font-weight: 600; font-size: 14px; }
+.mail .amt b { font-size: 24px; letter-spacing: -.02em; }
+.mail .btn { width: 100%; padding: 14px; font-size: 15px; }
+.mail .tiny { font-size: 11.5px; color: var(--mut); margin-top: 14px; line-height: 1.55; }
+.mail-cap { color: #8a93a0; font-size: 12.5px; margin: 0 4px 10px; display: flex; align-items: center; gap: 8px; }
+
+/* ---------- steps / compliance / promos ---------- */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; position: relative; }
+.step { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 28px; position: relative; }
+.step .n { width: 40px; height: 40px; border-radius: 12px; background: var(--g-l); color: var(--g); display: grid; place-items: center; font-weight: 700; font-size: 17px; }
+.step h4 { font-size: 20px; letter-spacing: -.01em; margin: 18px 0 8px; font-weight: 600; }
+.step p { color: var(--mut); font-size: 14.5px; line-height: 1.6; }
+.step + .step::before { content: ''; position: absolute; left: -17px; top: 48px; width: 18px; height: 2px; background: repeating-linear-gradient(90deg, var(--line-2) 0 4px, transparent 4px 8px); }
+.comp { display: flex; gap: 18px; align-items: flex-start; padding: 24px 28px; border-radius: 22px; background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--g); }
+.comp .ci { width: 40px; height: 40px; border-radius: 12px; background: var(--g-l); color: var(--g); display: grid; place-items: center; flex: none; }
+.comp .ci .ic { width: 20px; height: 20px; }
+.comp b { font-size: 16px; display: block; margin-bottom: 4px; }
+.comp p { color: var(--ink-2); font-size: 14.5px; line-height: 1.6; }
+.comp .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.promo-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.promo-h h5 { margin: 0; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--mut); font-weight: 600; }
+.promos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pc { display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 18px; background: rgba(255, 255, 255, .6); border: 1px solid var(--line); transition: background .15s, border-color .15s, transform .15s; }
+.pc:hover { background: #fff; border-color: var(--line-2); transform: translateY(-2px); }
+.pc .pi { width: 36px; height: 36px; border-radius: 10px; background: var(--soft); color: var(--ink-2); display: grid; place-items: center; flex: none; }
+.pc .pi .ic { width: 18px; height: 18px; }
+.pc b { display: block; font-size: 14.5px; font-weight: 600; }
+.pc small { display: block; font-size: 12.5px; color: var(--mut); margin-top: 3px; line-height: 1.45; }
+.pc.here { background: var(--g-l); border-color: rgba(0, 132, 84, .3); }
+.pc.here .pi { background: var(--g); color: #fff; }
+
+@media (max-width: 1100px) {
+  .widget { grid-template-columns: 1fr; }
+  .trk-grid { grid-template-columns: 1fr; }
+  .promos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .btn-sm { min-height: 40px; }
+  .xm-lang, .hdr-login { display: none; }
+  .wrap { padding: 0 12px; }
+  .hero { padding: 48px 20px 0; }
+  .w-form, .w-out { padding: 26px 20px; }
+  .res-grid { grid-template-columns: 1fr; justify-items: center; }
+  .linkrow { flex-wrap: wrap; padding: 12px; }
+  .linkrow code { white-space: normal; word-break: break-all; flex-basis: calc(100% - 40px); }
+  .linkrow .btn { width: 100%; }
+  .sh-b { padding: 10px 8px; gap: 8px; font-size: 12.5px; }
+  .sh-b i { width: 24px; height: 24px; }
+  .shares { width: 100%; }
+  .trk { padding: 36px 18px 28px; }
+  .tiles { grid-template-columns: 1fr; }
+  .tile { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+  .tile .ti { margin: 0; }
+  .tile b { font-size: 30px; margin-left: auto; order: 3; }
+  .tile span { margin: 0; }
+  .steps { grid-template-columns: 1fr; }
+  .step + .step::before { display: none; }
+  .promos { grid-template-columns: 1fr; }
+  .sec { margin-top: 64px; }
+  .code-t { font-size: 28px; }
+  .comp { flex-direction: column; padding: 22px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Promotions"></div>
+
+<main class="wrap">
+
+  <!-- ===== hero ===== -->
+  <section class="block hero" id="top">
+    <div class="kick"><span class="xmk">XM</span><span class="bdg">Refer a friend</span></div>
+    <h1>Share XMTrading. <em>Get rewarded.</em></h1>
+    <p class="sub">No account needed to start. Get your personal link in seconds and see how your referrals are doing.</p>
+    <div class="cta">
+      <a class="btn btn-primary glow-btn btn-xl" href="#generate" id="heroGo">Get my link</a>
+      <a class="btn btn-glass btn-xl" href="#how">How it works</a>
+    </div>
+    <div class="ill" aria-hidden="true">
+      <svg viewBox="0 0 900 330" fill="none">
+        <defs>
+          <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00c27c"/><stop offset="1" stop-color="#006b44"/></linearGradient>
+          <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a424d"/><stop offset="1" stop-color="#1a1f26"/></linearGradient>
+          <linearGradient id="gC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset=".55" stop-color="#f5b020"/><stop offset="1" stop-color="#c98100"/></linearGradient>
+          <radialGradient id="gG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#00c27c" stop-opacity=".55"/><stop offset="1" stop-color="#00c27c" stop-opacity="0"/></radialGradient>
+        </defs>
+        <circle cx="450" cy="170" r="150" fill="url(#gG)"/>
+        <!-- dotted hand-over arcs -->
+        <path class="dash-flow" d="M318 120 C370 40 420 52 410 120" stroke="#3ddc97" stroke-width="2.5" stroke-linecap="round"/>
+        <path class="dash-flow" d="M490 120 C480 52 530 40 582 120" stroke="#3ddc97" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- person A (referrer) -->
+        <g>
+          <path d="M150 330 C150 240 196 196 250 196 C304 196 350 240 350 330 Z" fill="url(#gA)"/>
+          <path d="M214 198 C226 220 274 220 286 198 C276 192 262 188 250 188 C238 188 224 192 214 198Z" fill="#f6f7f8" opacity=".92"/>
+          <rect x="239" y="172" width="22" height="22" rx="8" fill="#e8b58e"/>
+          <circle cx="250" cy="138" r="38" fill="#f1c4a0"/>
+          <path d="M210 138 C206 98 232 84 254 86 C282 88 296 108 290 138 C284 122 270 114 250 114 C232 114 218 122 210 138Z" fill="#1d2024"/>
+          <circle cx="237" cy="142" r="3.2" fill="#1d2024"/><circle cx="263" cy="142" r="3.2" fill="#1d2024"/>
+          <path d="M240 156 Q250 164 260 156" stroke="#9a5b3a" stroke-width="2.6" stroke-linecap="round"/>
+          <!-- phone -->
+          <rect x="296" y="214" width="42" height="74" rx="9" fill="#0b0d10" stroke="#3ddc97" stroke-width="2"/>
+          <rect x="302" y="224" width="30" height="8" rx="3" fill="#3ddc97"/><rect x="302" y="238" width="22" height="5" rx="2.5" fill="#4a5058"/><rect x="302" y="248" width="26" height="5" rx="2.5" fill="#4a5058"/>
+        </g>
+        <!-- link bubble -->
+        <g>
+          <rect x="296" y="52" width="148" height="34" rx="17" fill="#fff"/>
+          <path d="M330 86 l8 10 l8-10z" fill="#fff"/>
+          <text x="370" y="74" text-anchor="middle" font-family="Poppins,Inter,sans-serif" font-size="13" font-weight="700" fill="#0b0d10" letter-spacing=".5">XM-7K2Q-TAKU</text>
+        </g>
+        <!-- coin -->
+        <g class="coin-float">
+          <circle cx="450" cy="166" r="52" fill="url(#gC)"/>
+          <circle cx="450" cy="166" r="41" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.5"/>
+          <path d="M432 140 l18 22 l18-22 M450 162 v36 M436 170 h28 M436 182 h28" stroke="#8a5600" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M412 140 C418 124 432 114 448 112" stroke="#fff" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <g fill="#3ddc97"><path class="twinkle" d="M520 70 l4 10 l10 4 l-10 4 l-4 10 l-4-10 l-10-4 l10-4z"/><path class="twinkle" style="animation-delay:.8s" d="M380 190 l3 7 l7 3 l-7 3 l-3 7 l-3-7 l-7-3 l7-3z"/><circle class="twinkle" style="animation-delay:1.4s" cx="560" cy="200" r="4"/></g>
+        <!-- person B (friend) -->
+        <g>
+          <path d="M550 330 C550 240 596 196 650 196 C704 196 750 240 750 330 Z" fill="url(#gB)"/>
+          <path d="M650 196 L626 330 M650 196 L674 330" stroke="#0b0d10" stroke-opacity=".35" stroke-width="2"/>
+          <path d="M618 198 C628 224 672 224 682 198 C672 190 662 188 650 188 C638 188 628 192 618 198Z" fill="#f6f7f8" opacity=".92"/>
+          <rect x="639" y="172" width="22" height="22" rx="8" fill="#b57b56"/>
+          <circle cx="650" cy="138" r="38" fill="#c68f6b"/>
+          <path d="M610 134 C608 94 632 84 652 84 C676 84 694 98 690 134 C688 112 674 108 650 108 C628 108 612 114 610 134Z" fill="#2b1d17"/>
+          <circle cx="637" cy="142" r="3.2" fill="#1d2024"/><circle cx="663" cy="142" r="3.2" fill="#1d2024"/>
+          <path d="M640 156 Q650 164 660 156" stroke="#6e3f27" stroke-width="2.6" stroke-linecap="round"/>
+          <rect x="560" y="224" width="42" height="70" rx="9" fill="#0b0d10" stroke="#fff" stroke-opacity=".5" stroke-width="2"/>
+          <circle cx="581" cy="248" r="10" fill="#00c27c"/><path d="M576 248l4 4 7-8" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="570" y="266" width="22" height="5" rx="2.5" fill="#4a5058"/><rect x="570" y="276" width="16" height="5" rx="2.5" fill="#4a5058"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===== generator widget ===== -->
+  <section class="sec" id="generate" style="margin-top:56px">
+    <div class="widget" id="widget">
+      <form class="w-form" id="form" novalidate autocomplete="on">
+        <span class="eyebrow">Step 1 · no account needed</span>
+        <h3>Generate your referral link</h3>
+        <p>Takes about ten seconds. We only need an email to send you reward updates.</p>
+        <label class="field"><span>Your email <i>*</i></span><input class="inp" id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"><div class="err-msg" id="emailErr" hidden>Enter a valid email address.</div></label>
+        <label class="field"><span>First name <i>*</i></span><input class="inp" id="fname" type="text" autocomplete="given-name" placeholder="Taku" maxlength="24"><div class="err-msg" id="nameErr" hidden>Enter your first name.</div></label>
+        <button class="btn btn-primary btn-lg btn-block" id="gen" type="submit"><span class="ic" data-ic="bolt"></span><span id="genT">Generate my link</span></button>
+        <button class="sample" type="button" id="sample">Fill in sample details</button>
+        <button class="btn btn-ghost btn-sm again" type="button" id="again" style="align-self:flex-start">Not you? Start over</button>
+        <p class="fine"><span class="ic" data-ic="lock"></span><span>Your code is saved on this device only. No password, no registration, no deposit required to get a link.</span></p>
+      </form>
+
+      <div class="w-out" aria-live="polite">
+        <div class="w-empty" id="empty">
+          <div class="ghost-code">XM-····-····</div>
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="2" stroke-dasharray="4 6" aria-hidden="true"><rect x="8" y="8" width="104" height="104" rx="14"/><rect x="24" y="24" width="24" height="24" rx="5"/><rect x="72" y="24" width="24" height="24" rx="5"/><rect x="24" y="72" width="24" height="24" rx="5"/></svg>
+          <p>Your code, link and QR will appear here the moment you press <b style="color:#fff">Generate</b>.</p>
+        </div>
+
+        <div class="w-res" id="res">
+          <div class="lbl">Your referral code</div>
+          <div class="code"><div class="code-t" id="codeT">XM-····-····</div><button class="copy-b" type="button" id="copyCode"><span class="ic" data-ic="copy"></span><span>Copy code</span></button></div>
+          <div class="linkrow"><span class="ic" data-ic="globe"></span><code id="linkT">xmtrading.com/?ref=</code><button class="btn btn-primary btn-sm" type="button" id="copyLink"><span class="ic" data-ic="copy" style="width:15px;height:15px"></span><span>Copy link</span></button></div>
+          <div class="res-grid">
+            <div><div class="qr" id="qr"></div><div class="qr-cap">Scan to open your link</div></div>
+            <div>
+              <div class="lbl" style="margin-bottom:12px">Share</div>
+              <div class="shares">
+                <a class="sh-b" id="shLine" target="_blank" rel="noopener" href="#"><i style="background:#06c755">L</i>LINE</a>
+                <a class="sh-b" id="shWa" target="_blank" rel="noopener" href="#"><i style="background:#25a244">W</i>WhatsApp</a>
+                <a class="sh-b" id="shMail" href="#"><i style="background:#2f62f0"><span class="ic" data-ic="mail"></span></i>Email</a>
+                <a class="sh-b" id="shX" target="_blank" rel="noopener" href="#"><i style="background:#000">X</i>X</a>
+                <button class="sh-b" id="shCopy" type="button"><i style="background:#008454"><span class="ic" data-ic="copy"></span></i>Copy</button>
+                <button class="sh-b" id="shMore" type="button"><i class="more"><span class="ic" data-ic="share"></span></i>More…</button>
+              </div>
+              <div class="sh-hint" id="shHint">Opens the app or site you pick with the message pre-filled.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== status tracker ===== -->
+  <section class="sec" id="track" style="margin-top:20px">
+    <div class="block trk">
+      <div class="trk-head">
+        <div>
+          <span class="eyebrow lt">Live status tracker · demo</span>
+          <h2>See every referral, step by step.</h2>
+          <p>Simulate a friend using your link to see what the tracker, the reward counter and the follow-up email would look like.</p>
+        </div>
+        <div class="trk-act">
+          <button class="btn btn-primary glow-btn btn-lg" id="sim" type="button" style="border-radius:999px"><span class="ic" data-ic="users"></span>Simulate a friend joining</button>
+          <button class="btn btn-glass btn-sm" id="reset" type="button">Reset demo</button>
+        </div>
+      </div>
+
+      <div class="trk-grid">
+        <div>
+          <div class="tiles">
+            <div class="tile" id="t1"><div class="ti"><span class="ic" data-ic="globe"></span></div><b id="c1">0</b><span>Clicked link</span></div>
+            <div class="tile" id="t2"><div class="ti"><span class="ic" data-ic="user"></span></div><b id="c2">0</b><span>Registered</span></div>
+            <div class="tile" id="t3"><div class="ti"><span class="ic" data-ic="wallet"></span></div><b id="c3">0</b><span>Made first deposit</span></div>
+          </div>
+          <div class="reward">
+            <div><div class="lbl">Reward counter</div><div class="reward-v rv" id="rw" style="margin-top:10px">¥0</div><div class="rl">¥3,000 per qualifying referral. Amount is illustrative only, not a real offer.</div></div>
+            <span class="ill-tag">Illustrative</span>
+          </div>
+          <div class="feed" id="feed"><div class="none">No activity yet. Press <b style="color:#fff">Simulate a friend joining</b>.</div></div>
+        </div>
+        <div>
+          <div class="mail-cap"><span class="ic" data-ic="mail" style="width:16px;height:16px"></span><span id="mailCap">The email you would receive appears after a friend deposits</span></div>
+          <div class="mail off" id="mail">
+            <div class="mh"><span id="mlogo"></span><small>Notification</small></div>
+            <div class="mm">From: XMTrading &lt;noreply@xmtrading.com&gt;<br>To: <span id="mTo">you@example.com</span><b>Your friend deposited. Register to claim your reward</b></div>
+            <div class="mb">
+              <h4 id="mHi">Hi Taku,</h4>
+              <p><span id="mFriend">Aiko</span> opened an account through your link and made a first deposit. A reward is waiting for you.</p>
+              <div class="amt"><span>Pending reward</span><b id="mAmt">¥3,000</b></div>
+              <a class="btn btn-primary" id="claim" href="#"><span class="ic" data-ic="arrow"></span>Register to claim</a>
+              <p class="tiny">Rewards are paid after registration, verification and a qualifying deposit; subject to compliance review. Amount illustrative.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== how it works ===== -->
+  <section class="sec" id="how">
+    <div class="sh"><span class="eyebrow">How it works</span><h2 class="h-l">Three steps. Account comes last.</h2><p class="lead">The referrer is never forced through registration up front. It becomes the natural next step once there is something to claim.</p></div>
+    <div class="steps">
+      <div class="step reveal"><div class="n">1</div><h4>Get your link</h4><p>Enter an email and your first name. We generate a unique code and link instantly, no password and no registration.</p></div>
+      <div class="step reveal" style="transition-delay:.08s"><div class="n">2</div><h4>Share it</h4><p>Send it by LINE, WhatsApp, email or X, or let a friend scan the QR. You can follow clicks, sign-ups and deposits as they happen.</p></div>
+      <div class="step reveal" style="transition-delay:.16s"><div class="n">3</div><h4>Register to claim</h4><p>When a friend qualifies we email you. Register, verify your identity, and the reward is released after a compliance check.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== compliance ===== -->
+  <section class="sec" style="margin-top:28px">
+    <div class="comp reveal">
+      <div class="ci"><span class="ic" data-ic="shield"></span></div>
+      <div>
+        <b>Compliance and AML note</b>
+        <p>Rewards are paid after registration, verification and a qualifying deposit; subject to compliance review. Illustrative.</p>
+        <div class="chips"><span class="tag grey">One referral link per person</span><span class="tag grey">Identity verified before payout</span><span class="tag grey">Self-referrals not eligible</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== promotion context ===== -->
+  <section class="sec" style="margin-top:56px">
+    <div class="promo-h"><h5>More from XMTrading promotions</h5></div>
+    <div class="promos">
+      <a class="pc" href="#"><div class="pi"><span class="ic" data-ic="gift"></span></div><div><b>Deposit Bonus</b><small>Extra credit on qualifying deposits. Terms apply, illustrative.</small></div></a>
+      <a class="pc" href="#"><div class="pi"><span class="ic" data-ic="star"></span></div><div><b>Loyalty Program</b><small>Earn points as you trade and exchange them for credit.</small></div></a>
+      <a class="pc" href="#"><div class="pi"><span class="ic" data-ic="trophy"></span></div><div><b>Competitions</b><small>Demo and live contests with prize pools.</small></div></a>
+      <a class="pc here" href="#"><div class="pi"><span class="ic" data-ic="users"></span></div><div><b>Refer a Friend</b><small>You are here. Start with just an email.</small></div></a>
+    </div>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$;
+  var LS = 'xm.refer.v1';
+  var REWARD = 3000;
+  var ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  $$('[data-ic]').forEach(function (e) { e.innerHTML = XM.icon(e.getAttribute('data-ic')); });
+  $('#mlogo').innerHTML = XM.logo(true);
+
+  XM.notes({
+    title: 'Refer a friend without registering',
+    today: 'Referral rewards sit behind an account. A visitor who loves XM but has no account has nowhere to go, so the recommendation is lost.',
+    proposed: 'Anyone can get a personal code, link and QR with just an email and first name, share it in one tap, and watch a live tracker. Registration only appears when there is a reward to claim.',
+    why: 'Removes the biggest barrier to word-of-mouth and turns every referrer into a warm registration lead, with the email already captured.',
+    metric: 'Links generated per visit, shares per link, referred registrations and qualifying deposits, referrer-to-registered rate.'
+  });
+
+  /* ---------- helpers ---------- */
+  function hash(str) { var h = 1779033703 ^ str.length; for (var i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; } return function () { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return (h ^= h >>> 16) >>> 0; }; }
+  function rng(seed) { var a = seed; return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function makeCode(email, name) {
+    var r = rng(hash(email.toLowerCase() + '|' + name.toLowerCase())());
+    var a = ''; for (var i = 0; i < 4; i++) a += ALPH[Math.floor(r() * ALPH.length)];
+    var n = name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4);
+    while (n.length < 4) n += ALPH[Math.floor(r() * 24)];
+    return 'XM-' + a + '-' + n;
+  }
+  function copy(text, btn, label) {
+    var done = function () { XM.toast('Copied to clipboard'); if (btn) { btn.classList.add('ok'); var s = btn.querySelector('span:last-child'); var o = s && s.textContent; if (s) s.textContent = 'Copied'; setTimeout(function () { btn.classList.remove('ok'); if (s) s.textContent = o; }, 1400); } };
+    if (navigator.clipboard && window.isSecureContext !== false) { navigator.clipboard.writeText(text).then(done, fallback); } else fallback();
+    function fallback() { var t = document.createElement('textarea'); t.value = text; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); done(); }
+  }
+  function countTo(el, from, to, fmt, ms) {
+    if (reduce) { el.textContent = fmt(to); return; }
+    var t0 = performance.now();
+    (function f(t) { var p = Math.max(0, Math.min(1, (t - t0) / ms)); var e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(Math.round(from + (to - from) * e)); if (p < 1) requestAnimationFrame(f); })(t0);
+  }
+  var yen = function (n) { return '¥' + n.toLocaleString('en-US'); };
+
+  /* ---------- pseudo QR ---------- */
+  function qrSvg(code) {
+    var N = 25, r = rng(hash(code)()), g = [], i, j;
+    for (i = 0; i < N; i++) { g.push([]); for (j = 0; j < N; j++) g[i].push(r() > .52 ? 1 : 0); }
+    function finder(ox, oy) { for (var y = -1; y <= 7; y++) for (var x = -1; x <= 7; x++) { var X = ox + x, Y = oy + y; if (X < 0 || Y < 0 || X >= N || Y >= N) continue; var on = (x >= 0 && x <= 6 && y >= 0 && y <= 6) && (x === 0 || x === 6 || y === 0 || y === 6 || (x >= 2 && x <= 4 && y >= 2 && y <= 4)); g[Y][X] = on ? 1 : 0; } }
+    finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
+    for (i = 8; i < N - 8; i++) { g[6][i] = g[i][6] = i % 2 === 0 ? 1 : 0; }
+    var s = '<svg viewBox="0 0 ' + N + ' ' + N + '" shape-rendering="crispEdges" role="img" aria-label="QR code for your referral link (illustrative)">';
+    for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) if (g[y][x]) s += '<rect x="' + x + '" y="' + y + '" width="1" height="1" style="animation-delay:' + ((x + y) * 14) + 'ms"/>';
+    return s + '</svg>';
+  }
+
+  /* ---------- widget ---------- */
+  var widget = $('#widget'), form = $('#form'), email = $('#email'), fname = $('#fname');
+  var state = null, scrambling = null;
+
+  function setShare(s) {
+    var link = 'https://xmtrading.com/?ref=' + s.code;
+    var msg = 'I trade with XMTrading. Join through my link: ' + link;
+    $('#linkT').textContent = 'xmtrading.com/?ref=' + s.code;
+    $('#shLine').href = 'https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('I trade with XMTrading.');
+    $('#shWa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    $('#shX').href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent('I trade with XMTrading. Join through my link:') + '&url=' + encodeURIComponent(link);
+    $('#shMail').href = 'mailto:?subject=' + encodeURIComponent('Join me on XMTrading') + '&body=' + encodeURIComponent('Hi,\n\n' + msg + '\n\nTrading involves risk; you can lose your capital.\n\n' + s.name);
+    $('#qr').innerHTML = qrSvg(s.code);
+    $('#mTo').textContent = s.email; $('#mHi').textContent = 'Hi ' + s.name + ',';
+  }
+  function reveal(s, animate) {
+    state = s; widget.classList.add('ready'); setShare(s);
+    var el = $('#codeT'), parts = s.code.split('-');
+    var render = function (txt, scr) { el.classList.toggle('scr', !!scr); el.innerHTML = txt.split('-').join('<span class="sep">-</span>'); };
+    clearInterval(scrambling);
+    if (!animate || reduce) { render(s.code); return; }
+    var t0 = performance.now(), total = s.code.length - 3;
+    scrambling = setInterval(function () {
+      var p = (performance.now() - t0) / 1100, settled = Math.floor(p * s.code.length), out = '';
+      for (var i = 0; i < s.code.length; i++) out += (s.code[i] === '-' || i < settled || i < 3) ? s.code[i] : ALPH[Math.floor(Math.random() * ALPH.length)];
+      render(out, p < 1);
+      if (p >= 1) { clearInterval(scrambling); render(s.code); }
+    }, 45);
+  }
+  function validate() {
+    var okE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+    var okN = /\p{L}/u.test(fname.value.trim());
+    email.classList.toggle('err', !okE); $('#emailErr').hidden = okE;
+    fname.classList.toggle('err', !okN); $('#nameErr').hidden = okN;
+    return okE && okN;
+  }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!validate()) { (email.classList.contains('err') ? email : fname).focus(); return; }
+    var btn = $('#gen'); btn.disabled = true; $('#genT').textContent = 'Generating…';
+    setTimeout(function () {
+      var name = fname.value.trim().replace(/\s.*/, ''); name = name.charAt(0).toUpperCase() + name.slice(1);
+      var s = { email: email.value.trim(), name: name, code: makeCode(email.value.trim(), name), at: Date.now() };
+      try { localStorage.setItem(LS, JSON.stringify(s)); } catch (x) {}
+      XM.flow.set({ email: s.email, name: s.name, persona: 'referrer', refCode: s.code });
+      btn.disabled = false; $('#genT').textContent = 'Regenerate link';
+      reveal(s, true);
+      if (window.innerWidth < 1100) $('#empty').closest('.w-out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, reduce ? 0 : 650);
+  });
+  $$('#email,#fname').forEach(function (i) { i.addEventListener('input', function () { i.classList.remove('err'); $('#' + (i.id === 'email' ? 'emailErr' : 'nameErr')).hidden = true; }); });
+  $('#sample').addEventListener('click', function () { email.value = 'taku.sato@example.com'; fname.value = 'Taku'; email.classList.remove('err'); fname.classList.remove('err'); $('#emailErr').hidden = $('#nameErr').hidden = true; });
+  $('#again').addEventListener('click', function () {
+    try { localStorage.removeItem(LS); } catch (x) {}
+    state = null; widget.classList.remove('ready'); email.value = ''; fname.value = ''; $('#genT').textContent = 'Generate my link'; resetDemo(); email.focus();
+  });
+  $('#copyCode').addEventListener('click', function () { copy(state.code, this); });
+  $('#copyLink').addEventListener('click', function () { copy('https://xmtrading.com/?ref=' + state.code, this); });
+  $('#shCopy').addEventListener('click', function () { copy('https://xmtrading.com/?ref=' + state.code); });
+  $('#shMore').addEventListener('click', function () {
+    var link = 'https://xmtrading.com/?ref=' + state.code;
+    if (navigator.share) navigator.share({ title: 'XMTrading', text: 'I trade with XMTrading. Join through my link:', url: link }).catch(function () {});
+    else { copy(link); $('#shHint').textContent = 'Your browser has no native share sheet, so the link was copied instead.'; }
+  });
+
+  /* ---------- tracker demo ---------- */
+  var FRIENDS = ['Aiko', 'Kenji', 'Mei', 'Haruto', 'Sora', 'Yui'];
+  var cnt = [0, 0, 0], reward = 0, fi = 0, running = false, timers = [], deposited = 0, lastFriend = '';
+  function setCount(i, tile) { var el = $('#c' + (i + 1)); el.textContent = cnt[i]; var t = $('#t' + (i + 1)); t.classList.add('hit'); t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop'); }
+  function addFeed(icon, text, sub, amt, cls) {
+    var f = $('#feed'); var none = f.querySelector('.none'); if (none) none.remove();
+    var row = XM.el('<div class="fi ' + (cls || '') + '"><div class="fd"><span class="ic">' + XM.icon(icon) + '</span></div><div class="ft">' + text + '<small>' + sub + '</small></div>' + (amt ? '<span class="fa">' + amt + '</span>' : '') + '</div>');
+    f.insertBefore(row, f.firstChild);
+    while (f.children.length > 5) f.removeChild(f.lastChild);
+  }
+  function later(fn, ms) { timers.push(setTimeout(fn, reduce ? Math.min(ms, 300) : ms)); }
+  function simulate() {
+    if (!state) { XM.toast('Generate your link first'); $('#generate').scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(function () { email.focus({ preventScroll: true }); }, 500); return; }
+    if (running) return;
+    running = true; $('#sim').disabled = true;
+    var name = FRIENDS[fi++ % FRIENDS.length]; lastFriend = name;
+    var qc = state.code;
+    later(function () { cnt[0]++; setCount(0); addFeed('globe', '<b>' + name + '</b> clicked your link', qc + ' · just now'); }, 200);
+    later(function () { cnt[1]++; setCount(1); addFeed('user', '<b>' + name + '</b> registered an account', 'Pending verification'); }, 1700);
+    later(function () {
+      cnt[2]++; setCount(2); var from = reward; reward += REWARD; countTo($('#rw'), from, reward, yen, 900);
+      addFeed('wallet', '<b>' + name + '</b> made a first deposit', 'Qualifying deposit · illustrative', '+' + yen(REWARD), 'dep');
+    }, 3300);
+    later(function () {
+      var m = $('#mail'); m.classList.remove('off');
+      $('#mFriend').textContent = name; $('#mAmt').textContent = yen(reward);
+      $('#mailCap').textContent = 'Email sent to ' + state.email + ' · just now';
+      $('#claim').href = XM.url('ideas/02-hero-email/register.html?email=' + encodeURIComponent(state.email) + '&src=organic&persona=referrer');
+      if (window.innerWidth < 1100) m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      running = false; $('#sim').disabled = false; $('#sim').lastChild.textContent = 'Simulate another friend';
+    }, 4300);
+  }
+  function resetDemo() {
+    timers.forEach(clearTimeout); timers = []; running = false; cnt = [0, 0, 0]; reward = 0; fi = 0;
+    $$('.tile').forEach(function (t) { t.classList.remove('hit', 'pop'); });
+    [1, 2, 3].forEach(function (i) { $('#c' + i).textContent = 0; });
+    $('#rw').textContent = '¥0'; $('#sim').disabled = false; $('#sim').lastChild.textContent = 'Simulate a friend joining';
+    $('#feed').innerHTML = '<div class="none">No activity yet. Press <b style="color:#fff">Simulate a friend joining</b>.</div>';
+    $('#mail').classList.add('off'); $('#mailCap').textContent = 'The email you would receive appears after a friend deposits';
+  }
+  $('#sim').addEventListener('click', simulate);
+  $('#reset').addEventListener('click', resetDemo);
+  $('#claim').addEventListener('click', function (e) {
+    if (!state || $('#mail').classList.contains('off')) { e.preventDefault(); XM.toast('Simulate a friend joining first to see this email'); return; }
+    XM.flow.set({ email: state.email, name: state.name, persona: 'referrer', src: 'organic' });
+  });
+
+  /* ---------- restore ---------- */
+  try {
+    var saved = JSON.parse(localStorage.getItem(LS) || 'null');
+    if (saved && saved.code) { email.value = saved.email; fname.value = saved.name; $('#genT').textContent = 'Regenerate link'; reveal(saved, false); }
+  } catch (e) {}
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="16"></script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On-site assistant on MCP · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 17 · Assistant for support, learning and platform questions.
+   Left: scripted on-site chat. Right: the MCP tool-call trace behind each answer.
+   ===================================================================== */
+:root { --gl: #00c27c; --gl2: #3ddc97; --ui-ln: rgba(255, 255, 255, .08); --ui-mut: #8a93a0; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { margin-top: 72px; padding-bottom: 92px; }
+.ic { display: inline-grid; place-items: center; width: 18px; height: 18px; flex: none; }
+.ic svg { width: 100%; height: 100%; }
+button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55); outline-offset: 2px; }
+.ch-h button:focus-visible { outline-color: #3ddc97; }
+.ctry[disabled] { opacity: .5; pointer-events: none; }
+.intro { text-align: center; max-width: 820px; margin: 44px auto 34px; }
+.intro h1 { font-size: clamp(32px, 4.4vw, 56px); line-height: 1.06; letter-spacing: -.03em; font-weight: 700; margin-top: 12px; }
+.intro h1 em { font-style: normal; color: var(--g); }
+.intro p { margin-top: 14px; }
+
+.split { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 20px; align-items: stretch; }
+
+/* ---------- chat ---------- */
+.chat { height: 680px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: 0 1px 0 rgba(16, 24, 40, .03), 0 30px 70px -40px rgba(16, 24, 40, .35); overflow: hidden; }
+.ch-h { background: #0b0d10; color: #fff; padding: 16px 20px; display: flex; align-items: center; gap: 14px; position: relative; isolation: isolate; }
+.ch-h::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(70% 160% at 0% 0%, rgba(0, 194, 124, .32), transparent 70%); }
+.xmk { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 13px; letter-spacing: -.5px; flex: none; }
+.ch-h .t { flex: 1; min-width: 0; }
+.ch-h b { display: block; font-size: 15.5px; line-height: 1.2; }
+.ch-h small { display: flex; align-items: center; gap: 6px; color: #aab2bd; font-size: 12px; margin-top: 2px; }
+.ch-h small .dot { flex: none; }
+.ctry { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .08); color: #fff; border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ctry:hover { background: rgba(255, 255, 255, .16); }
+.ctry .ic { width: 14px; height: 14px; }
+.ibtn { width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .1); color: #fff; display: grid; place-items: center; }
+.ibtn:hover { background: rgba(255, 255, 255, .2); }
+.ibtn .ic { width: 16px; height: 16px; }
+.ch-b { flex: 1; overflow-y: auto; padding: 22px 20px 8px; background: #f7f8f9; display: flex; flex-direction: column; gap: 16px; scroll-behavior: smooth; }
+.msg { display: flex; gap: 10px; max-width: 92%; animation: fadeUp .3s both; }
+.msg .av { width: 28px; height: 28px; border-radius: 8px; background: #0b0d10; color: #fff; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 10px; flex: none; margin-top: 2px; }
+.bub { background: #fff; border: 1px solid var(--line); border-radius: 4px 18px 18px 18px; padding: 12px 15px; font-size: 14.5px; line-height: 1.6; color: #2b3036; min-width: 0; }
+.bub p + p { margin-top: 8px; }
+.msg.me { align-self: flex-end; flex-direction: row-reverse; }
+.msg.me .bub { background: var(--g); border-color: var(--g); color: #fff; border-radius: 18px 4px 18px 18px; }
+.cur::after { content: ''; display: inline-block; width: 7px; height: 15px; margin-left: 2px; vertical-align: -2px; background: var(--g); border-radius: 2px; animation: blink .8s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.typing { display: inline-flex; gap: 4px; padding: 4px 2px; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: #aab2bd; animation: dots 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes dots { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+.qb { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.qb button { border: 1.5px solid var(--g); background: #fff; color: var(--g); font-weight: 600; font-size: 13.5px; border-radius: 999px; padding: 8px 18px; transition: background .15s, color .15s; }
+.qb button:hover:not([disabled]) { background: var(--g); color: #fff; }
+.qb button[disabled] { opacity: .5; pointer-events: none; }
+.qb button.picked { opacity: 1; background: var(--g); color: #fff; }
+.meta { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; animation: fadeIn .4s both; }
+.src { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 4px 10px 4px 8px; border-radius: 999px; background: var(--g-l); color: var(--g-d); }
+.src .ic { width: 12px; height: 12px; }
+.rsk { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line-2); font-size: 11.5px; line-height: 1.5; color: var(--mut); display: flex; gap: 7px; animation: fadeIn .4s both; }
+.rsk .ic { width: 13px; height: 13px; color: #c0392b; margin-top: 2px; }
+.ch-f { border-top: 1px solid var(--line); background: #fff; padding: 12px 16px 14px; }
+.sugg { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+.sugg::-webkit-scrollbar { display: none; }
+.sugg button { flex: none; border: 1.5px solid var(--line-2); background: #fff; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 500; color: var(--ink-2); transition: border-color .15s, background .15s, color .15s; }
+.sugg button:hover:not([disabled]) { border-color: var(--g); color: var(--g); background: var(--g-l); }
+.sugg button[disabled] { opacity: .5; }
+.inrow { display: flex; gap: 8px; align-items: center; background: var(--bg); border: 1.5px solid transparent; border-radius: 999px; padding: 5px 5px 5px 18px; transition: border-color .15s, background .15s, box-shadow .15s; }
+.inrow:focus-within { background: #fff; border-color: var(--g); box-shadow: 0 0 0 4px rgba(0, 132, 84, .12); }
+.inrow input { flex: 1; min-width: 0; height: 40px; border: 0; background: transparent; outline: 0; font-size: 14.5px; }
+.send { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--g); color: #fff; display: grid; place-items: center; transition: background .15s, transform .12s; }
+.send:hover { background: var(--g-d); }
+.send[disabled] { opacity: .4; pointer-events: none; }
+.send .ic { width: 18px; height: 18px; }
+.disc { font-size: 11px; color: var(--mut); text-align: center; margin-top: 9px; }
+
+/* ---------- behind the scenes ---------- */
+.tr { height: 680px; display: flex; flex-direction: column; padding: 0; background: #090b0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.tr::before { background: radial-gradient(70% 40% at 80% 0%, rgba(0, 194, 124, .24), transparent 70%); }
+.tr-h { padding: 22px 24px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.tr-h h3 { font-size: 20px; letter-spacing: -.02em; margin: 0 0 4px; font-weight: 700; }
+.tr-h p { color: #8a93a0; font-size: 12.5px; line-height: 1.5; max-width: 34ch; }
+.lat { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .1); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: #cdd3db; white-space: nowrap; }
+.lat.live { color: var(--gl2); border-color: rgba(0, 194, 124, .35); }
+.lat .dot { width: 7px; height: 7px; background: #5b6470; }
+.lat.live .dot { background: var(--gl2); animation: pulse 1.4s infinite; }
+.tr-l { flex: 1; overflow-y: auto; padding: 4px 18px 20px; display: grid; gap: 8px; align-content: start; position: relative; }
+.st { background: #12161b; border: 1px solid var(--ui-ln); border-radius: 16px; padding: 0; transition: border-color .3s, background .3s, opacity .3s; position: relative; }
+.st.idle { opacity: .5; }
+.st.run { border-color: rgba(0, 194, 124, .55); background: #0f1a16; }
+.st.warn { border-color: rgba(245, 176, 74, .5); }
+.st.skip { opacity: .35; }
+.st-h { width: 100%; display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: none; border: 0; text-align: left; color: #fff; }
+.st .no { width: 26px; height: 26px; border-radius: 50%; background: rgba(255, 255, 255, .08); color: #aeb6c1; display: grid; place-items: center; font-size: 12px; font-weight: 700; flex: none; transition: background .3s, color .3s; }
+.st.run .no { background: rgba(0, 194, 124, .25); color: var(--gl2); }
+.st.done .no { background: var(--g); color: #fff; }
+.st.warn .no { background: rgba(245, 176, 74, .22); color: #f5b04a; }
+.st .no .ic { width: 14px; height: 14px; }
+.st .nm { flex: 1; min-width: 0; }
+.st .nm small { display: block; font-size: 11.5px; color: #8a93a0; line-height: 1.3; }
+.st .nm code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; color: #e8ecf0; font-weight: 500; }
+.ms { font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: rgba(255, 255, 255, .07); color: #aeb6c1; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 52px; text-align: center; }
+.st.done .ms { background: rgba(0, 194, 124, .16); color: var(--gl2); }
+.st.warn .ms { background: rgba(245, 176, 74, .16); color: #f5b04a; }
+.spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(61, 220, 151, .3); border-top-color: var(--gl2); animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.st-c { display: none; padding: 0 14px 14px 52px; }
+.st.open .st-c { display: block; animation: fadeIn .3s both; }
+.cd { background: #06080a; border: 1px solid rgba(255, 255, 255, .07); border-radius: 12px; padding: 10px 12px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11.5px; line-height: 1.6; color: #c8d0d9; overflow-x: auto; }
+.cd .cl { color: #5f6a77; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; font-family: var(--font); font-weight: 600; }
+.cd .cl:first-child { margin-top: 0; }
+.cd pre { margin: 0; white-space: pre-wrap; word-break: break-word; font: inherit; }
+.cd .k { color: #8fb8ff; } .cd .s { color: #86e2b2; } .cd .n { color: #f5b04a; } .cd .b { color: #d9a0ff; }
+.cd .rs { animation: fadeUp .35s both; }
+
+/* ---------- source of truth ---------- */
+.sot { margin-top: 20px; padding: 44px 40px 40px; background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); }
+.sot-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 30px; }
+.sot-h h2 { font-size: clamp(24px, 2.8vw, 34px); line-height: 1.12; letter-spacing: -.025em; font-weight: 700; margin-top: 10px; }
+.sot-h p { color: var(--mut); max-width: 440px; font-size: 14.5px; line-height: 1.6; }
+.dg { display: grid; grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1.15fr) 70px minmax(0, 1.3fr); align-items: center; }
+.col { display: grid; gap: 10px; position: relative; }
+.node { border: 1px solid var(--line); background: var(--bg); border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px; transition: border-color .3s, box-shadow .3s, background .3s; }
+.node small { display: block; font-weight: 400; color: var(--mut); font-size: 12px; line-height: 1.4; }
+.node .ni { width: 32px; height: 32px; border-radius: 9px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink-2); flex: none; }
+.node .ni .ic { width: 16px; height: 16px; }
+.node.live { border-color: var(--g); background: var(--g-l); box-shadow: 0 0 0 4px rgba(0, 132, 84, .1); }
+.node.live .ni { background: var(--g); color: #fff; border-color: var(--g); }
+.ai { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+.ai span { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: #fff; border: 1px solid var(--line-2); color: var(--ink-2); }
+.mcp { background: #0b0d10; color: #fff; border-radius: 22px; padding: 26px 22px; text-align: center; position: relative; isolation: isolate; overflow: hidden; box-shadow: 0 20px 50px -20px rgba(0, 132, 84, .5); }
+.mcp::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(80% 70% at 50% 0%, rgba(0, 194, 124, .4), transparent 75%); }
+.mcp .xmk { margin: 0 auto 12px; width: 44px; height: 44px; }
+.mcp b { display: block; font-size: 17px; letter-spacing: -.01em; }
+.mcp small { display: block; margin-top: 6px; color: #aab2bd; font-size: 12.5px; line-height: 1.5; }
+.mcp .tl { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 14px; }
+.mcp .tl code { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; padding: 3px 8px; border-radius: 6px; background: rgba(255, 255, 255, .09); color: #cfe9de; }
+.lnk { height: 100%; min-height: 40px; position: relative; }
+.lnk i { position: absolute; left: 6px; right: 6px; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, var(--g) 0 6px, transparent 6px 12px); background-size: 12px 2px; animation: flow 0.9s linear infinite; }
+.lnk i::after { content: ''; position: absolute; right: -2px; top: -4px; border-left: 7px solid var(--g); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+@keyframes flow { to { background-position: 12px 0; } }
+.sot-note { margin-top: 24px; display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: var(--mut); line-height: 1.6; }
+.sot-note .ic { width: 15px; height: 15px; margin-top: 3px; color: var(--g); }
+
+@media (max-width: 1100px) {
+  .split { grid-template-columns: 1fr; }
+  .tr { height: auto; min-height: 560px; }
+  .tr-l { overflow: visible; }
+}
+@media (max-width: 860px) {
+  .dg { grid-template-columns: 1fr; gap: 0; }
+  .lnk { height: 36px; min-height: 36px; }
+  .lnk i { left: 50%; right: auto; top: 4px; bottom: 4px; width: 2px; height: auto; background: repeating-linear-gradient(180deg, var(--g) 0 6px, transparent 6px 12px); background-size: 2px 12px; animation: flowv .9s linear infinite; }
+  .lnk i::after { right: auto; top: auto; bottom: -2px; left: -4px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--g); border-bottom: 0; }
+  @keyframes flowv { to { background-position: 0 12px; } }
+  .sot { padding: 28px 18px; }
+}
+@media (max-width: 640px) {
+  .ibtn { width: 40px; height: 40px; } .ctry { min-height: 40px; } .sugg button { min-height: 40px; } .qb button { min-height: 40px; }
+  .xm-lang, .hdr-login { display: none; }
+  .wrap { padding: 0 12px; }
+  .intro { margin: 28px auto 24px; }
+  .chat { height: 640px; border-radius: 22px; }
+  .msg { max-width: 100%; }
+  .ch-h { padding: 14px; gap: 10px; }
+  .ctry span.lbl { display: none; }
+  .tr-h { flex-direction: column; padding: 20px 18px 12px; }
+  .tr-l { padding: 4px 12px 16px; }
+  .st-c { padding-left: 14px; }
+}
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light" data-active="Learn & Research"></div>
+
+<main class="wrap">
+  <header class="intro">
+    <span class="eyebrow">Assistant · powered by MCP</span>
+    <h1>Ask in plain words. <em>Answered from one source of truth.</em></h1>
+    <p class="lead">Support, learning and platform questions answered from public XM information, with the sources shown and the tool calls visible.</p>
+  </header>
+
+  <section class="split">
+    <!-- ===== chat ===== -->
+    <div class="chat" role="region" aria-label="XM assistant">
+      <div class="ch-h">
+        <div class="xmk">XM</div>
+        <div class="t"><b>XM Assistant</b><small><span class="dot live"></span>Answers from XM public information</small></div>
+        <button class="ctry" id="ctry" type="button" title="Change country"><span class="ic" data-ic="globe"></span><span class="lbl">Country:</span><span id="ctryV">not set</span></button>
+        <button class="ibtn" id="clear" type="button" title="Restart chat" aria-label="Restart chat"><span class="ic" data-ic="close"></span></button>
+      </div>
+      <div class="ch-b" id="log" aria-live="polite"></div>
+      <div class="ch-f">
+        <div class="sugg" id="sugg"></div>
+        <form class="inrow" id="form" autocomplete="off">
+          <input id="q" type="text" placeholder="Ask about accounts, bonuses, platforms…" maxlength="200" aria-label="Your question">
+          <button class="send" id="send" type="submit" aria-label="Send"><span class="ic" data-ic="arrow"></span></button>
+        </form>
+        <div class="disc">Informational only, not investment advice. Illustrative answers for this prototype.</div>
+      </div>
+    </div>
+
+    <!-- ===== behind the scenes ===== -->
+    <div class="block tr">
+      <div class="tr-h">
+        <div><h3>Behind the scenes</h3><p>Every answer is built from tool calls to the XM MCP server. Nothing is guessed.</p></div>
+        <span class="lat" id="lat"><span class="dot"></span><span id="latT">Waiting for a question</span></span>
+      </div>
+      <ol class="tr-l" id="steps" style="list-style:none;margin:0"></ol>
+    </div>
+  </section>
+
+  <!-- ===== source of truth ===== -->
+  <section class="sot reveal">
+    <div class="sot-h">
+      <div><span class="eyebrow">Source of truth</span><h2>One MCP server. Every surface says the same thing.</h2></div>
+      <p>Facts, policies and regulator rules are maintained once. The site assistant, machine-readable files and outside AI assistants all read from the same place.</p>
+    </div>
+    <div class="dg">
+      <div class="col">
+        <div class="node"><span class="ni"><span class="ic" data-ic="book"></span></span><div>Website content<small>Help centre, product pages</small></div></div>
+        <div class="node"><span class="ni"><span class="ic" data-ic="shield"></span></span><div>Legal and compliance<small>Risk wording, regional rules</small></div></div>
+        <div class="node"><span class="ni"><span class="ic" data-ic="chart"></span></span><div>Product data<small>Accounts, platforms, promotions</small></div></div>
+      </div>
+      <div class="lnk"><i></i></div>
+      <div class="mcp">
+        <div class="xmk">XM</div>
+        <b>XM MCP server</b>
+        <small>Typed tools over approved public facts. Versioned, audited, region-aware.</small>
+        <div class="tl"><code>get_regulator</code><code>search_facts</code><code>get_account_types</code><code>get_promotions</code></div>
+      </div>
+      <div class="lnk"><i></i></div>
+      <div class="col">
+        <div class="node live" id="nAssist"><span class="ni"><span class="ic" data-ic="headset"></span></span><div>On-site assistant<small>The chat on this page</small></div></div>
+        <div class="node"><span class="ni"><span class="ic" data-ic="grid"></span></span><div>llms.txt<small>Plain-text map for crawlers and agents</small></div></div>
+        <div class="node"><span class="ni"><span class="ic" data-ic="search"></span></span><div>Structured data<small>JSON-LD for search results</small></div></div>
+        <div class="node"><span class="ni"><span class="ic" data-ic="users"></span></span><div>External AI assistants<small>Neutral labels, no endorsement</small><div class="ai"><span>ChatGPT</span><span>Claude</span><span>Perplexity</span></div></div></div>
+      </div>
+    </div>
+    <p class="sot-note"><span class="ic" data-ic="warn"></span><span>Prototype. The MCP server, tool names, latencies and facts are illustrative and scripted. Nothing here calls a real service or states real regulatory facts.</span></p>
+  </section>
+</main>
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+(function () {
+  var $ = XM.$, $$ = XM.$$;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SK = 'xm.assistant.country';
+  $$('[data-ic]').forEach(function (e) { e.innerHTML = XM.icon(e.getAttribute('data-ic')); });
+
+  XM.notes({
+    title: 'Assistant on a single MCP source',
+    today: 'Support, learning and platform questions go to static help pages and live chat. Answers vary by channel, and AI assistants outside XM guess from stale pages.',
+    proposed: 'An on-site assistant that checks the visitor\'s country first, then answers from one MCP server of approved public facts, with sources and a risk line. The same server feeds llms.txt, structured data and external AI assistants.',
+    why: 'Fewer repeat support contacts, consistent regulated wording everywhere, and control over what AI tools say about XM.',
+    metric: 'Deflected support contacts, answer-to-register rate, share of answers with a source, compliance escalations.'
+  });
+
+  /* ---------- knowledge base: generic, non-binding, illustrative ---------- */
+  var COUNTRIES = { Japan: { code: 'JP', ent: 'XM entity serving Japan', lang: 'ja-JP' }, Thailand: { code: 'TH', ent: 'XM entity serving Thailand', lang: 'th-TH' }, Other: { code: 'INT', ent: 'XM international entity', lang: 'en' } };
+  var KB = [
+    { id: 'accounts', keys: ['account', 'type', 'micro', 'standard', 'ultra', 'zero', 'offer'], tool: 'get_account_types', targs: function () { return {}; }, src: 'Account types page', ret: { types: ['Micro', 'Standard', 'Ultra Low'], min_deposit: 'varies by type' },
+      a: 'XMTrading offers several account types, for example Micro, Standard and Ultra Low. They differ mainly in lot size, spread structure and minimum deposit, so the right one depends on how you like to trade. Available types can vary by country.' },
+    { id: 'verification', keys: ['verif', 'kyc', 'document', 'identity', 'proof', 'how long', 'approve'], tool: 'get_verification_policy', targs: function (c) { return { region: c.code }; }, src: 'Verification help article', ret: { documents: ['photo ID', 'proof of address'], typical_review: 'within 1 business day' },
+      a: 'Verification usually needs a photo ID and a proof of address. Most reviews are completed within about one business day, though it can take longer if a document is unclear or during busy periods. You can trade on a demo account while you wait.' },
+    { id: 'bonus', keys: ['bonus', 'promotion', 'promo', 'offer', 'loyalty', 'credit', 'reward'], tool: 'get_promotions', targs: function (c) { return { region: c.code, status: 'active' }; }, src: 'Promotions page', ret: { items: ['no-deposit bonus', 'deposit bonus', 'loyalty program'], terms: 'apply' },
+      a: { Japan: 'In Japan, the promotions currently highlighted include a no-deposit welcome bonus (shown as 13,000 yen, illustrative), plus a deposit bonus and the Loyalty Program. Each has its own terms and eligibility, so please check the Promotions page before you rely on one.', Thailand: 'In Thailand, promotions can include a deposit bonus and the Loyalty Program. Availability and terms are set per region and per account type, so check the Promotions page for what applies to you.', Other: 'Promotions differ by region and account type and can change at any time. Typical examples are a deposit bonus and the Loyalty Program. Check the Promotions page for what applies to your country.' } },
+    { id: 'platform', keys: ['mt5', 'mt4', 'xmtd', ' app', 'platform', 'metatrader', 'mobile', 'web trader'], tool: 'get_platforms', targs: function () { return {}; }, src: 'Platforms page', ret: { platforms: ['MT4', 'MT5', 'XMTD app'], devices: ['desktop', 'web', 'mobile'] },
+      a: 'MT5 is a full desktop, web and mobile platform with advanced charting, many indicators and automated trading. The XMTD app is built for mobile: quick order entry and your account in one place. Many traders use both, and you can try either on a demo account first.' },
+    { id: 'withdraw', keys: ['withdraw', 'payout', 'cash out', 'transfer out', 'get my money'], tool: 'get_withdrawal_info', targs: function (c) { return { region: c.code }; }, src: 'Withdrawals help article', ret: { method: 'same route as deposit', verification: 'required first', speed: 'depends on method' },
+      a: 'Open the withdrawal section in your client area, pick an amount and a method. Withdrawals normally go back to the same route you deposited with, and your account needs to be verified first. Processing time depends on the method and on your bank or provider.' },
+    { id: 'deposit', keys: ['deposit', 'fund', 'top up', 'minimum'], tool: 'get_funding_methods', targs: function (c) { return { region: c.code }; }, src: 'Deposits and withdrawals page', ret: { methods: ['bank transfer', 'card', 'e-wallet'], fees: 'by method' },
+      a: 'You can usually fund an account by bank transfer, card or e-wallet, depending on your country. The minimum deposit depends on the account type, and the options shown in your client area are the ones available to you.' },
+    { id: 'demo', keys: ['demo', 'practice', 'virtual', 'try it'], tool: 'get_demo_info', targs: function () { return {}; }, src: 'Demo account page', ret: { virtual_funds: true, risk: 'none' },
+      a: 'A demo account lets you practise with virtual funds in real market conditions. It is a good way to explore a platform before using real money. Results on demo do not guarantee similar results on a live account.' },
+    { id: 'learn', keys: ['learn', 'webinar', 'education', 'tutorial', 'course', 'beginner', 'study'], tool: 'get_learning_content', targs: function () { return {}; }, src: 'Learn and Research hub', ret: { formats: ['webinars', 'tutorials', 'market news'], level: 'beginner to advanced' },
+      a: 'The Learn and Research area has webinars, tutorials and market news for different levels. Beginners usually start with the platform tutorials and the basics of leverage and risk management.' },
+    { id: 'support', keys: ['support', 'contact', 'help', 'agent', 'human', 'phone', 'call'], tool: 'get_support_channels', targs: function () { return {}; }, src: 'Contact us page', ret: { channels: ['live chat', 'email', 'phone'], hours: 'see page' },
+      a: 'You can reach the support team by live chat, email or phone. Hours and languages depend on your region, and the Contact page shows what is open now.' }
+  ];
+  var RISK = 'Trading involves significant risk and you can lose your invested capital. This is general information, not advice.';
+  var SUGG = ['What account types do you offer?', 'How long does verification take?', 'Which bonuses are available in Japan?', 'MT5 or the XMTD app?', 'How do I withdraw?'];
+
+  /* ---------- state ---------- */
+  var country = null, pending = null, busy = false, runId = 0;
+  try { country = sessionStorage.getItem(SK) || null; } catch (e) {}
+  var log = $('#log'), form = $('#form'), q = $('#q'), sugg = $('#sugg');
+  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, reduce ? Math.min(ms, 40) : ms); }); };
+  var rnd = function (a, b) { return Math.round(a + Math.random() * (b - a)); };
+
+  function setCountry(c) {
+    country = c; try { c ? sessionStorage.setItem(SK, c) : sessionStorage.removeItem(SK); } catch (e) {}
+    $('#ctryV').textContent = c || 'not set';
+  }
+  function scroll() { log.scrollTop = log.scrollHeight; }
+  function add(who, html, cls) {
+    var m = XM.el('<div class="msg ' + who + '">' + (who === 'bot' ? '<div class="av">XM</div>' : '') + '<div class="bub">' + html + '</div></div>');
+    log.appendChild(m); scroll(); return m.querySelector('.bub');
+  }
+  function setBusy(b) {
+    busy = b; $('#send').disabled = b;
+    $$('#sugg button').forEach(function (x) { x.disabled = b; });
+    $$('.qb button', log).forEach(function (x) { x.disabled = b; });
+    $('#ctry').disabled = b;
+  }
+  function typeInto(el, text) {
+    return new Promise(function (res) {
+      if (reduce) { el.textContent = text; return res(); }
+      var i = 0; el.classList.add('cur');
+      (function tick() {
+        var n = 2 + Math.floor(Math.random() * 3); i = Math.min(text.length, i + n);
+        el.textContent = text.slice(0, i); scroll();
+        if (i >= text.length) { el.classList.remove('cur'); res(); } else setTimeout(tick, 16 + Math.random() * 14);
+      })();
+    });
+  }
+
+  /* ---------- trace panel ---------- */
+  var STEPS = [
+    { t: 'Resolve country', f: 'get_regulator', h: 'country' },
+    { t: 'Search public facts', f: 'search_facts', h: 'query' },
+    { t: 'Fetch the record', f: '' },
+    { t: 'Compose answer', f: 'compose_answer', h: 'facts' }
+  ];
+  var stepsEl = $('#steps');
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function colour(s) { return esc(s).replace(/("(?:[^"\\]|\\.)*")(\s*:)?|\b(-?\d+(?:\.\d+)?)\b|\b(true|false|null)\b/g, function (m, str, colon, num, bool) { if (str) return colon ? '<span class="k">' + str + '</span>' + colon : '<span class="s">' + str + '</span>'; if (num) return '<span class="n">' + num + '</span>'; return '<span class="b">' + bool + '</span>'; }); }
+  function pretty(o) { var ks = Object.keys(o); if (!ks.length) return '{}'; return '{\n' + ks.map(function (k) { return '  "' + k + '": ' + JSON.stringify(o[k]); }).join(',\n') + '\n}'; }
+  function buildSteps() {
+    stepsEl.innerHTML = STEPS.map(function (s, i) {
+      return '<li class="st idle" data-i="' + i + '"><button class="st-h" type="button"><span class="no">' + (i + 1) + '</span><span class="nm"><code>' + (s.f ? s.f + '(' + s.h + ')' : 'get_…()') + '</code><small>' + s.t + '</small></span><span class="ms">waiting</span></button><div class="st-c"></div></li>';
+    }).join('');
+    $$('.st-h', stepsEl).forEach(function (b) { b.addEventListener('click', function () { var li = b.parentNode; if (!li.classList.contains('idle')) li.classList.toggle('open'); }); });
+  }
+  function stepEl(i) { return $('.st[data-i="' + i + '"]', stepsEl); }
+  function stepStart(i, name, args) {
+    $$('.st.open', stepsEl).forEach(function (x) { x.classList.remove('open'); });
+    var li = stepEl(i); li.className = 'st run open';
+    $('code', li).textContent = name + '(' + Object.keys(args || {}).filter(function (k) { return k !== 'style' && k !== 'language' && k !== 'top_k'; }).join(', ') + ')';
+    $('.ms', li).innerHTML = '<span class="spin" style="display:inline-block;vertical-align:-2px"></span>';
+    $('.st-c', li).innerHTML = '<div class="cd"><div class="cl">request</div><pre>' + colour(JSON.stringify({ tool: name, arguments: args })) + '</pre></div>';
+    li.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  }
+  function stepDone(i, res, ms, status) {
+    var li = stepEl(i); li.className = 'st ' + (status === 'warn' ? 'warn' : 'done') + ' open';
+    $('.ms', li).textContent = ms + ' ms';
+    $('.no', li).innerHTML = status === 'warn' ? '!' : XM.icon('check');
+    $('.cd', li).insertAdjacentHTML('beforeend', '<div class="rs"><div class="cl">response</div><pre>' + colour(pretty(res)) + '</pre></div>');
+  }
+  function stepSkip(i, why) { var li = stepEl(i); li.className = 'st skip'; $('.ms', li).textContent = 'skipped'; $('small', li).textContent = why; }
+  function latency(total, live) { var l = $('#lat'); l.classList.toggle('live', !!live); $('#latT').textContent = live ? 'Running…' : (total == null ? 'Waiting for a question' : 'Total ' + total + ' ms'); }
+
+  /* ---------- engine ---------- */
+  function match(text) {
+    var t = text.toLowerCase(), best = null, bs = 0;
+    KB.forEach(function (e) { var s = 0; e.keys.forEach(function (k) { if (t.indexOf(k) > -1) s += k.length > 4 ? 2 : 1; }); if (s > bs) { bs = s; best = e; } });
+    return { e: best, score: bs };
+  }
+  function answerText(e, c) { return typeof e.a === 'string' ? e.a : e.a[c] || e.a.Other; }
+
+  async function respond(question, forcedCountry) {
+    var my = ++runId; setBusy(true);
+    var c = COUNTRIES[forcedCountry || country];
+    var node = $('#nAssist'); node.classList.add('live');
+    buildSteps(); latency(null, true);
+    var total = 0, m = match(question), hits = m.score >= 1;
+    var bub = add('bot', '<span class="typing"><i></i><i></i><i></i></span>');
+
+    /* 1 resolve country */
+    if (!c) {
+      stepStart(0, 'get_regulator', { country: null });
+      await sleep(520); var ms0 = rnd(18, 34); total += ms0;
+      stepDone(0, { error: 'country_required', action: 'ask_user' }, ms0, 'warn');
+      [1, 2, 3].forEach(function (i) { stepSkip(i, 'waiting for country'); });
+      latency(total, false);
+      pending = question;
+      bub.innerHTML = '<p>Quick check first: <b>Which country are you in?</b></p><p style="color:var(--mut);font-size:13px">Products, bonuses and rules differ by region, so I answer for the right one.</p><div class="qb"><button data-c="Japan">Japan</button><button data-c="Thailand">Thailand</button><button data-c="Other">Other</button></div>';
+      $$('.qb button', bub).forEach(function (b) { b.addEventListener('click', function () { if (busy) return; b.classList.add('picked'); $$('.qb button', bub).forEach(function (x) { x.disabled = true; }); chooseCountry(b.getAttribute('data-c')); }); });
+      scroll(); setBusy(false); node.classList.remove('live'); return;
+    }
+    var key = forcedCountry || country;
+    stepStart(0, 'get_regulator', { country: c.code });
+    await sleep(480); if (my !== runId) return;
+    var ms1 = rnd(22, 48); total += ms1;
+    stepDone(0, { country: c.code, entity: c.ent, locale: c.lang, status: 'resolved' }, ms1);
+
+    /* 2 search */
+    var q2 = question.length > 48 ? question.slice(0, 45) + '…' : question;
+    stepStart(1, 'search_facts', { query: q2, country: c.code, top_k: 3 });
+    await sleep(560); if (my !== runId) return;
+    var ms2 = rnd(46, 96); total += ms2;
+    var others = KB.filter(function (x) { return x !== m.e; }).slice(0, 2);
+    var hitList = hits ? [{ id: m.e.id, score: +(0.82 + Math.min(m.score, 6) * 0.025).toFixed(2) }].concat(others.map(function (o, i) { return { id: o.id, score: +(0.34 - i * 0.09).toFixed(2) }; })) : [];
+    stepDone(1, hits ? { hits: hitList } : { hits: [], best_score: 0.11, note: 'below threshold 0.45' }, ms2, hits ? 'ok' : 'warn');
+
+    var text, srcs = [];
+    if (hits) {
+      /* 3 fetch */
+      var targs = m.e.targs(c);
+      stepStart(2, m.e.tool, targs);
+      await sleep(520); if (my !== runId) return;
+      var ms3 = rnd(60, 130); total += ms3;
+      stepDone(2, Object.assign({ source: m.e.src.toLowerCase().replace(/ /g, '-'), version: 'v' + rnd(11, 38) }, m.e.ret), ms3);
+      text = answerText(m.e, key); srcs = [m.e.src];
+    } else {
+      stepSkip(2, 'no matching fact'); text = 'I can only answer from XM public information, and I could not find that there. You can ask me about account types, verification, bonuses, platforms, deposits and withdrawals, or contact support for anything personal.';
+    }
+
+    /* 4 compose */
+    stepStart(3, 'compose_answer', { facts: hits ? [m.e.id] : [], style: 'plain', language: c.lang });
+    await sleep(380); if (my !== runId) return;
+    var ms4 = rnd(120, 240); total += ms4;
+    stepDone(3, { citations: srcs, risk_warning: true, country_check: true, grounded: hits, tokens: text.length > 0 ? Math.round(text.length / 4.2) : 0 }, ms4, hits ? 'ok' : 'warn');
+    latency(total, false);
+
+    bub.innerHTML = '<p></p>';
+    await typeInto(bub.firstChild, text);
+    if (my !== runId) return;
+    var extra = '';
+    if (srcs.length) extra += '<div class="meta">' + srcs.map(function (s) { return '<span class="src"><span class="ic">' + XM.icon('book') + '</span>Source: ' + s + '</span>'; }).join('') + '</div>';
+    extra += '<div class="rsk"><span class="ic">' + XM.icon('warn') + '</span><span>' + RISK + '</span></div>';
+    bub.insertAdjacentHTML('beforeend', extra);
+    if (!hits) bub.insertAdjacentHTML('beforeend', '<div class="qb">' + SUGG.slice(0, 3).map(function (s) { return '<button data-q="' + esc(s) + '" style="font-size:12.5px;padding:6px 14px">' + esc(s) + '</button>'; }).join('') + '</div>');
+    $$('.qb button[data-q]', bub).forEach(function (b) { b.addEventListener('click', function () { ask(b.getAttribute('data-q')); }); });
+    scroll(); setBusy(false); node.classList.remove('live');
+  }
+
+  function chooseCountry(c) {
+    setCountry(c); add('me', c);
+    var p = pending; pending = null;
+    if (p) respond(p, c);
+    else { var b = add('bot', '<p>Thanks, I will answer for <b>' + c + '</b>. What would you like to know?</p>'); setBusy(false); }
+  }
+  function ask(text) {
+    text = (text || '').trim(); if (!text || busy) return;
+    add('me', esc(text)); q.value = '';
+    /* a typed country answer while the country is unknown */
+    if (!country && pending) { var lc = text.toLowerCase(); var hit = lc.indexOf('japan') > -1 ? 'Japan' : lc.indexOf('thai') > -1 ? 'Thailand' : null; if (hit) { $$('.qb button', log).forEach(function (x) { x.disabled = true; }); chooseCountry(hit); return; } }
+    respond(text);
+  }
+
+  function askCountry() {
+    if (busy) return; setCountry(null); pending = null;
+    var b = add('bot', '<p><b>Which country are you in?</b></p><div class="qb"><button data-c="Japan">Japan</button><button data-c="Thailand">Thailand</button><button data-c="Other">Other</button></div>');
+    $$('.qb button', b).forEach(function (x) { x.addEventListener('click', function () { if (busy) return; x.classList.add('picked'); $$('.qb button', b).forEach(function (y) { y.disabled = true; }); chooseCountry(x.getAttribute('data-c')); }); });
+  }
+  function start() {
+    log.innerHTML = ''; pending = null; busy = false; runId++; setBusy(false); $('#ctryV').textContent = country || 'not set';
+    add('bot', '<p>Hi, I am the XM assistant. I answer from XM public information and show my sources.</p><p>Pick a question below or type your own.</p>');
+    buildSteps(); latency(null, false);
+  }
+  sugg.innerHTML = SUGG.map(function (s) { return '<button type="button">' + s + '</button>'; }).join('');
+  $$('button', sugg).forEach(function (b) { b.addEventListener('click', function () { ask(b.textContent); }); });
+  form.addEventListener('submit', function (e) { e.preventDefault(); ask(q.value); });
+  $('#ctry').addEventListener('click', askCountry);
+  $('#clear').addEventListener('click', function () { setCountry(null); start(); });
+  start();
+  /* cold open: if nobody has touched it, play one example so the tool trace is not an empty panel */
+  setTimeout(function () { if (!busy && log.children.length === 1 && !q.value && document.activeElement !== q) ask(SUGG[0]); setTimeout(function () { var j = log.querySelector('.qb button[data-c="Japan"]:not([disabled])'); if (j && document.activeElement !== q) j.click(); }, 2600); }, 1600);
+})();
+</script>
+<script src="../../assets/js/review.js" data-idea="17"></script>
+</body>
+</html>

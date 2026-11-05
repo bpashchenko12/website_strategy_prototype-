@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simplified homepage · XMTrading</title>
+<link rel="stylesheet" href="../../assets/css/xm.css">
+<style>
+/* =====================================================================
+   IDEA 01 · Simplified homepage (Kraken-style blocks in XM green/black)
+   Light page: no libraries, one data feed, below-the-fold visuals drawn lazily.
+   ===================================================================== */
+:root { --gl: #00c27c; --gl2: #3ddc97; --bd: rgba(255, 255, 255, .09); --ui-bg: #0f1216; --ui-2: #151a20; --ui-ln: rgba(255, 255, 255, .07); --ui-mut: #7d8794; }
+body { background: #f5f5f5; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+.sec { margin-top: 68px; }
+.sh { text-align: center; max-width: 760px; margin: 0 auto 32px; }
+.sh .h-l { margin-top: 12px; }
+.sh .lead { margin-top: 14px; }
+
+/* ---------- header (solid, like xmtrading.com) ---------- */
+.xm-hdr { background: rgba(245, 245, 245, .9); border-bottom-color: transparent; }
+.xm-ftr { padding-bottom: 92px; }
+
+/* ---------- hero: Kraken-style split. Headline + one button on the left, live phone with floating cards on the right ---------- */
+.blk.hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); gap: 24px; align-items: stretch; text-align: left; margin-top: 0; padding: 0 0 0 max(64px, calc((100vw - 1320px) / 2 + 64px)); min-height: min(600px, calc(100vh - 100px)); overflow: hidden; }
+.hero::before { background: radial-gradient(60% 70% at 78% 40%, rgba(0, 200, 125, .38), rgba(0, 132, 84, .12) 50%, transparent 74%), radial-gradient(40% 50% at 0% 0%, rgba(47, 98, 240, .14), transparent 70%); }
+.hc-l { align-self: center; display: flex; flex-direction: column; align-items: flex-start; padding: 52px 0; min-width: 0; }
+.hero h1 { margin-top: 4px; font-size: clamp(40px, 5vw, 70px); line-height: 1.03; letter-spacing: -.035em; font-weight: 700; animation: fadeUp .8s .05s both; }
+.blk.hero .sub { margin: 22px 0 34px; max-width: 480px; font-size: clamp(16px, 1.5vw, 19px); animation: fadeUp .8s .14s both; }
+.hero .kick { animation: fadeUp .7s both; }
+.hero .hcta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; animation: fadeUp .8s .22s both; }
+.hero-fine { margin-top: 28px; font-size: 12px; color: #6f7885; }
+.hv { position: relative; align-self: end; height: 560px; min-width: 0; animation: fadeUp 1s .3s both; }
+.hv .ph-h { left: 50%; top: 50px; margin-left: -92px; transform: rotate(4deg); transform-origin: 50% 100%; }
+.hv .ph .phone { width: 280px; } .hv .ph .scr { height: 580px; }
+.hc { position: absolute; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 12px 16px 12px 12px; border-radius: 18px; background: rgba(20, 24, 29, .9); border: 1px solid var(--bd); backdrop-filter: blur(12px); box-shadow: 0 20px 50px rgba(0, 0, 0, .5); animation: bob 6s ease-in-out infinite alternate; }
+.hc b { display: block; color: #fff; font-size: 14px; font-weight: 600; } .hc small { font-size: 11.5px; }
+.hc .v { text-align: right; font-variant-numeric: tabular-nums; } .hc .v .px { display: block; font-weight: 600; font-size: 15px; color: #fff; } .hc .v span:last-child { font-size: 12px; font-weight: 500; }
+.hc.a { left: -10px; top: 100px; } .hc.b { right: 6px; top: 220px; animation-delay: -2s; } .hc.c { left: 6px; top: 360px; animation-delay: -4s; }
+.hc.b .ret { color: var(--gl2); font-size: 20px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+.hc .gf { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #ffe08a, #f5a623); color: #3b2500; display: grid; place-items: center; flex: none; } .hc .gf svg { width: 18px; height: 18px; }
+.hc .sp svg { display: block; }
+.pill { border-radius: 999px; }
+.btn-xl { padding: 16px 34px; font-size: 16px; }
+.btn-glass { background: rgba(255, 255, 255, .07); color: #fff; border-color: rgba(255, 255, 255, .2); }
+.btn-glass:hover { background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .4); }
+.btn-primary.glow-btn { box-shadow: 0 10px 34px rgba(0, 132, 84, .45), inset 0 1px 0 rgba(255, 255, 255, .25); background: linear-gradient(180deg, #00a064, #008454); }
+.btn-primary.glow-btn:hover { background: linear-gradient(180deg, #00b06d, #007a4d); box-shadow: 0 14px 40px rgba(0, 150, 95, .6); transform: translateY(-1px); }
+.hf { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 520px; margin: 0; padding: 6px 6px 6px 20px; background: rgba(255, 255, 255, .09); border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; transition: border-color .15s, box-shadow .15s; }
+.hf:focus-within { border-color: #00c27c; box-shadow: 0 0 0 5px rgba(0, 194, 124, .2); }
+.hf svg { width: 20px; height: 20px; color: #8e97a3; flex: none; }
+.hf input { flex: 1; min-width: 0; height: 46px; background: transparent; border: 0; outline: 0; color: #fff; font-size: 16px; }
+.hf input::placeholder { color: #8892a0; }
+.hf.err { border-color: var(--red); animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.hf-err { color: #ff8a90; font-size: 13px; margin-top: 10px; min-height: 18px; }
+.try-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: #cfd5dc; font-size: 14px; font-weight: 500; }
+.try-link:hover { color: #fff; }
+.try-link svg { width: 15px; height: 15px; }
+.hero .up, .ui .up { color: #2fe39a; } .hero .dn, .ui .dn { color: #ff6b72; }
+
+/* ---------- stats ---------- */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 72px; }
+.stat { padding: 6px 28px; border-left: 1px solid var(--line-2); }
+.stat:first-child { border-left: 0; padding-left: 0; }
+.stat b { display: block; font-size: clamp(38px, 4.6vw, 62px); font-weight: 700; letter-spacing: -.035em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat b i { font-style: normal; color: var(--g); }
+.stat > span { display: block; margin-top: 6px; color: var(--mut); font-size: 14.5px; }
+
+/* ---------- dark Kraken-style blocks ---------- */
+.blk { padding: 52px 36px 0; text-align: center; display: flex; flex-direction: column; align-items: center; background: #090b0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.blk::before { background: radial-gradient(60% 50% at 50% 0%, rgba(0, 190, 120, .3), transparent 70%); }
+.blk::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .5; pointer-events: none; background-image: radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(180deg, #000, transparent 55%); mask-image: linear-gradient(180deg, #000, transparent 55%); }
+.blk.v-t::before { background: radial-gradient(80% 50% at 28% 0%, rgba(0, 170, 150, .32), transparent 70%), radial-gradient(60% 40% at 95% 100%, rgba(0, 132, 84, .2), transparent 70%); }
+.blk.v-b::before { background: radial-gradient(75% 50% at 72% 0%, rgba(47, 98, 240, .3), transparent 70%), radial-gradient(60% 40% at 0% 100%, rgba(0, 132, 84, .18), transparent 70%); }
+.blk.v-c::before { background: radial-gradient(70% 50% at 20% 0%, rgba(0, 194, 124, .3), transparent 70%), radial-gradient(50% 40% at 100% 100%, rgba(138, 63, 209, .2), transparent 70%); }
+.blk.v-w::before { background: radial-gradient(70% 50% at 80% 0%, rgba(245, 170, 40, .26), transparent 70%), radial-gradient(50% 40% at 0% 100%, rgba(0, 132, 84, .22), transparent 70%); }
+.kick { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.xmk { width: 28px; height: 28px; border-radius: 8px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 11px; letter-spacing: -.5px; }
+.bdg { background: #fff; color: #0b0d10; font-weight: 700; font-size: 12px; letter-spacing: .08em; padding: 6px 11px; border-radius: 8px; }
+.blk h3 { font-size: clamp(28px, 3vw, 40px); line-height: 1.06; font-weight: 700; letter-spacing: -.03em; max-width: 17ch; }
+.blk .sub { color: #a9b0ba; font-size: clamp(15px, 1.4vw, 18px); max-width: 520px; margin: 12px auto 20px; line-height: 1.55; }
+.blk .vis { margin-top: auto; padding-top: 30px; width: 100%; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+.grid2 .blk h3 { font-size: clamp(30px, 3.2vw, 46px); }
+.plat { display: grid; gap: 0; }
+
+/* ---------- full bleed: blocks run edge to edge, content stays on a centred measure ---------- */
+.fb { overflow-x: clip; }
+.fb .blk, .fb .cta { border-radius: 28px; margin-left: 14px; margin-right: 14px; }
+.fb .blk:not(.promo) { background: linear-gradient(180deg, rgba(18, 24, 30, .93), rgba(8, 10, 13, .96)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), inset 0 1px 0 rgba(255, 255, 255, .1); }
+.fb .blk.hero { margin-top: 14px; }
+.fb .plat { gap: 14px; }
+.fb .grid2 { gap: 14px; margin-top: 14px; margin-left: 14px; margin-right: 14px; }
+.fb .grid2 .blk { margin-left: 0; margin-right: 0; }
+.fb .stats { width: min(1272px, calc(100% - 48px)); margin: 72px auto 0; }
+.fb .sh { padding: 0 24px; }
+.fb .mv { width: calc(100% - 48px); }
+.fb section > .fine { margin: 0; padding: 22px 24px 0; text-align: center; }
+.fb #promotions, .fb #community, .fb #support { margin-top: 14px; }
+.fb #community .grid2 { margin-top: 0; }
+.fb #markets { padding-bottom: 68px; }
+.fb #markets .sh { margin-bottom: 20px; }
+.fb .promo { border: 1px solid var(--line); padding-left: max(40px, calc((100vw - 1240px) / 2)); padding-right: max(40px, calc((100vw - 1240px) / 2)); }
+.fb .sup { padding-left: max(56px, calc((100vw - 1240px) / 2)); padding-right: max(56px, calc((100vw - 1240px) / 2)); }
+.fb .cta { margin-top: 14px; margin-bottom: 14px; }
+
+/* ---------- download-the-app dialog ---------- */
+.dl { border: 0; padding: 0; background: transparent; color: #fff; max-width: none; max-height: none; overflow: visible; }
+.dl::backdrop { background: rgba(5, 8, 11, .72); backdrop-filter: blur(6px); }
+.dl[open] { animation: fadeUp .25s both; }
+.dl-c { position: relative; display: grid; grid-template-columns: 1fr 220px; gap: 40px; align-items: center; width: min(780px, calc(100vw - 32px)); padding: 48px 48px 44px; border-radius: 28px; background: #0c0f13; border: 1px solid rgba(255, 255, 255, .1); box-shadow: 0 40px 120px rgba(0, 0, 0, .6); overflow: hidden; isolation: isolate; text-align: left; }
+.dl-c::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(70% 70% at 90% 0%, rgba(0, 190, 120, .28), transparent 70%); }
+.dl-x { position: absolute; top: 14px; right: 14px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(255, 255, 255, .08); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.dl-x:hover { background: rgba(255, 255, 255, .16); } .dl-x svg { width: 18px; height: 18px; }
+.dl-l h3 { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.1; font-weight: 700; letter-spacing: -.03em; margin: 0; }
+.dl-l p { color: #a9b0ba; font-size: 15.5px; line-height: 1.6; margin: 14px 0 26px; max-width: 380px; }
+.dl-st { display: flex; flex-wrap: wrap; gap: 12px; }
+.stb { display: inline-flex; align-items: center; gap: 12px; padding: 10px 20px 10px 16px; border-radius: 14px; background: #fff; color: #0b0d10; font-weight: 600; font-size: 16px; line-height: 1.15; transition: transform .15s, box-shadow .15s; }
+.stb:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0, 0, 0, .4); }
+.stb .i { display: inline-flex; } .stb .i svg { width: 24px; height: 24px; } .stb .t { display: block; } .stb small { display: block; font-size: 10.5px; font-weight: 500; color: #5b626b; }
+.dl-r { text-align: center; } .dl-r b { display: block; margin-top: 14px; font-size: 14px; } .dl-r small { color: #8e97a3; font-size: 12px; }
+.dl-qr { background: #fff; border-radius: 18px; padding: 10px; box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .7); } .dl-qr svg { display: block; width: 100%; height: auto; }
+@media (max-width: 720px) { .dl-c { grid-template-columns: 1fr; padding: 40px 24px 28px; gap: 0; } .dl-r { display: none; } .dl-l p { margin-bottom: 22px; } .stb { flex: 1 1 100%; } }
+
+
+/* ---------- Portal block (its own block under the hero) ---------- */
+.pf-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 28px; }
+.pf-nav a { display: inline-flex; align-items: center; gap: 9px; padding: 11px 20px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: 14px; font-weight: 600; color: var(--ink); box-shadow: 0 1px 2px rgba(16, 24, 40, .04); transition: border-color .15s, color .15s, transform .15s, box-shadow .15s; }
+.pf-nav a:hover { border-color: var(--g); color: var(--g); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0, 132, 84, .14); }
+.pf-nav a svg { width: 17px; height: 17px; }
+.fb #platforms .blk { padding-top: 54px; }
+#b-portal .vis, #b-pro .vis, #b-mt .vis { position: relative; }
+#b-portal .vis > *, #b-pro .vis > *, #b-mt .vis > * { position: relative; }
+#b-portal .vis::before { content: ''; position: absolute; left: 50%; bottom: 0; width: min(900px, 90%); height: 70%; transform: translateX(-50%); background: radial-gradient(50% 60% at 50% 100%, rgba(0, 200, 125, .38), transparent 70%); filter: blur(30px); pointer-events: none; }
+#b-pro .vis::before { content: ''; position: absolute; left: 50%; bottom: 0; width: 80%; height: 70%; transform: translateX(-50%); background: radial-gradient(50% 60% at 50% 100%, rgba(0, 194, 170, .3), transparent 70%); filter: blur(30px); pointer-events: none; }
+#b-mt .vis::before { content: ''; position: absolute; left: 50%; bottom: 0; width: 80%; height: 70%; transform: translateX(-50%); background: radial-gradient(50% 60% at 50% 100%, rgba(70, 110, 255, .34), transparent 70%); filter: blur(30px); pointer-events: none; }
+#b-portal .vis .fit { position: relative; box-shadow: 0 -10px 80px rgba(0, 200, 125, .12); }
+#b-mt .vis .seg-l { margin: 0 0 24px; }
+#b-pro .pbar-f, #b-mt .pbar-f { margin-bottom: 18px; }
+#b-portal .vis .fit { max-width: 1080px; margin: 0 auto; }
+#b-portal h3 { max-width: 20ch; }
+.pbar-f { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; font-size: 14.5px; font-weight: 500; color: #cfd5dc; }
+.pbar-f li { display: flex; align-items: center; gap: 9px; }
+.pbar-f li span { width: 22px; height: 22px; border-radius: 50%; background: rgba(0, 194, 124, .16); color: var(--gl2); display: grid; place-items: center; }
+.pbar-f li svg { width: 13px; height: 13px; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- scaled device mock-ups ---------- */
+.fit { position: relative; width: 100%; overflow: hidden; }
+.fit-in { position: absolute; top: 0; left: 0; transform-origin: top left; }
+.ui { color: #e9edf1; font-size: 12px; line-height: 1.35; text-align: left; font-family: var(--font); }
+.ui .up { color: #2fe39a; } .ui .dn { color: #ff6b72; }
+.ui small { color: var(--ui-mut); font-size: 10.5px; }
+.ui .px { border-radius: 5px; padding: 1px 4px; margin: -1px -4px; }
+.ui ul { margin: 0; padding: 0; }
+.ui svg.ic { width: 18px; height: 18px; }
+
+.br { border-radius: 16px 16px 0 0; overflow: hidden; background: var(--ui-bg); border: 1px solid rgba(255, 255, 255, .13); border-bottom: 0; box-shadow: 0 -10px 80px rgba(0, 180, 110, .18), 0 30px 80px rgba(0, 0, 0, .6); }
+.br-bar { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; background: #1a1f26; border-bottom: 1px solid var(--ui-ln); }
+.br-bar i { width: 11px; height: 11px; border-radius: 50%; display: block; background: #3a414b; }
+.br-bar i:nth-child(1) { background: #ff5f57; } .br-bar i:nth-child(2) { background: #febc2e; } .br-bar i:nth-child(3) { background: #28c840; }
+.br-url { flex: 1; max-width: 420px; margin: 0 auto; height: 24px; border-radius: 8px; background: #0f1216; color: #98a2ad; font-size: 11.5px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.br-url svg { width: 12px; height: 12px; }
+.pt { display: grid; grid-template-columns: 56px 252px 1fr 250px; height: 520px; }
+.pt-rail { border-right: 1px solid var(--ui-ln); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0; }
+.pt-rail .mk { width: 32px; height: 32px; border-radius: 9px; background: #fff; color: #000; display: grid; place-items: center; font-weight: 800; font-style: italic; font-size: 12px; margin-bottom: 12px; }
+.pt-rail a { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: var(--ui-mut); }
+.pt-rail a.on { background: rgba(0, 194, 124, .14); color: var(--gl); }
+.pt-wl { border-right: 1px solid var(--ui-ln); padding: 14px 10px; }
+.pt-wl h6 { margin: 0 6px 10px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.pt-tabs { display: flex; gap: 6px; margin: 0 6px 10px; }
+.pt-tabs span { padding: 5px 10px; border-radius: 999px; font-size: 11px; color: var(--ui-mut); background: rgba(255, 255, 255, .04); }
+.pt-tabs span.on { background: #fff; color: #000; font-weight: 600; }
+.pt-wl li, .ap-list li { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: 10px; }
+.pt-wl li.on { background: rgba(255, 255, 255, .06); }
+.pt-wl li { cursor: pointer; transition: background .15s; } .pt-wl li:hover { background: rgba(255, 255, 255, .045); } .pt-wl li.on:hover { background: rgba(255, 255, 255, .08); }
+.pt-ch-h .tf span, .sb, .go-btn { cursor: pointer; } .pt-ch-h .tf span:hover { color: #fff; } .go-btn:hover { filter: brightness(1.08); } .sb:hover { filter: brightness(1.1); }
+.pt-ch-h .nm { min-width: 0; } .pt-ch-h .nm small { display: block; color: var(--ui-mut); }
+.xm-nav a { transition: color .15s, background .15s; } html { scroll-padding-top: 84px; }
+.n { flex: 1; min-width: 0; }
+.n b { display: block; font-size: 12.5px; font-weight: 600; }
+.n small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 96px; }
+.v { text-align: right; display: flex; flex-direction: column; font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 500; }
+.v span:last-child { font-size: 11px; }
+.pt-ch { padding: 14px 16px 0; border-right: 1px solid var(--ui-ln); position: relative; min-width: 0; }
+.pt-ch-h { display: flex; align-items: center; gap: 12px; }
+.pt-ch-h .big { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.pt-ch-h .tf { margin-left: auto; display: flex; gap: 4px; }
+.pt-ch-h .tf span { padding: 4px 8px; border-radius: 7px; font-size: 11px; color: var(--ui-mut); }
+.pt-ch-h .tf span.on { background: rgba(255, 255, 255, .1); color: #fff; }
+.cv { display: block; margin-top: 8px; width: 100%; }
+.reveal-x { clip-path: inset(0 100% 0 0); transition: clip-path 1.8s cubic-bezier(.25, .7, .2, 1); }
+.reveal-x.go { clip-path: inset(0 0 0 0); }
+.pt-sb { position: absolute; left: 16px; top: 74px; display: flex; gap: 8px; }
+.sb { padding: 8px 14px; border-radius: 9px; font-weight: 700; font-size: 12px; display: flex; flex-direction: column; line-height: 1.2; min-width: 92px; }
+.sb small { color: rgba(255, 255, 255, .75); font-weight: 500; font-size: 10px; }
+.sb.sell { background: #e5373f; color: #fff; } .sb.buy { background: #0a9a63; color: #fff; }
+.pt-tk { padding: 14px; }
+.pt-tk .acc { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, .05); margin-bottom: 14px; }
+.pt-tk .acc b { font-size: 14px; font-variant-numeric: tabular-nums; }
+.seg { display: flex; padding: 3px; background: rgba(255, 255, 255, .05); border-radius: 10px; margin-bottom: 14px; }
+.seg span { flex: 1; text-align: center; padding: 6px 0; border-radius: 8px; font-size: 11.5px; color: var(--ui-mut); }
+.seg span.on { background: #262d36; color: #fff; font-weight: 600; }
+.fld { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid var(--ui-ln); border-radius: 10px; margin-bottom: 8px; font-size: 12px; }
+.fld span { color: var(--ui-mut); } .fld b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.pt-tk .sum { margin: 12px 0 14px; display: grid; gap: 6px; font-size: 11.5px; }
+.pt-tk .sum div { display: flex; justify-content: space-between; color: var(--ui-mut); } .pt-tk .sum b { color: #fff; font-weight: 500; }
+.go-btn { display: block; width: 100%; text-align: center; padding: 12px; border-radius: 11px; background: var(--g); color: #fff; font-weight: 600; font-size: 13px; }
+.fit-in.compact .pt { grid-template-columns: 1fr; height: 400px; }
+.fit-in.compact .pt-rail, .fit-in.compact .pt-wl, .fit-in.compact .pt-tk { display: none; }
+.fit-in.compact .pt-ch { border-right: 0; }
+
+/* phones */
+.ph { position: absolute; }
+.ph .phone { width: 260px; padding: 9px; border-radius: 40px; background: #07090b; box-shadow: 0 0 0 1.5px #343a43, 0 40px 80px rgba(0, 0, 0, .55), 0 0 90px rgba(0, 190, 130, .12); }
+.ph .scr { height: 540px; border-radius: 32px; background: #0e1217; color: #fff; }
+.ph .notch { background: #000; }
+.ph .status { padding: 13px 22px 6px; font-size: 11.5px; }
+.ph-f { left: 200px; top: 0; z-index: 2; }
+.ph-b { left: 8px; top: 74px; transform: rotate(-6deg); transform-origin: bottom center; filter: brightness(.82); }
+.ap-h { display: flex; justify-content: space-between; align-items: center; padding: 8px 18px 0; }
+.ap-h small { display: block; } .ap-h b { font-size: 13px; font-weight: 600; }
+.ap-h .bell { width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, .07); display: grid; place-items: center; }
+.ap-bal { padding: 10px 18px 0; } .ap-bal .big { font-size: 28px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.ap-bal .pl { font-size: 11.5px; font-weight: 500; }
+.ap-chart { margin: 4px 0 0; }
+.ap-tabs { display: flex; gap: 6px; padding: 8px 18px 6px; }
+.ap-tabs span { padding: 6px 12px; border-radius: 999px; font-size: 11px; background: rgba(255, 255, 255, .06); color: var(--ui-mut); }
+.ap-tabs span.on { background: #fff; color: #000; font-weight: 600; }
+.ap-list { padding: 2px 10px; }
+.ap-list li { padding: 9px 8px; }
+.ap-list .sp { margin-right: 4px; }
+.ap-nav { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-around; padding: 14px 18px 22px; background: linear-gradient(180deg, transparent, #0e1217 35%); color: var(--ui-mut); }
+.ap-nav svg { width: 22px; height: 22px; } .ap-nav .on { color: var(--gl); }
+.bk-h { display: flex; align-items: center; gap: 10px; padding: 8px 18px 0; }
+.bk-h .ar { width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, .07); display: grid; place-items: center; }
+.bk-h b { font-size: 14px; }
+.bk-p { padding: 12px 18px 0; } .bk-p .big { font-size: 30px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.bk-tf { display: flex; gap: 4px; padding: 6px 14px; } .bk-tf span { padding: 5px 9px; border-radius: 8px; font-size: 10.5px; color: var(--ui-mut); } .bk-tf span.on { background: rgba(255, 255, 255, .1); color: #fff; }
+.fit-in.compact .ph-b { display: none; }
+.fit-in.compact .ph-f { left: 70px; }
+
+/* MetaTrader */
+.mt { background: #0b0e12; border: 1px solid rgba(255, 255, 255, .13); border-bottom: 0; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 -10px 70px rgba(47, 98, 240, .22), 0 30px 70px rgba(0, 0, 0, .6); }
+.mt-t { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; background: #1b2028; font-size: 11px; color: #c4ccd5; }
+.mt-t .lg { width: 14px; height: 14px; border-radius: 3px; background: linear-gradient(135deg, #2f62f0, #00c27c); }
+.mt-t .w { margin-left: auto; display: flex; gap: 10px; opacity: .6; }
+.mt-m { display: flex; gap: 14px; padding: 6px 12px; font-size: 10.5px; color: #8e97a3; background: #151a21; border-bottom: 1px solid var(--ui-ln); }
+.mt-tb { display: flex; gap: 4px; padding: 6px 10px; background: #12161c; border-bottom: 1px solid var(--ui-ln); align-items: center; }
+.mt-tb span { padding: 3px 7px; border-radius: 5px; font-size: 10px; color: #8e97a3; } .mt-tb span.on { background: #2a313b; color: #fff; }
+.mt-tb .bd { margin-left: auto; background: rgba(47, 98, 240, .18); color: #8fb0ff; padding: 3px 9px; border-radius: 999px; }
+.mt-b { display: grid; grid-template-columns: 188px 1fr; height: 232px; }
+.mt-w { border-right: 1px solid var(--ui-ln); font-size: 10.5px; }
+.mt-w .hd, .mt-w .r { display: grid; grid-template-columns: 1.3fr 1fr 1fr; padding: 5px 10px; gap: 4px; font-variant-numeric: tabular-nums; }
+.mt-w .hd { color: #6f7885; background: #12161c; font-size: 10px; }
+.mt-w .r { border-bottom: 1px solid rgba(255, 255, 255, .04); } .mt-w .r b { font-weight: 600; color: #e4e9ee; }
+.mt-c { padding: 6px 4px 0 8px; position: relative; }
+.mt-c .cap { position: absolute; left: 14px; top: 8px; font-size: 10.5px; color: #98a2ad; }
+.mt-tr { border-top: 1px solid var(--ui-ln); font-size: 10.5px; }
+.mt-tr .tabs { display: flex; gap: 14px; padding: 6px 12px; background: #12161c; color: #8e97a3; font-size: 10px; } .mt-tr .tabs .on { color: #fff; }
+.mt-tr .hd, .mt-tr .r { display: grid; grid-template-columns: 1.1fr .8fr .7fr 1fr 1fr; padding: 5px 12px; gap: 4px; font-variant-numeric: tabular-nums; }
+.mt-tr .hd { color: #6f7885; font-size: 10px; } .mt-tr .r { border-top: 1px solid rgba(255, 255, 255, .04); }
+.mt-tr .r:nth-child(odd) { background: rgba(255, 255, 255, .02); }
+.mt-s { padding: 7px 12px; font-size: 10.5px; color: #8e97a3; background: #12161c; border-top: 1px solid var(--ui-ln); display: flex; gap: 18px; font-variant-numeric: tabular-nums; } .mt-s b { color: #e4e9ee; font-weight: 500; }
+.fit-in.compact .mt-b { grid-template-columns: 1fr; } .fit-in.compact .mt-w { display: none; }
+.seg-l { display: inline-flex; padding: 4px; gap: 2px; border-radius: 999px; background: rgba(255, 255, 255, .07); border: 1px solid var(--bd); margin: 18px 0 20px; }
+.seg-l button { border: 0; background: none; color: #aab2bc; padding: 7px 20px; border-radius: 999px; font-weight: 600; font-size: 13px; }
+.seg-l button.on { background: #fff; color: #000; }
+
+/* ---------- promotions ---------- */
+.promo { background: #fff; border: 1px solid var(--line); padding: 52px 40px 26px; }
+.promo::before { background: radial-gradient(60% 50% at 50% 0%, rgba(0, 132, 84, .09), transparent 70%); }
+.promo { color: var(--ink); }
+.promo h3 { color: var(--ink); max-width: 22ch; }
+.promo .sub { color: var(--ink-2); }
+.pg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 34px; width: 100%; text-align: left; }
+.pc { background: #f5f5f5; border-radius: 22px; padding: 10px 10px 22px; display: flex; flex-direction: column; transition: transform .25s, box-shadow .25s, background .25s; }
+.pc:hover { transform: translateY(-6px); box-shadow: 0 24px 50px rgba(16, 24, 40, .12); background: #fff; }
+.pc .tile { border-radius: 16px; aspect-ratio: 3 / 2; overflow: hidden; display: grid; place-items: center; }
+.pc .tile svg { width: 100%; height: 100%; transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+.pc:hover .tile svg { transform: scale(1.06) rotate(-1deg); }
+.pc h4 { font-size: 19px; font-weight: 600; letter-spacing: -.01em; margin: 20px 12px 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.pc h4 .tag { order: -1; }
+.pc p { margin: 8px 12px 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.55; }
+.pc .more { margin: auto 12px 0; padding-top: 18px; color: var(--g); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+.pc .more svg { width: 16px; height: 16px; transition: transform .2s; } .pc:hover .more svg { transform: translateX(4px); }
+.fine { margin-top: 22px; font-size: 12px; color: var(--mut); }
+.t1 { background: linear-gradient(145deg, #063d2b, #0a8658); } .t2 { background: linear-gradient(145deg, #4a2d05, #d08a1e); }
+.t3 { background: linear-gradient(145deg, #14183f, #6a37c9); } .t4 { background: linear-gradient(145deg, #083f48, #14a5a0); }
+
+/* ---------- copy trading + competitions ---------- */
+.cp-stack { display: grid; gap: 12px; padding: 0 0 0; text-align: left; -webkit-mask-image: linear-gradient(180deg, #000 75%, transparent 100%); mask-image: linear-gradient(180deg, #000 75%, transparent 100%); max-height: 430px; overflow: hidden; }
+.cp { background: #12161b; border: 1px solid rgba(255, 255, 255, .09); border-radius: 20px; padding: 16px 18px 16px; box-shadow: 0 16px 40px rgba(0, 0, 0, .35); transition: transform .25s, border-color .25s; }
+.cp:hover { transform: translateY(-3px); border-color: rgba(0, 194, 124, .45); }
+.cp-h { display: flex; align-items: center; gap: 12px; }
+.av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff; flex: none; }
+.cp-h .nm { flex: 1; min-width: 0; } .cp-h .nm b { display: block; font-size: 15px; font-weight: 600; } .cp-h .nm small { color: #8e97a3; font-size: 12px; }
+.btn-cp { padding: 8px 18px; border-radius: 999px; border: 1.5px solid var(--gl); color: var(--gl2); background: transparent; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: .15s; }
+.btn-cp:hover { background: var(--gl); color: #04130c; }
+.btn-cp.on { background: var(--gl); color: #04130c; }
+.btn-cp svg { width: 14px; height: 14px; }
+.cp-m { display: flex; align-items: flex-end; gap: 14px; margin-top: 12px; }
+.cp-m .ret { flex: none; } .cp-m .ret b { display: block; font-size: 26px; font-weight: 600; color: var(--gl2); letter-spacing: -.02em; line-height: 1.1; } .cp-m .ret small { color: #8e97a3; font-size: 11.5px; }
+.cp-m .eq { flex: 1; height: 54px; min-width: 0; }
+.cp-s { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.cp-s span { font-size: 12px; color: #aab2bc; background: rgba(255, 255, 255, .05); padding: 5px 10px; border-radius: 8px; }
+.cp-s span b { color: #fff; font-weight: 600; }
+.dl { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2s cubic-bezier(.3, .6, .2, 1); }
+.go .dl { stroke-dashoffset: 0; }
+.ar-f { opacity: 0; transition: opacity 1.2s .8s; } .go .ar-f { opacity: 1; }
+
+.lb { background: #12161b; border: 1px solid rgba(255, 255, 255, .09); border-radius: 22px; padding: 20px; text-align: left; box-shadow: 0 16px 40px rgba(0, 0, 0, .35); }
+.lb-top { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+.lb-top .cup { width: 64px; height: 64px; flex: none; }
+.lb-top .pz small { display: block; color: #8e97a3; font-size: 12px; }
+.lb-top .pz b { font-size: 34px; font-weight: 700; letter-spacing: -.03em; background: linear-gradient(95deg, #ffe08a, #f5a623); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1.15; display: block; }
+.lb-top .cd { margin-left: auto; text-align: right; font-size: 11.5px; color: #8e97a3; }
+.lb-top .cd b { display: block; font-size: 18px; color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.lbr { display: flex; align-items: center; gap: 12px; padding: 12px 10px; border-radius: 14px; margin-top: 6px; transition: background .2s; }
+.lbr:hover { background: rgba(255, 255, 255, .04); }
+.lbr .rk { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 12.5px; color: #1a1306; flex: none; }
+.rk1 { background: linear-gradient(135deg, #ffe08a, #f5a623); } .rk2 { background: linear-gradient(135deg, #f2f4f7, #aab2bc); } .rk3 { background: linear-gradient(135deg, #f0b27a, #b9692f); }
+.lbr .nm { flex: 1; font-weight: 500; font-size: 14.5px; min-width: 0; } .lbr .nm small { display: block; color: #8e97a3; font-size: 11.5px; }
+.lbr .rt { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--gl2); font-size: 14.5px; }
+.lbr .pr { width: 74px; text-align: right; color: #d6dbe1; font-size: 13px; font-variant-numeric: tabular-nums; }
+.lbr.you { border: 1.5px dashed rgba(255, 255, 255, .18); margin-top: 12px; color: #aab2bc; }
+.lbr.you .rk { background: rgba(255, 255, 255, .1); color: #fff; }
+.lb-wrap { text-align: left; -webkit-mask-image: linear-gradient(180deg, #000 82%, transparent); mask-image: linear-gradient(180deg, #000 82%, transparent); max-height: 430px; overflow: hidden; }
+
+/* ---------- movers widget ---------- */
+.mv { max-width: 1040px; margin: 0 auto; }
+.mv-tabs { display: flex; justify-content: center; margin-bottom: 14px; }
+.mv-tabs .pill-tabs { background: #fff; box-shadow: var(--sh-s); }
+.mv-tabs button { transition: background .15s, color .15s; } .mv-tabs button:hover { color: var(--ink); }
+.mv-card { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 4px 22px 8px; box-shadow: 0 30px 70px rgba(16, 24, 40, .07); }
+.mv-top { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 4px; font-size: 13px; color: var(--mut); }
+.mv-top span { display: inline-flex; align-items: center; gap: 8px; }
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -8px; padding: 0 8px; }
+.mv table { width: 100%; border-collapse: collapse; min-width: 700px; }
+.mv th { text-align: left; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--mut); font-weight: 600; padding: 8px 8px; border-bottom: 1px solid var(--line); }
+.mv th.r, .mv td.r { text-align: right; }
+.mv td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; font-weight: 500; }
+.mv tbody tr { animation: fadeUp .45s both; transition: background .15s; } .mv tbody tr:hover { background: #fafafa; }
+.mv tbody tr:last-child td { border-bottom: 0; }
+.as { display: flex; align-items: center; gap: 14px; }
+.as b { display: block; font-size: 15px; font-weight: 600; } .as small { display: block; color: var(--mut); font-size: 12.5px; font-weight: 400; max-width: 230px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mv .px { padding: 3px 8px; margin: -3px -8px; border-radius: 7px; font-size: 15px; display: inline-block; }
+.chg { display: inline-block; padding: 5px 11px; border-radius: 9px; font-weight: 600; font-size: 13.5px; min-width: 76px; text-align: center; }
+.chg.up { background: rgba(18, 165, 106, .11); } .chg.dn { background: rgba(229, 55, 63, .09); }
+.mv td.sp { width: 130px; } .mv td.sp svg { margin-left: auto; }
+.btn-line { border: 1.5px solid var(--line-2); background: #fff; } .btn-line:hover { border-color: var(--g); color: var(--g); }
+.mv-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--mut); }
+.mv-foot a { color: var(--g); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; } .mv-foot a svg { width: 15px; height: 15px; }
+
+/* ---------- support ---------- */
+.sup { padding: 40px 56px; text-align: left; flex-direction: row; align-items: center; gap: 44px; }
+.sup > div { flex: 1; min-width: 0; }
+.sup h3 { max-width: 14ch; }
+.sup .sub { margin-left: 0; margin-right: 0; }
+.award { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 6px 14px 6px 7px; border-radius: 999px; background: rgba(245, 170, 40, .1); border: 1px solid rgba(245, 170, 40, .3); color: #ffd98a; font-size: 13px; font-weight: 500; }
+.award i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #ffe08a, #f5a623); color: #3b2500; } .award svg { width: 16px; height: 16px; }
+.ss { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 0; margin: 20px 0 18px; }
+.ss div { padding: 0 28px; border-left: 1px solid rgba(255, 255, 255, .12); } .ss div:first-child { padding-left: 0; border-left: 0; }
+.ss b { display: block; font-size: 30px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; } .ss span { color: #8e97a3; font-size: 13px; }
+.langs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.langs span { padding: 6px 13px; border-radius: 999px; background: rgba(255, 255, 255, .06); border: 1px solid var(--bd); font-size: 12.5px; color: #cfd5dc; }
+.chat { position: relative; max-width: 460px; margin-left: auto; width: 100%; }
+.chat::before { content: ''; position: absolute; inset: -40px; z-index: -1; background: radial-gradient(circle at 50% 50%, rgba(0, 194, 124, .22), transparent 65%); }
+.ch-w { background: #fff; color: var(--ink); border-radius: 26px; overflow: hidden; box-shadow: 0 40px 90px rgba(0, 0, 0, .55); }
+.ch-h { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: #0b0d10; color: #fff; }
+.ch-h .a { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #00c27c, #008454); display: grid; place-items: center; } .ch-h .a svg { width: 20px; height: 20px; }
+.ch-h b { display: block; font-size: 15px; } .ch-h small { color: #8e97a3; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
+.ch-b { padding: 14px; height: 250px; display: flex; flex-direction: column; gap: 10px; background: #f7f8f9; overflow: hidden; }
+.msg { max-width: 82%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; animation: fadeUp .35s both; }
+.msg.me { align-self: flex-end; background: var(--g); color: #fff; border-bottom-right-radius: 5px; }
+.msg.ag { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+.msg.ty { display: inline-flex; gap: 4px; padding: 14px; } .msg.ty i { width: 6px; height: 6px; border-radius: 50%; background: #aab2bc; animation: blink 1s infinite; } .msg.ty i:nth-child(2) { animation-delay: .15s; } .msg.ty i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 60%, 100% { opacity: .3; transform: none; } 30% { opacity: 1; transform: translateY(-3px); } }
+.ch-f { padding: 12px 16px; border-top: 1px solid var(--line); display: flex; gap: 10px; align-items: center; color: var(--mut); font-size: 13.5px; }
+.ch-f span { flex: 1; } .ch-f i { width: 34px; height: 34px; border-radius: 50%; background: var(--g); display: grid; place-items: center; color: #fff; } .ch-f svg { width: 16px; height: 16px; }
+.float { position: absolute; padding: 10px 14px; border-radius: 14px; background: rgba(20, 24, 29, .92); border: 1px solid var(--bd); backdrop-filter: blur(10px); font-size: 12px; color: #cfd5dc; box-shadow: 0 16px 40px rgba(0, 0, 0, .45); animation: bob 6s ease-in-out infinite alternate; }
+.float b { display: block; color: #fff; font-size: 15px; } .float.a { left: -38px; bottom: 70px; } .float.b { right: -14px; top: -20px; animation-delay: -3s; }
+
+/* ---------- closing CTA ---------- */
+.cta { margin-top: 20px; padding: 56px 24px; text-align: center; background: linear-gradient(135deg, #005c3b, #00a36a 70%, #14c488); }
+.cta::before { background: radial-gradient(50% 80% at 85% 0%, rgba(255, 255, 255, .22), transparent 70%); }
+.cta::after { content: ''; position: absolute; inset: 0; z-index: -1; background-image: radial-gradient(rgba(255, 255, 255, .14) 1px, transparent 1.2px); background-size: 22px 22px; -webkit-mask-image: linear-gradient(100deg, transparent 30%, #000); mask-image: linear-gradient(100deg, transparent 30%, #000); }
+.cta h3 { font-size: clamp(32px, 4.4vw, 58px); font-weight: 700; letter-spacing: -.03em; line-height: 1.06; max-width: 20ch; margin: 0 auto; }
+.cta p { margin: 16px auto 34px; opacity: .88; font-size: 17px; max-width: 480px; }
+.cta .btn-light { color: #00553a; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) { .fchip { display: none; } .pg { grid-template-columns: repeat(2, 1fr); } .blk.hero { padding-left: 44px; } }
+@media (max-width: 1000px) {
+  .blk.hero { grid-template-columns: 1fr; gap: 0; padding: 0 32px; min-height: 0; }
+  .hc-l { padding: 60px 0 36px; }
+  .hv { width: 100%; max-width: 520px; margin: 0 auto; height: 560px; }
+  .hc.a { left: 0; } .hc.b { right: 0; } .hv .ph-h { margin-left: -154px; }
+  .grid2 { grid-template-columns: 1fr; }
+  .fb .sup { flex-direction: column; align-items: stretch; gap: 48px; padding: 56px 28px; }
+  .chat { margin: 0 auto; } .float.a { left: -10px; }
+  .stats { grid-template-columns: repeat(2, 1fr); row-gap: 28px; } .stat:nth-child(3) { border-left: 0; padding-left: 0; }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 0 16px; } .sec { margin-top: 80px; } .fb #markets { padding-bottom: 80px; } .fb .mv { width: calc(100% - 32px); }
+  .fb .blk, .fb .cta { border-radius: 22px; margin-left: 8px; margin-right: 8px; } .fb .grid2 { margin-left: 8px; margin-right: 8px; } .fb .grid2 .blk { margin-left: 0; margin-right: 0; }
+  .hero { padding: 52px 20px 0; min-height: 0; }
+  .blk.hero { padding: 0 20px; } .hc-l { padding: 44px 0 28px; } .hero-fine { margin-top: 20px; }
+  .hv { height: 500px; } .hv .ph-h { top: 40px; } .hv .ph .scr { height: 560px; }
+  .hc { padding: 9px 12px 9px 9px; gap: 9px; border-radius: 14px; } .hc b { font-size: 12.5px; } .hc small { font-size: 10.5px; } .hc .v .px { font-size: 13px; }
+  .hc.a { top: 72px; left: -6px; } .hc.a .sp { display: none; } .hc.b { top: 250px; right: -6px; } .hc.b .ret { font-size: 16px; } .hc.b small { display: none; } .hc.c { display: none; }
+  .blk { padding: 52px 20px 0; } .fb #platforms .blk { padding-top: 48px; } .fb .promo { padding: 52px 16px 24px; }
+  .blk .vis { padding-top: 36px; }
+  .pg { grid-template-columns: 1fr; margin-top: 40px; }
+  .mv-card { padding: 8px 14px 16px; border-radius: 22px; }
+  .fb .sup { padding: 48px 20px; } .ss div { padding: 0 16px; } .ss b { font-size: 26px; }
+  .ch-b { height: 360px; } .float { display: none; }
+  .cp-m .ret b { font-size: 22px; }
+  .lb-top .pz b { font-size: 28px; } .lb-top .cup { width: 48px; height: 48px; } .lbr .pr { display: none; }
+  .btn-xl { padding: 15px 26px; }
+  .cta { padding: 64px 20px; }
+}
+@media (max-width: 720px) { .mv-tabs button { padding: 9px 13px; white-space: nowrap; font-size: 13px; } .mv-top { flex-wrap: wrap; gap: 2px 12px; } .mv-card { padding: 10px 18px 18px; } }
+@media (max-width: 520px) { .xm-lang, .xm-hdr [data-login] { display: none; } .hf { padding-left: 16px; } .hf svg { display: none; } .seg-l button { padding: 11px 22px; } .mv .btn-sm { min-height: 40px; } }
+</style>
+</head>
+<body>
+<div data-xm-risk></div>
+<div data-xm-header data-variant="light"></div>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <div class="fb">
+    <section class="block blk hero" id="hero" data-idea-block="hero">
+      <div class="hc-l">
+        <span class="kick"><b class="xmk">XM</b><span class="bdg">XMTRADING</span></span>
+        <h1>Every market.<br>One trusted broker.</h1>
+        <p class="sub">Forex, metals, indices, stocks and crypto CFDs on the web, on your phone and on MetaTrader.</p>
+        <div class="hcta" id="heroCta">
+          <a class="btn btn-primary btn-lg btn-xl pill glow-btn" href="#" data-join data-src="direct">Join today</a>
+          <a class="btn btn-glass btn-lg btn-xl pill" href="#" id="dlBtn" aria-haspopup="dialog"><span data-ico="phone"></span>Download the app</a>
+        </div>
+        <div id="heroForm" hidden>
+          <form class="hf" id="hf" novalidate>
+            <span class="sr">Email</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            <input id="hfEmail" type="email" inputmode="email" autocomplete="email" placeholder="Enter your email" aria-label="Email address">
+            <button class="btn btn-primary btn-lg pill glow-btn" type="submit">Sign up</button>
+          </form>
+          <div class="hf-err" id="hfErr" role="alert"></div>
+        </div>
+        <p class="hero-fine">*Illustrative prices and figures for this prototype.</p>
+      </div>
+      <div class="hv ui" data-lazy="hero"></div>
+    </section>
+  <!-- ================= STATS ================= -->
+    <div class="stats" id="stats">
+      <div class="stat reveal"><b><span class="cnt" data-to="1400">1,400</span><i>+</i></b><span>Tradable instruments</span></div>
+      <div class="stat reveal" style="--d:1"><b><span class="cnt" data-to="4">4</span></b><span>Account types</span></div>
+      <div class="stat reveal" style="--d:2"><b><span class="cnt" data-to="3">3</span></b><span>Trading platforms</span></div>
+      <div class="stat reveal" style="--d:3"><b><span class="cnt" data-to="24">24</span><i>/7</i></b><span>Multilingual support</span></div>
+    </div>
+
+    <!-- ================= PLATFORMS ================= -->
+    <section class="sec" id="platforms">
+      <div class="sh reveal">
+        <span class="eyebrow">Our platforms</span>
+        <h2 class="h-l">Trade your way. On the web, on your phone or on desktop.</h2>
+        <nav class="pf-nav" aria-label="Platforms">
+          <a href="#b-portal"><span data-ico="monitor"></span>Web Portal</a>
+          <a href="#b-pro"><span data-ico="phone"></span>Mobile app</a>
+          <a href="#b-mt"><span data-ico="chart"></span>MetaTrader</a>
+        </nav>
+      </div>
+
+      <div class="plat">
+        <article class="block blk v-t reveal" id="b-portal">
+          <span class="kick"><b class="xmk">XM</b><span class="bdg">PORTAL</span></span>
+          <h3>XMTrading Portal</h3>
+          <p class="sub" style="margin-bottom:22px">Trade, fund and manage your account in any browser, with nothing to install.</p>
+          <ul class="pbar-f"><li><span data-ico="check"></span>Charts and one-click orders</li><li><span data-ico="check"></span>Deposits and withdrawals</li><li><span data-ico="check"></span>Copy trading</li></ul>
+          <div class="btn-row"><a class="btn btn-primary btn-lg pill" href="#" data-join data-src="portal">Open the Portal</a><a class="btn btn-glass btn-lg pill" href="#" data-try>Try it without an account</a></div>
+          <div class="vis">
+            <div class="fit" data-cmp="640" data-w="1080" data-wm="520" data-h="440" data-hm="360" data-lazy="portal"><div class="fit-in"></div></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="grid2">
+        <article class="block blk v-t reveal" id="b-pro">
+          <span class="kick"><b class="xmk">XM</b><span class="bdg">TRADER PRO</span></span>
+          <h3>XMTD Trader Pro</h3>
+          <p class="sub">Markets, charts and one-tap trading in your pocket, on iOS and Android.</p>
+          <ul class="pbar-f"><li><span data-ico="check"></span>Live charts and alerts</li><li><span data-ico="check"></span>Biometric login</li></ul>
+          <div class="btn-row"><a class="btn btn-primary btn-lg pill" href="#" data-join data-src="app">Get the app</a><a class="btn btn-glass btn-lg pill" href="#" data-dl><span data-ico="qr"></span>Scan to download</a></div>
+          <div class="vis">
+            <div class="fit" data-cmp="430" data-w="480" data-wm="340" data-h="420" data-hm="420" data-lazy="phones"><div class="fit-in"></div></div>
+          </div>
+        </article>
+
+        <article class="block blk v-b reveal" style="--d:1" id="b-mt">
+          <span class="kick"><b class="xmk">XM</b><span class="bdg">META TRADER</span></span>
+          <h3>MT4 &amp; MT5</h3>
+          <p class="sub" id="mtSub">The industry-standard terminal, connected to your XMTrading account in a click.</p>
+          <ul class="pbar-f"><li><span data-ico="check"></span>Expert Advisors</li><li><span data-ico="check"></span>Windows, Mac and web</li></ul>
+          <div class="btn-row"><a class="btn btn-primary btn-lg pill" href="#" data-join data-src="mt">Download MetaTrader</a><a class="btn btn-glass btn-lg pill" href="#" data-join data-src="mt-demo">Open a demo</a></div>
+          <div class="vis">
+            <div class="seg-l" role="tablist" aria-label="MetaTrader version"><button class="on" data-mt="5" role="tab">MT5</button><button data-mt="4" role="tab">MT4</button></div>
+            <div class="fit" data-cmp="430" data-w="620" data-wm="440" data-h="420" data-hm="400" data-lazy="mt"><div class="fit-in"></div></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= PROMOTIONS ================= -->
+    <section class="sec" id="promotions">
+      <article class="block blk promo reveal">
+        <span class="eyebrow">Promotions</span>
+        <h3 style="margin-top:14px">Rewards that go further.</h3>
+        <p class="sub">Bonuses, loyalty points and referral rewards, built around the way you trade.</p>
+        <a class="btn btn-primary btn-lg pill" href="#" data-join data-src="promo">See all promotions</a>
+
+        <div class="pg">
+          <a class="pc reveal" href="#" data-join data-src="promo" style="--d:0">
+            <div class="tile t1">
+              <svg viewBox="0 0 240 160" aria-hidden="true">
+                <ellipse cx="120" cy="140" rx="74" ry="8" fill="#000" opacity=".25"/>
+                <rect x="78" y="72" width="84" height="64" rx="9" fill="#e8f7ef"/>
+                <rect x="68" y="55" width="104" height="24" rx="8" fill="#fff"/>
+                <rect x="112" y="55" width="16" height="81" fill="#f5c451"/>
+                <path d="M120 55c-6-20-32-22-32-9 0 11 21 11 32 9zM120 55c6-20 32-22 32-9 0 11-21 11-32 9z" fill="none" stroke="#f5c451" stroke-width="5.5" stroke-linejoin="round"/>
+                <ellipse cx="196" cy="134" rx="22" ry="7" fill="#c78a14"/><rect x="174" y="118" width="44" height="16" fill="#f5c451"/><ellipse cx="196" cy="118" rx="22" ry="7" fill="#ffd86b"/>
+                <ellipse cx="196" cy="104" rx="22" ry="7" fill="#c78a14"/><rect x="174" y="90" width="44" height="14" fill="#f5c451"/><ellipse cx="196" cy="90" rx="22" ry="7" fill="#ffd86b"/>
+                <text x="196" y="93.5" text-anchor="middle" font-size="10" font-weight="800" fill="#a66b00">$</text>
+                <rect x="18" y="86" width="50" height="24" rx="12" fill="#00c27c"/><text x="43" y="102.5" text-anchor="middle" font-size="12" font-weight="700" fill="#04130c">+20%</text>
+                <path d="M46 40l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM206 44l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fff" opacity=".9"/>
+              </svg>
+            </div>
+            <h4>Deposit Bonus <span class="tag">Illustrative</span></h4>
+            <p>Add bonus credit to every qualifying deposit and give your trading more room.</p>
+            <span class="more">Learn more <span data-ico="arrow"></span></span>
+          </a>
+
+          <a class="pc reveal" href="#" data-join data-src="promo" data-promo="welcome-13000" style="--d:1">
+            <div class="tile t2">
+              <svg viewBox="0 0 240 160" aria-hidden="true">
+                <defs><mask id="cm"><rect width="240" height="160" fill="#fff"/><circle cx="36" cy="82" r="11" fill="#000"/><circle cx="204" cy="82" r="11" fill="#000"/></mask></defs>
+                <ellipse cx="120" cy="142" rx="80" ry="7" fill="#000" opacity=".22"/>
+                <g transform="rotate(-6 120 82)">
+                  <rect x="30" y="42" width="180" height="80" rx="12" fill="#fff" mask="url(#cm)"/>
+                  <line x1="160" y1="52" x2="160" y2="112" stroke="#d6d9de" stroke-width="2" stroke-dasharray="4 5"/>
+                  <text x="50" y="70" font-size="10" font-weight="600" fill="#7b828b" letter-spacing="1.4">WELCOME BONUS</text>
+                  <text x="50" y="100" font-size="28" font-weight="800" fill="#008454">¥13,000</text>
+                  <circle cx="184" cy="82" r="16" fill="#f5c451"/><path d="m184 72 3.2 6.6 7.2 1-5.2 5 1.2 7.2-6.4-3.4-6.4 3.4 1.2-7.2-5.2-5 7.2-1z" fill="#fff"/>
+                </g>
+                <path d="M30 28l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM212 120l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fff" opacity=".85"/>
+              </svg>
+            </div>
+            <h4>No Deposit Bonus <span class="tag amber">Welcome</span></h4>
+            <p>Try live markets with welcome credit before you add a single yen of your own.</p>
+            <span class="more">Learn more <span data-ico="arrow"></span></span>
+          </a>
+
+          <a class="pc reveal" href="#" data-join data-src="promo" style="--d:2">
+            <div class="tile t3">
+              <svg viewBox="0 0 240 160" aria-hidden="true">
+                <ellipse cx="120" cy="142" rx="86" ry="7" fill="#000" opacity=".25"/>
+                <rect x="40" y="110" width="36" height="26" rx="7" fill="#cd7f32"/>
+                <rect x="82" y="92" width="36" height="44" rx="7" fill="#c0c7d1"/>
+                <rect x="124" y="72" width="36" height="64" rx="7" fill="#f5c451"/>
+                <rect x="166" y="52" width="36" height="84" rx="7" fill="#7de3ff"/>
+                <path d="M58 98 L100 80 L142 60 L184 40" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+                <path d="M184 6l18 7v14c0 10-7 17-18 20-11-3-18-10-18-20V13l18-7z" fill="#fff"/>
+                <path d="m175 27 6 6 11-12" fill="none" stroke="#6a37c9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 48l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#fff" opacity=".85"/>
+              </svg>
+            </div>
+            <h4>Loyalty Program <span class="tag blue">Tiers</span></h4>
+            <p>Earn points on every trade and climb the tiers for better rewards over time.</p>
+            <span class="more">Learn more <span data-ico="arrow"></span></span>
+          </a>
+
+          <a class="pc reveal" href="#" data-join data-src="promo" style="--d:3">
+            <div class="tile t4">
+              <svg viewBox="0 0 240 160" aria-hidden="true">
+                <ellipse cx="120" cy="142" rx="86" ry="7" fill="#000" opacity=".22"/>
+                <path d="M72 88 C 96 14, 144 14, 168 88" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width="2.6" stroke-dasharray="2 8" stroke-linecap="round"/>
+                <circle cx="68" cy="106" r="30" fill="#fff"/><circle cx="68" cy="98" r="10" fill="#0a8a8a"/><path d="M50 128c2-10 9-15 18-15s16 5 18 15" fill="#0a8a8a"/>
+                <circle cx="172" cy="106" r="30" fill="#ffe08a"/><circle cx="172" cy="98" r="10" fill="#8a5a00"/><path d="M154 128c2-10 9-15 18-15s16 5 18 15" fill="#8a5a00"/>
+                <circle cx="120" cy="40" r="17" fill="#f5c451"/><circle cx="120" cy="40" r="12" fill="none" stroke="#c78a14" stroke-width="1.6"/><text x="120" y="45" text-anchor="middle" font-size="14" font-weight="800" fill="#a66b00">$</text>
+                <path d="M200 40l3 8 8 3-8 3-3 8-3-8-8-3 8-3zM28 52l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fff" opacity=".85"/>
+              </svg>
+            </div>
+            <h4>Refer a Friend <span class="tag grey">Rewards</span></h4>
+            <p>Invite friends to XMTrading and get rewarded when they start trading.</p>
+            <span class="more">Learn more <span data-ico="arrow"></span></span>
+          </a>
+        </div>
+        <p class="fine">*Illustrative promotions for this prototype. Real terms, amounts and eligibility vary by region.</p>
+      </article>
+    </section>
+
+    <!-- ================= COPY TRADING + COMPETITIONS ================= -->
+    <section class="sec" id="community">
+      <div class="grid2" style="margin-top:0">
+        <article class="block blk v-c reveal" id="b-copy">
+          <span class="kick"><b class="xmk">XM</b><span class="bdg">COPY TRADING</span></span>
+          <h3>Copy traders who trade like you want to.</h3>
+          <p class="sub">Pick a strategy, set your risk and mirror their trades automatically.</p>
+          <a class="btn btn-primary btn-lg pill" href="#" data-join data-src="copy">Start copying</a>
+          <div class="vis" data-lazy="copy">
+            <div class="cp-stack">
+              <div class="cp"><div class="cp-h"><span class="av" style="background:linear-gradient(135deg,#00c27c,#0a6a46)">NS</span><div class="nm"><b>NorthStar FX</b><small>Forex &middot; Gold &middot; 3 yrs</small></div><button class="btn-cp" data-copy="NorthStar FX"><span data-ico="copy"></span><span class="l">Copy</span></button></div>
+                <div class="cp-m"><div class="ret"><b>+38.4%</b><small>12-month return*</small></div><div class="eq" data-eq="0.016" data-id="a"></div></div>
+                <div class="cp-s"><span>Risk <b>4</b>/10</span><span><b>1,284</b> copiers</span><span>Max DD <b>-6.2%</b></span></div></div>
+              <div class="cp"><div class="cp-h"><span class="av" style="background:linear-gradient(135deg,#f5a623,#b9692f)">KG</span><div class="nm"><b>Kenji Gold</b><small>Metals &middot; Indices &middot; 2 yrs</small></div><button class="btn-cp" data-copy="Kenji Gold"><span data-ico="copy"></span><span class="l">Copy</span></button></div>
+                <div class="cp-m"><div class="ret"><b>+24.1%</b><small>12-month return*</small></div><div class="eq" data-eq="0.011" data-id="b"></div></div>
+                <div class="cp-s"><span>Risk <b>3</b>/10</span><span><b>842</b> copiers</span><span>Max DD <b>-4.1%</b></span></div></div>
+              <div class="cp"><div class="cp-h"><span class="av" style="background:linear-gradient(135deg,#8a3fd1,#4a2a9e)">SH</span><div class="nm"><b>Steady Hands</b><small>Forex majors &middot; 4 yrs</small></div><button class="btn-cp" data-copy="Steady Hands"><span data-ico="copy"></span><span class="l">Copy</span></button></div>
+                <div class="cp-m"><div class="ret"><b>+17.8%</b><small>12-month return*</small></div><div class="eq" data-eq="0.008" data-id="c"></div></div>
+                <div class="cp-s"><span>Risk <b>2</b>/10</span><span><b>2,019</b> copiers</span><span>Max DD <b>-2.9%</b></span></div></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="block blk v-w reveal" style="--d:1" id="b-comp">
+          <span class="kick"><b class="xmk">XM</b><span class="bdg">COMPETITIONS</span></span>
+          <h3>Compete. Climb. Win.</h3>
+          <p class="sub">Join trading competitions and see how you rank against traders around the world.</p>
+          <a class="btn btn-primary btn-lg pill" href="#" data-join data-src="competition">Join a competition</a>
+          <div class="vis lb-wrap">
+            <div class="lb">
+              <div class="lb-top">
+                <svg class="cup" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#f09a1a"/></linearGradient></defs><path d="M18 8h28v16a14 14 0 0 1-28 0V8z" fill="url(#gd)"/><path d="M18 14H8v4a9 9 0 0 0 10 9M46 14h10v4a9 9 0 0 1-10 9" fill="none" stroke="url(#gd)" stroke-width="4" stroke-linecap="round"/><rect x="28" y="38" width="8" height="10" fill="#e8920f"/><rect x="20" y="48" width="24" height="8" rx="3" fill="url(#gd)"/><path d="m32 14 2.4 5 5.4.7-4 3.8 1 5.4-4.8-2.6-4.8 2.6 1-5.4-4-3.8 5.4-.7z" fill="#fff" opacity=".85"/></svg>
+                <div class="pz"><small>Monthly challenge &middot; prize pool*</small><b>$50,000</b></div>
+                <div class="cd">Ends in<b id="cd">12d 04:21:07</b></div>
+              </div>
+              <div class="lbr"><span class="rk rk1">1</span><span class="av" style="width:36px;height:36px;font-size:12px;background:linear-gradient(135deg,#00c27c,#0a6a46)">HK</span><span class="nm">Haruto_K<small>Japan</small></span><span class="rt num" data-lb="182.4">+182.4%</span><span class="pr">$15,000</span></div>
+              <div class="lbr"><span class="rk rk2">2</span><span class="av" style="width:36px;height:36px;font-size:12px;background:linear-gradient(135deg,#2f62f0,#14378f)">ET</span><span class="nm">ElenaTrades<small>Spain</small></span><span class="rt num" data-lb="161.9">+161.9%</span><span class="pr">$8,000</span></div>
+              <div class="lbr"><span class="rk rk3">3</span><span class="av" style="width:36px;height:36px;font-size:12px;background:linear-gradient(135deg,#f5a623,#b9692f)">FN</span><span class="nm">FXNomad<small>Thailand</small></span><span class="rt num" data-lb="147.3">+147.3%</span><span class="pr">$4,000</span></div>
+              <div class="lbr"><span class="rk" style="background:rgba(255,255,255,.1);color:#fff">4</span><span class="av" style="width:36px;height:36px;font-size:12px;background:linear-gradient(135deg,#8a3fd1,#4a2a9e)">MR</span><span class="nm">Mira_R<small>Germany</small></span><span class="rt num" data-lb="131.0">+131.0%</span><span class="pr">$2,000</span></div>
+              <div class="lbr you"><span class="rk">?</span><span class="nm">Your rank<small>Join to start climbing</small></span><span class="rt" style="color:#aab2bc">--</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <p class="fine" style="text-align:center">*Illustrative traders, returns and prizes. Past performance is not a guarantee of future results.</p>
+    </section>
+
+    <!-- ================= MOVERS ================= -->
+    <section class="sec" id="markets">
+      <div class="sh reveal">
+        <span class="eyebrow">Markets</span>
+        <h2 class="h-l">See what's moving right now.</h2>
+        <p class="lead">Top gainers, top losers and the most traded instruments, updated live.</p>
+      </div>
+      <div class="mv reveal">
+        <div class="mv-tabs"><div class="pill-tabs" role="tablist" id="mvTabs">
+          <button class="on" data-tab="gain" role="tab">Top gainers</button><button data-tab="loss" role="tab">Top losers</button><button data-tab="vol" role="tab">Most traded</button>
+        </div></div>
+        <div class="mv-card">
+          <div class="mv-top"><span><span class="dot live"></span> Live prices</span><span>Simulated data &middot; one lightweight feed</span></div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Asset</th><th class="r">Price</th><th class="r">24h change</th><th class="r">Last 24h</th><th class="r"><span class="sr">Action</span></th></tr></thead>
+              <tbody id="mvBody"></tbody>
+            </table>
+          </div>
+          <div class="mv-foot"><span>Prices are illustrative and for demonstration only.</span><a href="#" data-join data-src="markets">View all 1,400+ instruments <span data-ico="arrow"></span></a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SUPPORT ================= -->
+    <section class="sec" id="support">
+      <article class="block blk v-w sup reveal" id="b-support">
+        <div>
+          <span class="award"><i data-ico="trophy"></i> Award-winning support team</span>
+          <h3>Support that's there when you trade.</h3>
+          <p class="sub">Real people, in your language, around the clock. Ask about anything from funding to platforms.</p>
+          <div class="ss">
+            <div><b>24/7</b><span>Always on</span></div>
+            <div><b>20+</b><span>Languages</span></div>
+            <div><b>~1 min</b><span>Typical chat reply*</span></div>
+          </div>
+          <a class="btn btn-primary btn-lg pill" href="#" data-join data-src="support">Talk to support</a>
+          <div class="langs"><span>English</span><span>日本語</span><span>Español</span><span>Deutsch</span><span>Português</span><span>中文</span><span>العربية</span><span>+ more</span></div>
+        </div>
+        <div>
+          <div class="chat" data-lazy="chat">
+            <div class="ch-w">
+              <div class="ch-h"><span class="a" data-ico="headset"></span><div><b>XM Support</b><small><span class="dot"></span> Online now</small></div></div>
+              <div class="ch-b" id="chatBody" aria-live="polite"></div>
+              <div class="ch-f"><span>Type your message&hellip;</span><i data-ico="arrow"></i></div>
+            </div>
+            <div class="float a"><b>EN &middot; JA &middot; ES</b>Switch language any time</div>
+            <div class="float b"><b>~1 min</b>typical reply*</div>
+          </div>
+        </div>
+      </article>
+      <p class="fine" style="text-align:center">*Illustrative figures for this prototype.</p>
+    </section>
+
+    <!-- ================= CLOSING CTA ================= -->
+    <section>
+      <article class="block cta reveal">
+        <h3>Ready to trade with a broker you can trust?</h3>
+        <p>Open a free account in minutes and explore every platform with a demo.</p>
+        <div class="hero-cta" style="animation:none;margin:0">
+          <a class="btn btn-light btn-lg btn-xl pill" href="#" data-join data-src="footer-cta">Join today</a>
+          <a class="btn btn-lg btn-xl pill" href="#" data-try style="background:rgba(0,0,0,.2);color:#fff;border-color:rgba(255,255,255,.35)">Try the platform</a>
+        </div>
+      </article>
+    </section>
+  </div>
+</main>
+
+<dialog class="dl" id="dl" aria-labelledby="dlT">
+  <div class="dl-c">
+    <button class="dl-x" type="button" id="dlX" aria-label="Close"><span class="i" data-ico="close"></span></button>
+    <div class="dl-l">
+      <span class="kick"><b class="xmk">XM</b><span class="bdg">TRADER PRO</span></span>
+      <h3 id="dlT">Get the XMTD Trader Pro app</h3>
+      <p>Markets, charts and one-tap trading on iOS and Android. Sign in with your XMTrading account.</p>
+      <div class="dl-st">
+        <a href="#" class="stb" data-store="App Store"><span class="i" data-ico="phone"></span><span class="t"><small>Download on the</small>App Store</span></a>
+        <a href="#" class="stb" data-store="Google Play"><span class="i" data-ico="play"></span><span class="t"><small>Get it on</small>Google Play</span></a>
+      </div>
+    </div>
+    <div class="dl-r">
+      <div class="dl-qr" id="dlQr"></div>
+      <b>Scan to download</b>
+      <small>Point your phone camera at the code.</small>
+    </div>
+  </div>
+</dialog>
+
+
+<div data-xm-footer></div>
+
+<script src="../../assets/js/common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  var $ = XM.$, $$ = XM.$$, I = XM.INSTR, esc = XM.esc;
+  var JOIN = XM.url('ideas/02-hero-email/register.html');
+  var TRY = XM.url('ideas/09-try/index.html');
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function ico(root) { $$('[data-ico]', root).forEach(function (e) { var n = e.getAttribute('data-ico'); e.removeAttribute('data-ico'); e.innerHTML = XM.icon(n, 'w16'); if (e.tagName === 'SPAN' && !e.className) { e.style.display = 'inline-flex'; e.style.width = '16px'; e.style.height = '16px'; } }); }
+  function links(root) {
+    $$('[data-join]', root).forEach(function (a) { a.href = JOIN + '?src=' + (a.getAttribute('data-src') === 'direct' ? 'direct' : 'organic') + (a.getAttribute('data-promo') ? '&promo=' + a.getAttribute('data-promo') : ''); });
+    $$('[data-try]', root).forEach(function (a) { a.href = TRY; });
+  }
+
+  /* ---------------- hero: Download the app dialog (QR + store buttons) ---------------- */
+  (function () {
+    var dlg = $('#dl'), btns = $$('[data-dl], #dlBtn'), N = 29;
+    function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+    function rng(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    function qr(str) {
+      var m = [], r = [], i, j, R = rng(hash(str));
+      for (i = 0; i < N; i++) { m.push(new Array(N).fill(0)); r.push(new Array(N).fill(0)); }
+      function finder(x, y) {
+        for (var dy = -1; dy <= 7; dy++) for (var dx = -1; dx <= 7; dx++) {
+          var X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= N || Y >= N) continue;
+          r[Y][X] = 1;
+          var in7 = dx >= 0 && dx <= 6 && dy >= 0 && dy <= 6;
+          m[Y][X] = in7 && (dx === 0 || dx === 6 || dy === 0 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4)) ? 1 : 0;
+        }
+      }
+      finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
+      for (i = 8; i < N - 8; i++) { m[6][i] = m[i][6] = i % 2 === 0 ? 1 : 0; r[6][i] = r[i][6] = 1; }
+      for (i = 0; i < 9; i++) { r[8][i] = r[i][8] = 1; if (i < 8) { r[8][N - 1 - i] = 1; r[N - 1 - i][8] = 1; } }
+      var c = (N - 1) / 2;
+      for (j = 0; j < N; j++) for (i = 0; i < N; i++) {
+        if (Math.abs(i - c) <= 3 && Math.abs(j - c) <= 3) { m[j][i] = 0; continue; }
+        if (!r[j][i]) m[j][i] = R() < .5 ? 1 : 0;
+      }
+      var d = '';
+      for (j = 0; j < N; j++) for (i = 0; i < N; i++) if (m[j][i]) d += 'M' + (i + 2) + ' ' + (j + 2) + 'h1v1h-1z';
+      var lg = N / 2 + 2 - 2.6;
+      return '<svg viewBox="0 0 ' + (N + 4) + ' ' + (N + 4) + '" shape-rendering="crispEdges" role="img" aria-label="QR code to download the XMTD Trader Pro app"><rect width="' + (N + 4) + '" height="' + (N + 4) + '" fill="#fff"/><path d="' + d + '" fill="#0b0d10"/>' +
+        '<rect x="' + lg + '" y="' + lg + '" width="5.2" height="5.2" rx="1.2" fill="#0b0d10"/><text x="' + (N / 2 + 2) + '" y="' + (N / 2 + 3.15) + '" text-anchor="middle" font-family="Poppins,Arial" font-weight="800" font-style="italic" font-size="2.9" fill="#fff" shape-rendering="auto">XM</text></svg>';
+    }
+    if (!dlg || !btns.length) return;
+    $('#dlQr').innerHTML = qr('xmtd-trader-pro:get-app');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+      });
+    });
+    $('#dlX').addEventListener('click', function () { dlg.close(); });
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+    $$('.stb', dlg).forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); XM.toast('Prototype: this would open the ' + a.getAttribute('data-store') + ' listing.'); });
+    });
+  })();
+
+  /* ---------------- hero variant: ?hero=email ---------------- */
+  if (XM.qs('hero') === 'email') {
+    $('#heroCta').hidden = true; $('#heroForm').hidden = false;
+    var f = $('#hf'), inp = $('#hfEmail'), er = $('#hfErr');
+    var pre = (XM.flow.get() || {}).email; if (pre) inp.value = pre;
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = inp.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { f.classList.remove('err'); void f.offsetWidth; f.classList.add('err'); er.textContent = 'Please enter a valid email address.'; inp.focus(); return; }
+      XM.flow.set({ email: v, src: 'organic' });
+      location.href = JOIN + '?email=' + encodeURIComponent(v) + '&src=organic';
+    });
+    inp.addEventListener('input', function () { f.classList.remove('err'); er.textContent = ''; });
+  }
+
+  /* ---------------- price engine: one feed drives every widget ---------------- */
+  var VOL = { Forex: .00035, Metals: .0007, Indices: .0006, Energies: .0009, Stocks: .0011, Crypto: .0014 };
+  var S = {}, subs = {};
+  function bridge(open, close, n, vol) {
+    var a = [], w = 0, i, t;
+    for (i = 0; i < n; i++) { t = i / (n - 1); w = w * .78 + (Math.random() - .5) * vol * open * 5; a.push(open + (close - open) * t + w * Math.sin(Math.PI * t)); }
+    a[n - 1] = close; return a;
+  }
+  I.forEach(function (i) { var open = i.p / (1 + i.chg / 100); S[i.s] = { i: i, p: i.p, open: open, h: bridge(open, i.p, 40, VOL[i.cls] || .0008) }; });
+  function chgOf(s) { return (s.p / s.open - 1) * 100; }
+  function fmtChg(c) { return (c >= 0 ? '+' : '-') + Math.abs(c).toFixed(2) + '%'; }
+  function sub(sym, fn) { (subs[sym] = subs[sym] || []).push(fn); }
+  function flash(e, dir) {
+    if (RM || !e.animate) return;
+    e.animate([{ backgroundColor: dir > 0 ? 'rgba(18,200,130,.28)' : 'rgba(240,84,91,.26)' }], { duration: 900, easing: 'ease-out' });
+  }
+  function spark(e) {
+    var s = S[e.getAttribute('data-sp')], dk = e.getAttribute('data-dk');
+    var c = chgOf(s) >= 0;
+    e.innerHTML = XM.sparkline(s.h.slice(-34), +e.getAttribute('data-w') || 110, +e.getAttribute('data-h') || 34, dk ? (c ? '#2fe39a' : '#ff6b72') : (c ? '#12a56a' : '#e5373f'));
+  }
+  function initSp(root) { $$('[data-sp]', root).forEach(spark); }
+  function paint(sym, dir) {
+    var s = S[sym];
+    $$('[data-px="' + sym + '"]').forEach(function (e) { e.textContent = XM.fmt(s.p + (+e.getAttribute('data-off') || 0), s.i.d); flash(e, dir); });
+    var c = chgOf(s);
+    $$('[data-chg="' + sym + '"]').forEach(function (e) { e.textContent = fmtChg(c); e.classList.toggle('up', c >= 0); e.classList.toggle('dn', c < 0); });
+    $$('[data-sp="' + sym + '"]').forEach(spark);
+    (subs[sym] || []).forEach(function (fn) { fn(s.p, dir); });
+  }
+  var FEAT = ['GOLD', 'EURUSD'];
+  function tick() {
+    if (document.hidden) return;
+    var syms = FEAT.slice(), k;
+    for (k = 0; k < 5; k++) { var q = I[Math.floor(Math.random() * I.length)].s; if (syms.indexOf(q) < 0) syms.push(q); }
+    syms.forEach(function (sym) {
+      var s = S[sym], d = (Math.random() - .48) * 2 * (VOL[s.i.cls] || .0008) * 1.3, old = s.p;
+      s.p = old * (1 + d); s.h.push(s.p); s.h.shift();
+      paint(sym, s.p >= old ? 1 : -1);
+    });
+  }
+  setInterval(tick, 1100);
+
+  /* ---------------- chart helpers ---------------- */
+  function Candles(svg, w, h, o) {
+    var n = o.n, vol = o.vol, axis = o.axis || 56, self = this, data = [], p = 1, i, ticks = 0;
+    for (i = 0; i < n; i++) {
+      var op = p, cl = op * (1 + (Math.random() - .5) * 2 * vol + Math.sin(i / 7) * vol * .5);
+      data.push({ o: op, c: cl, h: Math.max(op, cl) * (1 + Math.random() * vol * .7), l: Math.min(op, cl) * (1 - Math.random() * vol * .7), v: .2 + Math.random() * .8 });
+      p = cl;
+    }
+    var k = o.price / p; data.forEach(function (x) { x.o *= k; x.c *= k; x.h *= k; x.l *= k; });
+    this.render = function () {
+      var top = 12, ph = h * .8 - top, vh = h * .13, min = Infinity, max = -Infinity, s = '', g, j;
+      data.forEach(function (x) { if (x.l < min) min = x.l; if (x.h > max) max = x.h; });
+      var pad = (max - min) * .08; min -= pad; max += pad;
+      var y = function (v) { return top + (max - v) / (max - min) * ph; };
+      var cw = (w - axis) / n, bw = Math.max(2, cw * .62);
+      for (g = 0; g <= 4; g++) {
+        var gv = max - (max - min) * g / 4, gy = top + ph * g / 4;
+        s += '<line x1="0" x2="' + (w - axis) + '" y1="' + gy.toFixed(1) + '" y2="' + gy.toFixed(1) + '" stroke="rgba(255,255,255,.06)"/><text x="' + (w - axis + 8) + '" y="' + (gy + 3.5).toFixed(1) + '" fill="#6f7885" font-size="10" font-family="Poppins,Inter,sans-serif">' + XM.fmt(gv, o.d) + '</text>';
+      }
+      data.forEach(function (x, j) {
+        var cx = j * cw + cw / 2, up = x.c >= x.o, vv = x.v * vh;
+        s += '<rect x="' + (cx - bw / 2).toFixed(1) + '" y="' + (h - 6 - vv).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + vv.toFixed(1) + '" fill="' + (up ? o.upA : o.dnA) + '"/>';
+      });
+      data.forEach(function (x, j) {
+        var cx = j * cw + cw / 2, up = x.c >= x.o, col = up ? o.up : o.dn, yo = y(x.o), yc = y(x.c);
+        s += '<line x1="' + cx.toFixed(1) + '" x2="' + cx.toFixed(1) + '" y1="' + y(x.h).toFixed(1) + '" y2="' + y(x.l).toFixed(1) + '" stroke="' + col + '"/><rect x="' + (cx - bw / 2).toFixed(1) + '" y="' + Math.min(yo, yc).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(1.4, Math.abs(yc - yo)).toFixed(1) + '" rx="1" fill="' + col + '"/>';
+      });
+      var pts = [], per = o.ma || 10;
+      for (j = per - 1; j < n; j++) { var sm = 0, q; for (q = 0; q < per; q++) sm += data[j - q].c; pts.push((j * cw + cw / 2).toFixed(1) + ',' + y(sm / per).toFixed(1)); }
+      s += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + (o.maC || '#f5a623') + '" stroke-width="1.5" stroke-linejoin="round" opacity=".9"/>';
+      var L = data[n - 1], ly = y(L.c), col2 = L.c >= L.o ? o.up : o.dn;
+      s += '<line x1="0" x2="' + (w - axis) + '" y1="' + ly.toFixed(1) + '" y2="' + ly.toFixed(1) + '" stroke="' + col2 + '" stroke-dasharray="3 3" opacity=".85"/><rect x="' + (w - axis + 2) + '" y="' + (ly - 9).toFixed(1) + '" width="' + (axis - 2) + '" height="18" rx="4" fill="' + col2 + '"/><text x="' + (w - axis + 7) + '" y="' + (ly + 3.5).toFixed(1) + '" fill="#fff" font-size="10" font-weight="600" font-family="Poppins,Inter,sans-serif">' + XM.fmt(L.c, o.d) + '</text>';
+      svg.innerHTML = s;
+    };
+    this.update = function (px) {
+      var L = data[n - 1]; L.c = px; if (px > L.h) L.h = px; if (px < L.l) L.l = px; L.v = Math.min(1, L.v + .02);
+      if (++ticks % 10 === 0) { data.shift(); data.push({ o: px, c: px, h: px, l: px, v: .2 }); }
+      self.render();
+    };
+    this.render();
+  }
+  function area(vals, w, h, col, id, o) {
+    o = o || {};
+    var mn = Math.min.apply(0, vals), mx = Math.max.apply(0, vals), rg = (mx - mn) || 1, pad = o.pad == null ? 6 : o.pad;
+    var pts = vals.map(function (v, i) { return [i / (vals.length - 1) * w, pad + (1 - (v - mn) / rg) * (h - pad * 2)]; });
+    var d = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join('');
+    var last = pts[pts.length - 1];
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + (o.fixed ? w : '100%') + '" height="' + h + '" preserveAspectRatio="none"><defs><linearGradient id="ag' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".32"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs><path class="ar-f" d="' + d + 'L' + w + ' ' + h + 'L0 ' + h + 'Z" fill="url(#ag' + id + ')"/><path class="dl" pathLength="1" d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>' + (o.dot ? '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="3.5" fill="' + col + '"/><circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="8" fill="' + col + '" opacity=".25"/>' : '') + '</svg>';
+  }
+  function go(el) { requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.add('go'); }); }); }
+  var UP = '#12c882', DN = '#f0545b';
+
+  /* ---------------- lazy visuals (drawn when within 300px of the viewport) ---------------- */
+  var lazy = {};
+
+  lazy.portal = function (el) {
+    var inn = el.firstElementChild, wl = ['EURUSD', 'GOLD', 'BTCUSD', 'US100Cash', 'USDJPY', 'TSLA', 'NVDA'].map(function (sym) {
+      var s = S[sym], i = s.i, c = chgOf(s);
+      return '<li class="' + (sym === 'GOLD' ? 'on' : '') + '">' + XM.logoChip(i, 30) + '<div class="n"><b>' + esc(sym.replace('Cash', '')) + '</b><small>' + esc(i.n) + '</small></div><div class="v"><span class="px" data-px="' + sym + '">' + XM.fmt(s.p, i.d) + '</span><span class="' + (c >= 0 ? 'up' : 'dn') + '" data-chg="' + sym + '">' + fmtChg(c) + '</span></div></li>';
+    }).join('');
+    var g = S.GOLD;
+    inn.classList.add('ui');
+    inn.innerHTML = '<div class="br"><div class="br-bar"><i></i><i></i><i></i><div class="br-url" id="ptUrl">' + XM.icon('lock') + 'my.xmtrading.com/trade/GOLD</div></div><div class="pt">' +
+      '<aside class="pt-rail"><span class="mk">XM</span><a class="on">' + XM.icon('chart', 'ic') + '</a><a>' + XM.icon('wallet', 'ic') + '</a><a>' + XM.icon('copy', 'ic') + '</a><a>' + XM.icon('book', 'ic') + '</a><a>' + XM.icon('bell', 'ic') + '</a></aside>' +
+      '<aside class="pt-wl"><h6>Watchlist <span style="color:var(--ui-mut);font-weight:400">' + XM.icon('search', 'ic') + '</span></h6><div class="pt-tabs"><span class="on">Popular</span><span>Forex</span><span>Stocks</span></div><ul id="ptWl">' + wl + '</ul></aside>' +
+      '<section class="pt-ch"><div class="pt-ch-h" id="ptHead"></div>' +
+      '<svg class="cv reveal-x" id="ptc" width="524" height="372" viewBox="0 0 524 372"></svg>' +
+      '<div class="pt-sb" id="ptSb"></div></section>' +
+      '<aside class="pt-tk"><div class="acc"><span><small>Real account</small><br><b>$75,250.40</b></span><span class="tag" style="font-size:10.5px">Verified</span></div><div class="seg"><span class="on">Market</span><span>Limit</span><span>Stop</span></div>' +
+      '<div class="fld"><span>Volume (lots)</span><b>0.10</b></div><div class="fld"><span>Take profit</span><b id="ptTp"></b></div><div class="fld"><span>Stop loss</span><b id="ptSl"></b></div>' +
+      '<div class="sum"><div>Est. margin<b>$81.10</b></div><div>Spread<b id="ptSp"></b></div></div><span class="go-btn" id="ptGo">Enter trade</span></aside></div></div>';
+    var cv = $('#ptc', inn), cur = 'GOLD', tf = '1H', cd;
+    var TFV = { '1m': .45, '15m': .8, '1H': 1, '4H': 1.7, '1D': 2.6 };
+    function head(sym) {
+      var s = S[sym], i = s.i, c = chgOf(s), a = i.d;
+      $('#ptHead', inn).innerHTML = XM.logoChip(i, 34) + '<div class="nm"><b style="font-size:14px">' + esc(sym.replace('Cash', '')) + '</b><small>' + esc(i.cls) + '</small></div><div style="margin-left:14px"><span class="big px" data-px="' + sym + '">' + XM.fmt(s.p, a) + '</span> <span class="' + (c >= 0 ? 'up' : 'dn') + '" data-chg="' + sym + '" style="font-weight:500">' + fmtChg(c) + '</span></div><div class="tf">' + ['1m', '15m', '1H', '4H', '1D'].map(function (t) { return '<span' + (t === tf ? ' class="on"' : '') + '>' + t + '</span>'; }).join('') + '</div>';
+      $('#ptSb', inn).innerHTML = '<div class="sb sell">SELL<small class="px num" data-px="' + sym + '" data-off="' + (-i.sp / 2) + '">0</small></div><div class="sb buy">BUY<small class="px num" data-px="' + sym + '" data-off="' + (i.sp / 2) + '">0</small></div>';
+      $('#ptTp', inn).textContent = XM.fmt(s.p * 1.009, a); $('#ptSl', inn).textContent = XM.fmt(s.p * .9925, a); $('#ptSp', inn).textContent = String(i.sp);
+      $('#ptUrl', inn).innerHTML = XM.icon('lock') + 'my.xmtrading.com/trade/' + esc(sym);
+      paint(sym, 1);
+    }
+    function chart(sym) { var s = S[sym]; cd = new Candles(cv, 524, 372, { n: 54, vol: (VOL[s.i.cls] || .0008) * 2.3 * (TFV[tf] || 1), price: s.p, d: s.i.d, up: UP, dn: DN, upA: 'rgba(18,200,130,.25)', dnA: 'rgba(240,84,91,.25)' }); }
+    function pickSym(sym) {
+      if (sym === cur) return; cur = sym; if (FEAT.indexOf(sym) < 0) FEAT.push(sym);
+      $$('#ptWl li', inn).forEach(function (li) { li.classList.toggle('on', li.getAttribute('data-sym') === sym); });
+      head(sym); chart(sym);
+    }
+    $$('#ptWl li', inn).forEach(function (li) { var sym = li.querySelector('[data-px]').getAttribute('data-px'); li.setAttribute('data-sym', sym); li.setAttribute('tabindex', '0'); li.setAttribute('role', 'button'); });
+    inn.addEventListener('click', function (e) {
+      var li = e.target.closest('#ptWl li'), t = e.target.closest('.tf span');
+      if (li) { pickSym(li.getAttribute('data-sym')); return; }
+      if (t) { tf = t.textContent; $$('.tf span', inn).forEach(function (x) { x.classList.toggle('on', x === t); }); chart(cur); return; }
+      if (e.target.closest('.sb, #ptGo')) XM.toast('Demo only. Join today to place real orders.');
+    });
+    inn.addEventListener('keydown', function (e) { var li = e.target.closest && e.target.closest('#ptWl li'); if (li && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickSym(li.getAttribute('data-sym')); } });
+    head('GOLD'); chart('GOLD');
+    ['EURUSD', 'GOLD', 'BTCUSD', 'US100Cash', 'USDJPY', 'TSLA', 'NVDA'].forEach(function (sym) { sub(sym, function (p) { if (sym === cur) cd.update(p); }); });
+    go(cv);
+    fitAll();
+  };
+
+  lazy.hero = function (el) {
+    var rows = ['EURUSD', 'BTCUSD', 'NVDA', 'US100Cash'].map(function (sym) {
+      var s = S[sym], i = s.i, c = chgOf(s);
+      return '<li>' + XM.logoChip(i, 34) + '<div class="n"><b>' + esc(sym.replace('Cash', '')) + '</b><small>' + esc(i.n) + '</small></div><span class="sp" data-sp="' + sym + '" data-w="56" data-h="24" data-dk="1"></span><div class="v"><span class="px" data-px="' + sym + '">' + XM.fmt(s.p, i.d) + '</span><span class="' + (c >= 0 ? 'up' : 'dn') + '" data-chg="' + sym + '">' + fmtChg(c) + '</span></div></li>';
+    }).join('');
+    var g = S.GOLD, gc = chgOf(g), bal = XM.series(30, 100, .012, .006);
+    var sb = '<span>9:41</span><span style="display:flex;gap:5px;align-items:center"><svg width="16" height="10" viewBox="0 0 16 10" fill="#fff"><rect x="0" y="6" width="3" height="4" rx=".6"/><rect x="4.4" y="4" width="3" height="6" rx=".6"/><rect x="8.8" y="2" width="3" height="8" rx=".6"/><rect x="13" y="0" width="3" height="10" rx=".6" opacity=".4"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="#fff" stroke-opacity=".8"><rect x=".5" y=".5" width="18" height="9" rx="2.5"/><rect x="2" y="2" width="12" height="6" rx="1.2" fill="#fff" stroke="none"/></svg></span>';
+    el.innerHTML =
+      '<div class="ph ph-h"><div class="phone"><span class="notch"></span><div class="scr"><div class="status">' + sb + '</div>' +
+      '<div class="ap-h"><div><small>Good evening</small><b>Your portfolio</b></div><span class="bell">' + XM.icon('bell', 'ic').replace('<svg ', '<svg style="width:16px;height:16px" ') + '</span></div>' +
+      '<div class="ap-bal"><span class="big">$75,250<span style="font-size:18px;color:var(--ui-mut)">.40</span></span><br><span class="pl up">+$1,820.15 (2.48%) today</span></div>' +
+      '<div class="ap-chart" id="hapc"></div><div class="ap-tabs"><span class="on">Popular</span><span>Forex</span><span>Stocks</span></div><ul class="ap-list">' + rows + '</ul></div></div></div>' +
+      '<div class="hc a">' + XM.logoChip(g.i, 36) + '<div><b>Gold</b><small>GOLD</small></div><span class="sp" data-sp="GOLD" data-w="60" data-h="26" data-dk="1"></span><div class="v"><span class="px" data-px="GOLD">' + XM.fmt(g.p, 2) + '</span><span class="' + (gc >= 0 ? 'up' : 'dn') + '" data-chg="GOLD">' + fmtChg(gc) + '</span></div></div>' +
+      '<div class="hc b"><span class="av" style="background:linear-gradient(135deg,#00c27c,#0a6a46)">NS</span><div><b>NorthStar FX</b><small>Copy trader*</small></div><div class="ret">+38.4%</div></div>' +
+      '<div class="hc c"><span class="gf">' + XM.icon('gift') + '</span><div><b>Welcome bonus*</b><small>Try live markets with credit</small></div></div>';
+    $('#hapc', el).innerHTML = area(bal, 272, 80, '#2fe39a', 'h1', { fixed: true, pad: 8 });
+    go($('#hapc', el)); initSp(el);
+  };
+
+  lazy.phones = function (el) {
+    var inn = el.firstElementChild;
+    var rows = ['EURUSD', 'GOLD', 'BTCUSD', 'NVDA'].map(function (sym) {
+      var s = S[sym], i = s.i, c = chgOf(s);
+      return '<li>' + XM.logoChip(i, 32) + '<div class="n"><b>' + sym + '</b><small>' + esc(i.n) + '</small></div><span class="sp" data-sp="' + sym + '" data-w="52" data-h="22" data-dk="1"></span><div class="v"><span class="px" data-px="' + sym + '">' + XM.fmt(s.p, i.d) + '</span><span class="' + (c >= 0 ? 'up' : 'dn') + '" data-chg="' + sym + '">' + fmtChg(c) + '</span></div></li>';
+    }).join('');
+    var bal = XM.series(30, 100, .012, .006);
+    var e = S.EURUSD, ec = chgOf(e);
+    var nav = XM.icon('home') + XM.icon('chart') + XM.icon('copy') + XM.icon('wallet');
+    var sb = '<span>9:41</span><span style="display:flex;gap:5px;align-items:center"><svg width="16" height="10" viewBox="0 0 16 10" fill="#fff"><rect x="0" y="6" width="3" height="4" rx=".6"/><rect x="4.4" y="4" width="3" height="6" rx=".6"/><rect x="8.8" y="2" width="3" height="8" rx=".6"/><rect x="13" y="0" width="3" height="10" rx=".6" opacity=".4"/></svg><svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="#fff" stroke-opacity=".8"><rect x=".5" y=".5" width="18" height="9" rx="2.5"/><rect x="2" y="2" width="12" height="6" rx="1.2" fill="#fff" stroke="none"/></svg></span>';
+    inn.classList.add('ui');
+    inn.style.height = '560px';
+    inn.innerHTML =
+      '<div class="ph ph-b"><div class="phone"><span class="notch"></span><div class="scr"><div class="status">' + sb + '</div>' +
+      '<div class="bk-h"><span class="ar">' + XM.icon('arrow', 'ic').replace('<svg ', '<svg style="transform:rotate(180deg);width:16px;height:16px" ') + '</span><div style="flex:1"><b>EUR/USD</b><br><small>Euro vs US Dollar</small></div><span class="ar">' + XM.icon('star', 'ic').replace('<svg ', '<svg style="width:15px;height:15px" ') + '</span></div>' +
+      '<div class="bk-p"><span class="big px" data-px="EURUSD">' + XM.fmt(e.p, 5) + '</span><br><span class="' + (ec >= 0 ? 'up' : 'dn') + '" data-chg="EURUSD" style="font-weight:500">' + fmtChg(ec) + '</span> <small>today</small></div>' +
+      '<div id="bkc" style="margin-top:8px"></div><div class="bk-tf"><span>1H</span><span class="on">1D</span><span>1W</span><span>1M</span><span>1Y</span></div>' +
+      '<div style="display:flex;gap:10px;padding:10px 18px"><span class="sb sell" style="flex:1;align-items:center;min-width:0">SELL<small class="px num" data-px="EURUSD" data-off="-0.00003">0</small></span><span class="sb buy" style="flex:1;align-items:center;min-width:0">BUY<small class="px num" data-px="EURUSD" data-off="0.00003">0</small></span></div></div></div></div>' +
+      '<div class="ph ph-f"><div class="phone"><span class="notch"></span><div class="scr"><div class="status">' + sb + '</div>' +
+      '<div class="ap-h"><div><small>Good evening</small><b>Your portfolio</b></div><span class="bell">' + XM.icon('bell', 'ic').replace('<svg ', '<svg style="width:16px;height:16px" ') + '</span></div>' +
+      '<div class="ap-bal"><span class="big">$75,250<span style="font-size:18px;color:var(--ui-mut)">.40</span></span><br><span class="pl up">+$1,820.15 (2.48%) today</span></div>' +
+      '<div class="ap-chart" id="apc"></div><div class="ap-tabs"><span class="on">Popular</span><span>Forex</span><span>Stocks</span></div><ul class="ap-list">' + rows + '</ul>' +
+      '<div class="ap-nav">' + nav.replace(/<svg /g, '<svg ').replace('<svg ', '<svg class="on" ') + '</div></div></div></div>';
+    $('#apc', inn).innerHTML = area(bal, 242, 78, '#2fe39a', 'p1', { fixed: true, pad: 8 });
+    $('#bkc', inn).innerHTML = area(S.EURUSD.h, 242, 130, ec >= 0 ? '#2fe39a' : '#ff6b72', 'p2', { fixed: true, dot: true });
+    go($('#apc', inn)); go($('#bkc', inn));
+    initSp(inn);
+    sub('EURUSD', function () { var c = $('#bkc', inn); if (c) { c.innerHTML = area(S.EURUSD.h, 242, 130, chgOf(S.EURUSD) >= 0 ? '#2fe39a' : '#ff6b72', 'p2', { fixed: true, dot: true }); c.classList.add('go'); } });
+    fitAll();
+  };
+
+  var MTV = '5';
+  lazy.mt = function (el) {
+    var inn = el.firstElementChild;
+    var mw = ['EURUSD', 'GBPUSD', 'USDJPY', 'GOLD', 'US100Cash', 'BTCUSD'].map(function (sym) {
+      var s = S[sym], i = s.i;
+      return '<div class="r"><b>' + esc(sym.replace('Cash', '')) + '</b><span class="px" data-px="' + sym + '">' + XM.fmt(s.p, i.d) + '</span><span class="px" data-px="' + sym + '" data-off="' + i.sp + '">' + XM.fmt(s.p + i.sp, i.d) + '</span></div>';
+    }).join('');
+    var tr = [['EURUSD', 'buy', '0.20', '1.11520', '+85.60', 1], ['GOLD', 'sell', '0.05', '4,061.40', '+26.70', 1], ['US100Cash', 'buy', '0.10', '29,401.2', '-14.30', 0], ['GBPJPY', 'sell', '0.15', '210.482', '+41.05', 1]].map(function (r) {
+      return '<div class="r"><b>' + r[0] + '</b><span class="' + (r[1] === 'buy' ? 'up' : 'dn') + '">' + r[1] + '</span><span>' + r[2] + '</span><span>' + r[3] + '</span><span class="' + (r[5] ? 'up' : 'dn') + '">' + r[4] + '</span></div>';
+    }).join('');
+    inn.classList.add('ui');
+    inn.innerHTML = '<div class="mt"><div class="mt-t"><span class="lg"></span><span data-mtt>MetaTrader ' + MTV + ' &middot; XMTrading-Real</span><span class="w"><b>&minus;</b><b>&#9633;</b><b>&times;</b></span></div>' +
+      '<div class="mt-m"><span>File</span><span>View</span><span>Insert</span><span>Charts</span><span>Tools</span><span>Window</span><span>Help</span></div>' +
+      '<div class="mt-tb"><span>M1</span><span>M5</span><span>M15</span><span class="on">H1</span><span>H4</span><span>D1</span><span>W1</span><span class="bd" data-mtb>MT5 &middot; Depth of Market</span></div>' +
+      '<div class="mt-b"><div class="mt-w"><div class="hd"><span>Symbol</span><span>Bid</span><span>Ask</span></div>' + mw + '</div><div class="mt-c"><span class="cap">EURUSD, H1</span><svg class="reveal-x" id="mtc" width="420" height="226" viewBox="0 0 420 226"></svg></div></div>' +
+      '<div class="mt-tr"><div class="tabs"><span class="on">Trade</span><span>Exposure</span><span>History</span><span>News</span></div><div class="hd"><span>Symbol</span><span>Type</span><span>Volume</span><span>Price</span><span>Profit</span></div>' + tr + '</div>' +
+      '<div class="mt-s"><span>Balance: <b>10 000.00</b></span><span>Equity: <b>10 138.15</b></span><span>Free margin: <b>9 898.73</b></span></div></div>';
+    var cv = $('#mtc', inn), e = S.EURUSD;
+    var cd = new Candles(cv, 420, 226, { n: 36, vol: .0009, price: e.p, d: 5, axis: 54, up: '#27d37f', dn: '#e5535a', upA: 'rgba(39,211,127,.22)', dnA: 'rgba(229,83,90,.22)', ma: 8, maC: '#6f9bff' });
+    sub('EURUSD', function (p) { cd.update(p); }); go(cv);
+    fitAll();
+  };
+  $$('[data-mt]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      MTV = b.getAttribute('data-mt');
+      $$('[data-mt]').forEach(function (x) { x.classList.toggle('on', x === b); });
+      $$('[data-mtt]').forEach(function (t) { t.innerHTML = 'MetaTrader ' + MTV + ' &middot; XMTrading-Real'; });
+      $$('[data-mtb]').forEach(function (t) { t.innerHTML = MTV === '5' ? 'MT5 &middot; Depth of Market' : 'MT4 &middot; Expert Advisors'; });
+      $('#mtSub').textContent = MTV === '5' ? 'The industry-standard terminal, connected to your XMTrading account in a click.' : 'The classic terminal, loved for its indicators and Expert Advisors.';
+    });
+  });
+
+  lazy.copy = function (el) {
+    $$('[data-eq]', el).forEach(function (q, idx) {
+      var vals = XM.series(36, 100, .018, +q.getAttribute('data-eq')); vals[vals.length - 1] = Math.max.apply(0, vals) * 1.01;
+      q.innerHTML = area(vals, 220, 54, '#2fe39a', 'e' + idx, { pad: 4 }); go(q);
+    });
+  };
+  $$('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var on = b.classList.toggle('on'), n = b.getAttribute('data-copy');
+      b.querySelector('.l').textContent = on ? 'Copying' : 'Copy';
+      b.firstElementChild.style.display = on ? 'none' : 'inline-flex';
+      XM.toast(on ? 'Now copying ' + esc(n) + ' (illustrative)' : 'Stopped copying ' + esc(n));
+    });
+  });
+
+  lazy.chat = function (el) {
+    var body = $('#chatBody', el);
+    var script = [['me', 'Hi, how long does account verification take?'], ['ag', 'Hi! Happy to help. Upload your ID and proof of address in the Portal. Most reviews finish within a short time.'], ['me', '日本語でも大丈夫ですか？'], ['ag', 'もちろんです！日本語でサポートいたします。']];
+    var i = 0;
+    function add(role, text) { var d = document.createElement('div'); d.className = 'msg ' + role; d.textContent = text; body.appendChild(d); return d; }
+    function next() {
+      if (i >= script.length) return;
+      var m = script[i++];
+      if (RM) { add(m[0] === 'me' ? 'me' : 'ag', m[1]); next(); return; }
+      if (m[0] === 'me') { setTimeout(function () { add('me', m[1]); setTimeout(next, 500); }, 600); }
+      else { var t = document.createElement('div'); t.className = 'msg ag ty'; t.innerHTML = '<i></i><i></i><i></i>'; body.appendChild(t); setTimeout(function () { t.remove(); add('ag', m[1]); setTimeout(next, 900); }, 1100); }
+    }
+    next();
+  };
+
+  /* lazy driver */
+  var lio = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { lio.unobserve(e.target); var f = lazy[e.target.getAttribute('data-lazy')]; if (f) f(e.target); } });
+  }, { rootMargin: '300px 0px' }) : null;
+  $$('[data-lazy]').forEach(function (e) { if (lio) lio.observe(e); else lazy[e.getAttribute('data-lazy')](e); });
+
+  /* fit: scale fixed-size mock-ups to their container (compact layout on small screens) */
+  function fitAll() {
+    $$('.fit').forEach(function (w) {
+      var inn = w.firstElementChild, cw = w.clientWidth, small = w.hasAttribute('data-wm') && cw < (+w.getAttribute('data-cmp') || 720);
+      var dw = +w.getAttribute(small ? 'data-wm' : 'data-w'), dh = +w.getAttribute(small ? 'data-hm' : 'data-h');
+      var s = Math.min(1, cw / dw);
+      inn.classList.toggle('compact', small);
+      inn.style.width = dw + 'px';
+      inn.style.transform = 'scale(' + s + ')';
+      inn.style.left = Math.max(0, (cw - dw * s) / 2) + 'px';
+      w.style.height = (dh * s) + 'px';
+    });
+  }
+  fitAll(); window.addEventListener('resize', fitAll);
+
+  /* ---------------- movers widget ---------------- */
+  var VOLORD = ['EURUSD', 'GOLD', 'US100Cash', 'BTCUSD', 'USDJPY'];
+  var tabSets = {
+    gain: function () { return I.map(function (i) { return i.s; }).filter(function (s) { return chgOf(S[s]) > 0; }).sort(function (a, b) { return chgOf(S[b]) - chgOf(S[a]); }).slice(0, 5); },
+    loss: function () { return I.map(function (i) { return i.s; }).filter(function (s) { return chgOf(S[s]) < 0; }).sort(function (a, b) { return chgOf(S[a]) - chgOf(S[b]); }).slice(0, 5); },
+    vol: function () { return VOLORD; }
+  };
+  function mvRender(tab) {
+    $('#mvBody').innerHTML = tabSets[tab]().map(function (sym, k) {
+      var s = S[sym], i = s.i, c = chgOf(s);
+      return '<tr style="animation-delay:' + (k * 55) + 'ms"><td><div class="as">' + XM.logoChip(i, 34) + '<div><b>' + esc(sym.replace('Cash', '')) + '</b><small>' + esc(i.n) + ' &middot; ' + esc(i.cls) + '</small></div></div></td>' +
+        '<td class="r"><span class="px num" data-px="' + sym + '">' + XM.fmt(s.p, i.d) + '</span></td><td class="r"><span class="chg num ' + (c >= 0 ? 'up' : 'dn') + '" data-chg="' + sym + '">' + fmtChg(c) + '</span></td>' +
+        '<td class="sp r" data-sp="' + sym + '"></td><td class="r"><a class="btn btn-sm btn-line pill" href="#" data-join data-src="movers">Trade</a></td></tr>';
+    }).join('');
+    initSp($('#mvBody')); links($('#mvBody'));
+  }
+  function tabs(sel, onPick) {
+    var bs = $$(sel + ' button');
+    function set(b, focus) { bs.forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; }); if (focus) b.focus(); onPick(b); }
+    bs.forEach(function (b, i) {
+      b.addEventListener('click', function () { set(b); });
+      b.addEventListener('keydown', function (e) { var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d) { e.preventDefault(); set(bs[(i + d + bs.length) % bs.length], true); } });
+    });
+    bs.forEach(function (x) { var on = x.classList.contains('on'); x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; });
+  }
+  tabs('#mvTabs', function (b) { mvRender(b.getAttribute('data-tab')); });
+  mvRender('gain');
+
+  /* header nav jumps to in-page sections and follows the scroll position */
+  (function () {
+    var map = { 'Trading': 'platforms', 'Promotions': 'promotions', 'Learn & Research': 'markets' }, ls = [];
+    $$('.xm-nav a').forEach(function (a) {
+      var id = map[a.textContent.trim()]; if (!id) return; a.href = '#' + id; ls.push([a, id]);
+      a.addEventListener('click', function (e) { e.preventDefault(); var t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); });
+    });
+    if (!ls.length) return;
+    var queued = false;
+    function spy() {
+      queued = false; var act = null;
+      ls.forEach(function (p) { var t = document.getElementById(p[1]); if (t && t.getBoundingClientRect().top < innerHeight * .4) act = p[1]; });
+      var ft = $('.xm-ftr'); if (ft && ft.getBoundingClientRect().top < innerHeight * .6) act = null;
+      ls.forEach(function (p) { p[0].classList.toggle('on', p[1] === act); });
+    }
+    window.addEventListener('scroll', function () { if (!queued) { queued = true; requestAnimationFrame(spy); } }, { passive: true });
+    spy();
+  })();
+
+  /* ---------------- competition countdown + leaderboard drift ---------------- */
+  var end = Date.now() + ((12 * 24 + 4) * 3600 + 21 * 60 + 7) * 1000;
+  function pad2(n) { return n < 10 ? '0' + n : n; }
+  setInterval(function () {
+    var r = Math.max(0, Math.floor((end - Date.now()) / 1000)), d = Math.floor(r / 86400), h = Math.floor(r % 86400 / 3600), m = Math.floor(r % 3600 / 60), s = r % 60;
+    var e = $('#cd'); if (e && !document.hidden) e.textContent = d + 'd ' + pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+  }, 1000);
+  setInterval(function () {
+    if (document.hidden) return;
+    $$('[data-lb]').forEach(function (e) {
+      var v = parseFloat(e.getAttribute('data-lb')) + (Math.random() - .35) * .4; e.setAttribute('data-lb', v.toFixed(1)); e.textContent = '+' + v.toFixed(1) + '%'; flash(e, 1);
+    });
+  }, 2400);
+
+  /* ---------------- count-up stats ---------------- */
+  (function () {
+    var els = $$('.cnt'); if (!els.length) return;
+    els.forEach(function (e) { e.textContent = '0'; });
+    function run() {
+      els.forEach(function (e) {
+        var to = +e.getAttribute('data-to'), t0 = performance.now(), dur = 1500;
+        (function step(t) { var p = Math.max(0, Math.min(1, (t - t0) / dur)), v = Math.round(to * (1 - Math.pow(1 - p, 3))); e.textContent = v.toLocaleString('en-US'); if (p < 1) requestAnimationFrame(step); })(t0);
+      });
+    }
+    if (RM || !('IntersectionObserver' in window)) { els.forEach(function (e) { e.textContent = (+e.getAttribute('data-to')).toLocaleString('en-US'); }); return; }
+    var o = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { o.disconnect(); run(); } }, { threshold: .4 });
+    o.observe($('#stats'));
+  })();
+
+  ico(document); links(document); XM.reveal();
+
+  XM.notes({
+    title: 'Idea 01 · Simplified homepage',
+    today: 'One homepage for every visitor, working mostly as an affiliate traffic router to /register. Average scroll depth is 29%, the page makes many API calls on load and LCP is about 4 s.',
+    proposed: 'A Kraken-style split hero (one headline, one button, a live phone with floating cards), then a separate platform block per product (Portal, Trader Pro, MetaTrader), promotions, copy trading, live movers and support. One lightweight data feed, no libraries, below-the-fold visuals drawn lazily.',
+    why: 'Affiliate visitors arrive ready to register. One message per screen, a faster first paint (LCP from about 4 s towards 2.5 s) and a clear path from every offering to registration keep them from leaving.',
+    metric: 'Variant vs control: registration conversion (affiliate traffic included), scroll depth and Core Web Vitals (LCP baseline about 4 s, INP, CLS).'
+  });
+});
+</script>
+<script src="../../assets/js/review.js" data-idea="01"></script>
+</body>
+</html>
