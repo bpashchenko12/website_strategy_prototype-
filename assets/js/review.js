@@ -173,14 +173,14 @@ body.xr-pinmode, body.xr-pinmode * { cursor: crosshair !important; }\
       '<button class="xr-tab" data-a="show">' + ic('eye') + ' Review</button>' +
       '<div class="xr-pop" data-r="pop"></div>' +
       '<div class="xr-mode"><span>Click anywhere on the page to leave a comment</span><button data-a="pin-cancel">Cancel (Esc)</button></div>' +
-      '<aside class="xr-draw data-a="id-backdrop"><div class="xr-m" role="dialog" aria-modal="true" aria-label="Who is commenting?"><button class="xr-mx" data-a="id-close" aria-label="Close">×</button><h3>Who is commenting?</h3><p>Your name appears next to your votes and comments. No account needed.</p>' +
+      '<aside class="xr-drawer" aria-label="Comments"><div class="xr-dh"><div class="xr-row"><h3>#' + esc(idea.id) + ' · ' + esc(idea.title) + '</h3><button class="xr-x" data-a="drawer-close" aria-label="Close">×</button></div><div class="xr-stats" data-r="stats"></div></div>' +
+      '<div class="xr-list" data-r="list"></div>' +
+      '<div class="xr-comp"><div class="xr-types" data-r="types"></div><textarea rows="3" placeholder="Share feedback on this idea…" data-r="text"></textarea><div class="xr-foot"><span>Visible to everyone with the link</span><button class="xr-send" data-a="post" disabled>Post</button></div></div>' +
+      '<div class="xr-who" data-r="who"></div></aside>' +
+      '<div class="xr-modal" data-a="id-backdrop"><div class="xr-m" role="dialog" aria-modal="true" aria-label="Who is commenting?"><button class="xr-mx" data-a="id-close" aria-label="Close">×</button><h3>Who is commenting?</h3><p>Your name appears next to your votes and comments. No account needed.</p>' +
       '<label>Your name</label><input data-r="name" maxlength="40" placeholder="e.g. Alex Tanaka" autocomplete="name">' +
       '<label>Role</label><select data-r="role"><option value="" disabled selected>Select your role</option>' + ROLES.map(function (r) { return '<option>' + r + '</option>'; }).join('') + '</select>' +
-      '<button class="xr-go" data-a="id-save">Continue</button><button class="xr-no" data-a="id-close">Not now' +
-      '<div class="xr-modal"><div class="xr-m"><h3>Who is commenting?</h3><p>Your name appears next to your votes and comments. No account needed.</p>' +
-      '<label>Your name</label><input data-r="name" maxlength="40" placeholder="e.g. Alex Tanaka" autocomplete="name">' +
-      '<label>Role</label><select data-r="role">' + ROLES.map(function (r) { return '<option>' + r + '</option>'; }).join('') + '</select>' +
-      '<button class="xr-go" data-a="id-save">Continue</button></div></div>';
+      '<button class="xr-go" data-a="id-save">Continue</button><button class="xr-no" data-a="id-close">Not now</button></div></div>';
     document.body.appendChild(root);
     dock = root.querySelector('.xr-dock'); drawer = root.querySelector('.xr-drawer'); list = root.querySelector('[data-r=list]'); pop = root.querySelector('[data-r=pop]');
     tab = root.querySelector('.xr-tab'); modeBar = root.querySelector('.xr-mode'); idModal = root.querySelector('.xr-modal');
@@ -337,12 +337,12 @@ body.xr-pinmode, body.xr-pinmode * { cursor: crosshair !important; }\
       var box = t.closest('.xr-reply'), rt = box.querySelector('textarea'), v = rt.value.trim(); if (!v) return;
       post({ idea: idea.id, text: v, type: 'comment', parent: id, pin: null }); rt.value = ''; box.classList.remove('xr-open');
     }
-    elvar rl = root.querySelector('[data-r=role]').value; if (!rl) { root.querySelector('[data-r=role]').focus(); return; }
-      XMStore.setIdentity(nm, rlv') === '1');
+    else if (a === 'resolve') XMStore.resolve(id, t.getAttribute('data-v') === '1');
     else if (a === 'del') { if (confirm('Delete this comment? Replies to it are removed too.')) XMStore.remove(id); }
     else if (a === 'id-save') {
       var nm = root.querySelector('[data-r=name]').value.trim(); if (!nm) { root.querySelector('[data-r=name]').focus(); return; }
-      XMStore.setIdentity(nm, root.querySelector('[data-r=role]').value); idModal.classList.remove('xr-open');
+      var rl = root.querySelector('[data-r=role]').value; if (!rl) { root.querySelector('[data-r=role]').focus(); return; }
+      XMStore.setIdentity(nm, rl); idModal.classList.remove('xr-open');
       if (afterIdentity) { var f = afterIdentity; afterIdentity = null; f(); }
     }
     else if (a === 'id-change') { var cur = XMStore.identity; if (cur) { root.querySelector('[data-r=name]').value = cur.name; root.querySelector('[data-r=role]').value = cur.role; } afterIdentity = null; idModal.classList.add('xr-open'); }
