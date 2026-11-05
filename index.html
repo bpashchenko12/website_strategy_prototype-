@@ -280,7 +280,7 @@
     if (view === 'journey') {
       XM_JOURNEYS.forEach(function (j) { grp('j' + j.id, j.label, esc(j.theme), j.steps.map(byId)); });
     } else {
-      [1, 2, 3, 4].forEach(function (w) { var W = XM_WAVES[w]; grp('w' + w, W.label + ' · ' + W.range, esc(W.theme), IDEAS.filter(function (i) { return i.wave === w; })); });
+      [1, 2, 3].forEach(function (w) { var W = XM_WAVES[w]; grp('w' + w, W.label + ' · ' + W.range, esc(W.theme), IDEAS.filter(function (i) { return i.wave === w; })); });
     }
     $('#groups').innerHTML = any ? h : '<div class="empty"><b>No ideas match</b>Try another word, or clear the filter.</div>';
     meta();

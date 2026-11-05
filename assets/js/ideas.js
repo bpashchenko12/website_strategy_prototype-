@@ -120,7 +120,7 @@ window.XM_IDEAS = [
   },
   {
     id: '13', slide: 34, wave: 3, obj: 'retention', status: 'built', effort: 'Medium', priority: 'High',
-    title: 'Dwell pop-up, seasonal promotions and notification centre',
+    title: 'Notifications subscription',
     short: 'Pop-up on content pages and homepage; email non-clients, PWA and app for clients',
     path: 'ideas/13-notifications/index.html',
     hypothesis: 'If visitors choose what they hear about, including seasonal campaigns, XM can reach them before they register. Looking the email up first means only non-clients get email, while clients and newly registered users get the same topics in the PWA and the mobile app.',
@@ -153,23 +153,13 @@ window.XM_IDEAS = [
     hypothesis: 'If a visitor can share a link before registering and earn a small reward when a referral deposits, we gain a low-cost referral channel and the referrer registers to claim it.',
     scope: ['Code widget on the Refer a Friend page for non-registered visitors', 'Email to the referrer when a referral deposits, prompting registration', 'Compliance and AML review first'],
     metric: 'Referral registrations; referrer registrations; FTD of referred users'
-  },
-  {
-    id: '17', slide: 39, wave: 4, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
-    title: 'Informational MCP server and assistant',
-    short: 'Answers on conditions, support and platforms',
-    path: 'ideas/17-assistant/index.html',
-    hypothesis: 'If account types, bonus terms by country, payment methods and platform facts are available from one source of truth, assistants quote the right numbers and fewer users arrive with wrong expectations.',
-    scope: ['Read-only MCP server exposing public facts', 'Country check first; regulator and risk warning in every answer', 'Same data feeds llms.txt, structured data and an on-site assistant'],
-    metric: 'Organic and referral share; registration-quality guardrail'
   }
 ];
 
 window.XM_WAVES = {
   1: { label: 'Wave 1', range: 'Months 0-3', theme: 'Measure, fix the key pages' },
   2: { label: 'Wave 2', range: 'Months 3-6', theme: 'Answer, and let people try' },
-  3: { label: 'Wave 3', range: 'Months 6-9', theme: 'Return, and reward learning' },
-  4: { label: 'Later', range: 'Beyond 9 months', theme: 'Assistants and search' }
+  3: { label: 'Wave 3', range: 'Months 6-9', theme: 'Return, and reward learning' }
 };
 
 window.XM_OBJ = {
@@ -184,5 +174,5 @@ window.XM_OBJ = {
 window.XM_JOURNEYS = [
   { id: 'a', label: 'Journey A', theme: 'From first visit to a registered client', steps: ['04', '01', '02', '03', '05', '06', '07', '18'] },
   { id: 'b', label: 'Journey B', theme: 'See it, try it, learn it, fund it', steps: ['09', '11', '10', '15', '08'] },
-  { id: 'c', label: 'Journey C', theme: 'Bring clients back and keep them', steps: ['14', '12', '13', '16', '17'] }
+  { id: 'c', label: 'Journey C', theme: 'Bring clients back and keep them', steps: ['14', '12', '13', '16'] }
 ];
