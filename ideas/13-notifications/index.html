@@ -171,7 +171,7 @@ svg { flex: none; }
 .b-url { display: flex; justify-content: center; margin-bottom: 22px; }
 .b-url span { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; font-size: 13px; color: var(--ink-2); box-shadow: var(--sh-s); } .b-url svg { width: 13px; height: 13px; color: var(--g); }
 .b-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 22px; align-items: start; }
-.chs3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.chs3 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .chc { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 50px -38px rgba(16, 24, 40, .4); transition: border-color .2s, box-shadow .2s; }
 .chc.on { border-color: rgba(0, 132, 84, .45); box-shadow: 0 0 0 4px rgba(0, 132, 84, .07), 0 20px 50px -38px rgba(0, 132, 84, .5); }
 .chc-h { display: flex; align-items: center; gap: 12px; }
@@ -191,7 +191,7 @@ svg { flex: none; }
 .mx-top h3 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; } .mx-top p { font-size: 13px; color: var(--mut); margin-top: 2px; }
 .saved { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--g); font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--g-l); transition: opacity .3s; white-space: nowrap; } .saved svg { width: 14px; height: 14px; } .saved.flash { animation: flash .9s; }
 @keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(0, 132, 84, .5); transform: scale(1.06); } 100% { box-shadow: 0 0 0 10px rgba(0, 132, 84, 0); transform: none; } }
-.mxr { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 76px); align-items: center; gap: 0; }
+.mxr { display: grid; grid-template-columns: minmax(0, 1fr) repeat(2, 76px); align-items: center; gap: 0; }
 .mxh { padding: 14px 0 12px; border-bottom: 1px solid var(--line); font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; color: var(--mut); font-weight: 600; }
 .mxh .c { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; } .mxh .c svg { width: 18px; height: 18px; color: var(--ink-2); } .mxh .c.onl svg, .mxh .c.onl { color: var(--g); }
 .mxrow { padding: 16px 0; border-bottom: 1px solid var(--line); } .mxrow:last-child { border-bottom: 0; }
@@ -269,7 +269,7 @@ svg { flex: none; }
   .vp { height: 640px; } .site-h { padding: 12px 14px; } .site-h .ln { display: none; } .site-h .bt { margin-left: auto; } .art { padding: 22px 18px 0; }
   .pop { left: 8px; right: 8px; bottom: 8px; width: auto; max-width: none; padding: 0; border-radius: 22px; }
   .pop-h { padding: 18px 54px 16px 16px; } .pop-body { padding: 14px 14px 10px; } .hp-cards { grid-template-columns: 1fr; } .hp-hero { margin: 14px 14px 0; padding: 24px 20px; } .hp-sec { padding: 20px 14px 0; } .rt-b { grid-template-columns: 1fr; } .route { padding: 18px 16px; } .cside { position: static; } .pop h4 { font-size: 19px; } .opts { gap: 8px; margin: 14px 0 12px; } .opt { padding: 10px; gap: 8px; } .opt small { display: none; } .opt { flex-direction: row; align-items: center; }
-  .mx { padding: 4px 16px 8px; border-radius: 22px; } .mxr { grid-template-columns: minmax(0, 1fr) repeat(3, 54px); } .mxrow .ti { width: 34px; height: 34px; } .mxrow small { display: none; } .mxrow .it { gap: 10px; } .mxrow b { font-size: 14px; } .sw { width: 42px; height: 26px; } .sw::after { width: 20px; height: 20px; } .sw[aria-checked=true]::after { transform: translateX(16px); } .mx-top { flex-wrap: wrap; } .mxh { font-size: 10px; letter-spacing: .04em; }
+  .mx { padding: 4px 16px 8px; border-radius: 22px; } .mxr { grid-template-columns: minmax(0, 1fr) repeat(2, 54px); } .mxrow .ti { width: 34px; height: 34px; } .mxrow small { display: none; } .mxrow .it { gap: 10px; } .mxrow b { font-size: 14px; } .sw { width: 42px; height: 26px; } .sw::after { width: 20px; height: 20px; } .sw[aria-checked=true]::after { transform: translateX(16px); } .mx-top { flex-wrap: wrap; } .mxh { font-size: 10px; letter-spacing: .04em; }
   .flow { padding: 26px 18px 22px; border-radius: 22px; }
 }
 @media (max-width: 520px) { .xm-lang, .xm-hdr [data-login] { display: none; } }
@@ -433,10 +433,10 @@ svg { flex: none; }
       <aside class="block cside">
         <h3>Homepage use case</h3>
         <h4>Seasonal promotions, announced before they start.</h4>
-        <p>On the homepage the pop-up changes its pitch. It leads with seasonal campaigns and pre-selects them. Visitors who are not clients yet get campaign emails; once they register, the same choice also runs in the PWA and the mobile app.</p>
+        <p>On the homepage the pop-up changes its pitch. It leads with seasonal campaigns and the visitor chooses which topics to follow. Visitors who are not clients yet get campaign emails; once they register, the same choice also runs in the PWA and the mobile app.</p>
         <ul class="rules">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Shows after 20 s on the homepage, or when a campaign card is tapped</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Seasonal promotions pre-selected; other topics optional</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Seasonal promotions lead the pop-up; the visitor ticks the topics they want</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Email is looked up first: only non-clients are emailed</li>
         </ul>
         <div class="cbtn">
@@ -497,12 +497,12 @@ svg { flex: none; }
     promos: ['Black Friday starts tomorrow', 'Early access for subscribers: the campaign opens at 00:00 server time (illustrative).'],
     account: ['New device login', 'Was this you? Tap to review the sign-in on your account.']
   };
-  var CH = ['push', 'email', 'line'];
+  var CH = ['push', 'email'];
 
   /* ---------- store ---------- */
-  function def() { var m = {}; ITEMS.forEach(function (i) { m[i.k] = { push: 0, email: 0, line: 0 }; }); m.account.push = 1; m.account.email = 1; return { m: m, email: '', push: 'off', line: 0, tab: 'a', snooze: 0, route: null }; }
+  function def() { var m = {}; ITEMS.forEach(function (i) { m[i.k] = { push: 0, email: 0 }; }); m.account.push = 1; m.account.email = 1; return { m: m, email: '', push: 'off', tab: 'a', snooze: 0, route: null }; }
   var S = def();
-  try { var raw = JSON.parse(localStorage.getItem(KEY)); if (raw && raw.m) { var d = def(); S = Object.assign(d, raw); ITEMS.forEach(function (i) { S.m[i.k] = Object.assign({ push: 0, email: 0, line: 0 }, raw.m[i.k] || {}); }); } } catch (e) {}
+  try { var raw = JSON.parse(localStorage.getItem(KEY)); if (raw && raw.m) { var d = def(); S = Object.assign(d, raw); ITEMS.forEach(function (i) { S.m[i.k] = Object.assign({ push: 0, email: 0 }, raw.m[i.k] || {}); }); } } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function item(k) { return ITEMS.filter(function (i) { return i.k === k; })[0]; }
 
@@ -601,7 +601,7 @@ svg { flex: none; }
     function capText() { var d = new Date(Date.now() + 14 * 864e5); $('#capN').textContent = 'Maybe later hides this for 14 days (next ask ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ').'; }
     function dismiss(why) { S.snooze = Date.now() + 14 * 864e5; save(); close(); if (ctx === 'a') dw.handled(); if (why === 'later') XM.toast('No problem. We will not ask again for 14 days.'); }
     function close() { p.classList.remove('show'); }
-    function clear() { POP_TOPICS.forEach(function (k) { sel[k] = (ctx === 'c' && k === 'promos'); }); }
+    function clear() { POP_TOPICS.forEach(function (k) { sel[k] = false; }); }
     function paintCtx() { $('#popT').textContent = CTX[ctx === 'c' ? 'c' : 'a'].t; $('#popSub').textContent = CTX[ctx === 'c' ? 'c' : 'a'].p; }
     return {
       init: function () {
@@ -681,17 +681,15 @@ svg { flex: none; }
 
   /* =================== SCENE B =================== */
   var SVG = {
-    push: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2.500"/><path d="M9 20h6M12 16v4"/></svg>',
-    line: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4C7 4 3.500 7 3.500 10.800c0 2.300 1.300 4.300 3.400 5.600-.1.900-.5 2.300-1 3 1.600-.2 3.200-1 4.200-1.900.6.100 1.300.2 1.900.2 5 0 8.500-3 8.500-6.900S17 4 12 4z"/></svg>'
+    push: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2.500"/><path d="M9 20h6M12 16v4"/></svg>'
   };
   var pushSt = function () { return S.push; };
   function chStatus(c) {
     if (c === 'push') return S.push === 'on' ? ['ok', 'Enabled'] : S.push === 'blocked' ? ['bad', 'Blocked in browser'] : ['', 'Not enabled'];
     if (c === 'email') return S.email ? ['ok', 'Verified (demo)'] : ['', 'Add your email'];
-    return S.line ? ['ok', 'Connected'] : ['', 'Not connected'];
   }
   function renderChannels() {
-    var ps = chStatus('push'), es = chStatus('email'), ls = chStatus('line');
+    var ps = chStatus('push'), es = chStatus('email');
     var hasN = typeof window.Notification !== 'undefined' && typeof Notification.requestPermission === 'function';
     $('#channels').innerHTML =
       '<div class="chc ' + (S.push === 'on' ? 'on' : '') + '"><div class="chc-h"><span class="chi" style="background:#0b0d10">' + SVG.push + '</span><div><h4>Web push</h4><span class="stt ' + ps[0] + '"><i></i>' + ps[1] + '</span></div></div>' +
@@ -699,19 +697,12 @@ svg { flex: none; }
         '<button class="btn ' + (S.push === 'on' ? 'btn-line' : 'btn-primary') + '" id="pushBtn" type="button">' + (S.push === 'on' ? 'Turn off on this device' : 'Enable') + '</button><span class="sml">' + (hasN ? 'Uses your browser\u2019s permission prompt.' : 'This browser has no Notification API, so the prompt is simulated.') + '</span></div>' +
       '<div class="chc ' + (S.email ? 'on' : '') + '"><div class="chc-h"><span class="chi" style="background:#2f62f0">' + XM.icon('mail') + '</span><div><h4>Email</h4><span class="stt ' + es[0] + '"><i></i>' + es[1] + '</span></div></div>' +
         '<p>Briefings, webinar invites and summaries in your inbox.</p>' +
-        '<div class="row"><input class="inp" id="emIn" type="email" placeholder="you@example.com" value="' + XM.esc(S.email || '') + '" aria-label="Email address"><button class="btn btn-line" id="emBtn" type="button">Save</button></div><span class="sml" id="emErr"> </span></div>' +
-      '<div class="chc ' + (S.line ? 'on' : '') + '"><div class="chc-h"><span class="chi" style="background:#06c755">' + SVG.line + '</span><div><h4>LINE</h4><span class="stt ' + ls[0] + '"><i></i>' + ls[1] + '</span></div></div>' +
-        '<p>' + (S.line ? 'Connected as Taro (LINE). Messages arrive from the XM official account.' : 'Get alerts in the chat app you already use. Popular with clients in Japan and Thailand.') + '</p>' +
-        '<button class="btn ' + (S.line ? 'btn-line' : 'btn-primary') + '" id="lnBtn" type="button" style="' + (S.line ? '' : 'background:#06c755') + '">' + (S.line ? 'Disconnect' : 'Connect LINE') + '</button><span class="sml">' + (S.line ? 'You can disconnect at any time.' : 'Opens LINE to confirm (simulated).') + '</span></div>';
+        '<div class="row"><input class="inp" id="emIn" type="email" placeholder="you@example.com" value="' + XM.esc(S.email || '') + '" aria-label="Email address"><button class="btn btn-line" id="emBtn" type="button">Save</button></div><span class="sml" id="emErr"> </span></div>';
     $('#pushBtn').addEventListener('click', onPush);
     $('#emBtn').addEventListener('click', function () {
       var v = $('#emIn').value.trim();
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { $('#emIn').classList.add('err'); $('#emErr').textContent = 'Enter a valid email address.'; $('#emErr').style.color = 'var(--red)'; return; }
       S.email = v; save(); renderChannels(); renderCarry(); matrixHdr(); flashSaved('Email saved'); XM.toast('Email saved: ' + XM.esc(v));
-    });
-    $('#lnBtn').addEventListener('click', function () {
-      var b = this; if (S.line) { S.line = 0; save(); renderChannels(); renderCarry(); matrixHdr(); flashSaved('LINE disconnected'); return; }
-      b.disabled = true; b.innerHTML = '<span class="spin"></span>Connecting'; setTimeout(function () { S.line = 1; save(); renderChannels(); renderCarry(); matrixHdr(); flashSaved('LINE connected'); XM.toast('LINE connected'); }, 1100);
     });
   }
   function onPush() {
@@ -731,11 +722,11 @@ svg { flex: none; }
   }
 
   function matrixHdr() {
-    var on = { push: S.push === 'on', email: !!S.email, line: !!S.line };
+    var on = { push: S.push === 'on', email: !!S.email };
     $$('#matrix .mxh .c').forEach(function (c) { c.classList.toggle('onl', on[c.getAttribute('data-c')]); var s = c.querySelector('em'); if (s) s.textContent = on[c.getAttribute('data-c')] ? 'Active' : 'Not set up'; });
   }
   function renderMatrix() {
-    var h = '<div class="mxr mxh"><div></div>' + CH.map(function (c) { return '<div class="c" data-c="' + c + '">' + (c === 'email' ? XM.icon('mail') : SVG[c]) + '<span>' + { push: 'Push', email: 'Email', line: 'LINE' }[c] + '</span></div>'; }).join('') + '</div>';
+    var h = '<div class="mxr mxh"><div></div>' + CH.map(function (c) { return '<div class="c" data-c="' + c + '">' + (c === 'email' ? XM.icon('mail') : SVG[c]) + '<span>' + { push: 'Push', email: 'Email' }[c] + '</span></div>'; }).join('') + '</div>';
     ITEMS.forEach(function (i) {
       h += '<div class="mxr mxrow" data-k="' + i.k + '"><div class="it"><span class="ti" style="--tint:' + TINT[i.k] + ';--col:' + COL[i.k] + '">' + (i.k === 'promos' || i.k === 'account' ? ART[i.k] : ART[i.k]) + '</span><div><b>' + i.t + '</b><small>' + i.d + '</small>' + (i.k === 'account' ? '<span class="lk">' + XM.icon('lock') + 'Email is required for security</span>' : '') + '</div></div>' +
         CH.map(function (c) { var lockd = i.k === 'account' && c === 'email'; return '<div class="c"><button class="sw" role="switch" aria-checked="' + !!S.m[i.k][c] + '" aria-label="' + i.t + ' by ' + c + '" data-k="' + i.k + '" data-c="' + c + '"' + (lockd ? ' disabled' : '') + '></button></div>'; }).join('') + '</div>';
@@ -743,8 +734,8 @@ svg { flex: none; }
     $('#matrix').innerHTML = h;
     $$('#matrix .sw').forEach(function (s) { s.addEventListener('click', function () {
       var k = s.getAttribute('data-k'), c = s.getAttribute('data-c'); S.m[k][c] = S.m[k][c] ? 0 : 1; s.setAttribute('aria-checked', !!S.m[k][c]); save();
-      var name = { push: 'push', email: 'email', line: 'LINE' }[c]; flashSaved('Saved'); 
-      var warn = S.m[k][c] && ((c === 'push' && S.push !== 'on') || (c === 'email' && !S.email) || (c === 'line' && !S.line));
+      var name = { push: 'push', email: 'email' }[c]; flashSaved('Saved'); 
+      var warn = S.m[k][c] && ((c === 'push' && S.push !== 'on') || (c === 'email' && !S.email));
       XM.toast('Saved \u00b7 ' + item(k).t + ' by ' + name + ': ' + (S.m[k][c] ? 'on' : 'off') + (warn ? ' (set up ' + name + ' above to receive)' : ''));
       renderCarry(); selChips();
     }); });
@@ -774,7 +765,7 @@ svg { flex: none; }
     var c = counts();
     $('#carryN').textContent = c.n + (c.n === 1 ? ' choice' : ' choices');
     $('#carryMp').innerHTML = ITEMS.slice(0, 4).map(function (i) {
-      var on = CH.filter(function (x) { return S.m[i.k][x]; }).map(function (x) { return { push: 'Push', email: 'Email', line: 'LINE' }[x]; });
+      var on = CH.filter(function (x) { return S.m[i.k][x]; }).map(function (x) { return { push: 'Push', email: 'Email' }[x]; });
       return '<div><span>' + i.t + '</span><i class="' + (on.length ? '' : 'off') + '">' + (on.length ? on.join(' + ') : 'Off') + '</i></div>';
     }).join('');
     var tick = XM.icon('check');
@@ -799,7 +790,7 @@ svg { flex: none; }
     XM.notes({
       title: 'Dwell pop-up, homepage seasonal promotions and notification centre (idea 13)',
       today: 'Visitors who read research or learning content, or land on the homepage, leave without any way for XM to reach them again. Seasonal campaigns are announced to people who already know us.',
-      proposed: 'A redesigned dwell pop-up offers five topics in one step, including Seasonal promotions, and also runs on the homepage with that topic pre-selected. The email is looked up first: only people who are not clients yet are emailed. Once they register, the same topics run in the PWA and the mobile app. A /notifications centre gives per-topic, per-channel control.',
+      proposed: 'A redesigned dwell pop-up offers five topics in one step, including Seasonal promotions, and also runs on the homepage with seasonal promotions leading, nothing ticked in advance. The email is looked up first: only people who are not clients yet are emailed. Once they register, the same topics run in the PWA and the mobile app. A /notifications centre gives per-topic, per-channel control.',
       why: 'Dwell time and campaign interest are strong intent signals. Emailing only non-clients avoids duplicate messages to people we can already reach in-app, and a consented list gives marketing a segmented audience before each campaign. Caveat: the visitor must see the same confirmation whether or not an account exists, otherwise the pop-up reveals who is a client.',
       metric: 'Pop-up opt-in rate (content pages vs homepage), share of subscribers who register within 30 days, seasonal campaign click-through from subscribers, opt-out rate per channel.'
     });

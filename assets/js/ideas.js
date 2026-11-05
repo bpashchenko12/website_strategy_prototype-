@@ -124,7 +124,7 @@ window.XM_IDEAS = [
     short: 'Pop-up on content pages and homepage; email non-clients, PWA and app for clients',
     path: 'ideas/13-notifications/index.html',
     hypothesis: 'If visitors choose what they hear about, including seasonal campaigns, XM can reach them before they register. Looking the email up first means only non-clients get email, while clients and newly registered users get the same topics in the PWA and the mobile app.',
-    scope: ['Redesigned pop-up: market updates, webinars, trading signals, courses and seasonal promotions', 'Triggered after a dwell timeout on content pages, and on the homepage with seasonal promotions pre-selected', 'Email lookup: non-clients are emailed; clients get the same topics in the PWA and app; on registration all three channels are active', '/notifications with web push, email and LINE; per-item control', 'Same confirmation shown whether or not an account exists (no account enumeration)'],
+    scope: ['Redesigned pop-up: market updates, webinars, trading signals, courses and seasonal promotions', 'Triggered after a dwell timeout on content pages, and on the homepage with seasonal promotions leading; the visitor ticks the topics, nothing is pre-ticked', 'Email lookup: non-clients are emailed; clients get the same topics in the PWA and app; on registration the same choices run in the PWA and the app', '/notifications with web push and email; per-item control', 'Same confirmation shown whether or not an account exists (no account enumeration)'],
     metric: 'Pop-up opt-in rate by page type; subscribers who register within 30 days; seasonal campaign click-through from subscribers; opt-out rate per channel'
   },
   {
