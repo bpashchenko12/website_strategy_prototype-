@@ -87,6 +87,20 @@ body { background: #f5f5f5; }
 .aff-ft b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .aff.empty .aff-art > * { opacity: .45; }
 
+/* pages browsed on xmtrading.com */
+.trail { margin-top: 12px; border-radius: 16px; border: 1px solid var(--line-2); background: #fff; overflow: hidden; }
+.tr-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; background: #fafafa; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--mut); }
+.tr-h b { color: var(--ink); font-weight: 600; font-size: 12.5px; }
+.tr-h .tr-n { font-variant-numeric: tabular-nums; }
+.trail ol { list-style: none; margin: 0; padding: 4px 0; }
+.trail li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 14px; font-size: 12.5px; animation: fadeUp .45s calc(var(--i, 0) * 160ms) both cubic-bezier(.2, .7, .2, 1); }
+.trail li + li { border-top: 1px solid var(--line); }
+.trail li > i { width: 8px; height: 8px; border-radius: 50%; background: var(--g); }
+.trail li b { display: block; font-weight: 600; line-height: 1.25; }
+.trail li small { display: block; font-family: var(--mono); font-size: 11px; color: var(--mut); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trail li em { font-style: normal; font-size: 11.5px; color: var(--mut); font-variant-numeric: tabular-nums; }
+.trail .tr-e { padding: 14px; font-size: 12.5px; color: var(--mut); }
+
 /* ---------- step 2 · cookie inspector (DevTools look) ---------- */
 .dt { border-radius: 14px; background: #0f1216; color: #d6dbe1; border: 1px solid #232932; overflow: hidden; font-family: var(--mono); font-size: 12px; }
 .dt-top { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #181d24; border-bottom: 1px solid #232932; font-size: 11.5px; color: #98a2ad; }
@@ -524,7 +538,7 @@ body { background: #f5f5f5; }
         <span class="pers-l">Personas</span>
         <div class="pers-c" id="persChips"></div>
       </div>
-      <p class="pers-n"><span data-ico="check"></span><span>The homepage and registration content can be customized for each persona: headline, subline, button, visual, helper row and next step. Anyone else sees today's page.</span></p>
+      <p class="pers-n"><span data-ico="check"></span><span>The homepage keeps today's hero. Only two blocks adapt there: the hero visual and the link under the button. Registration gets a helper row and the next step adapts too. Anyone else sees today's page.</span></p>
     </div>
     <div class="facts" aria-label="Key facts">
       <div><b>6</b><span>personas</span></div>
@@ -537,7 +551,7 @@ body { background: #f5f5f5; }
   <div class="lab">
     <!-- step 1 -->
     <section class="step s1" id="s1" aria-labelledby="h1a">
-      <header class="sh"><span class="n">1</span><div><h2 id="h1a">Where did the visitor come from?</h2><p>Pick the affiliate page they just read. Choosing one drops the cookie.</p></div></header>
+      <header class="sh"><span class="n">1</span><div><h2 id="h1a">Where did the visitor come from?</h2><p>Pick the affiliate page they just read. We then see which XMTrading pages they browse next, and the cookie is dropped.</p></div></header>
       <div class="src-grid" id="srcGrid"></div>
       <div class="tour"><button class="btn btn-outline btn-sm" id="tourBtn" type="button" aria-pressed="false"></button><span>Presenting? Plays every persona, homepage then registration.</span></div>
       <div class="aff empty" id="aff" aria-live="polite">
@@ -553,6 +567,10 @@ body { background: #f5f5f5; }
           <div class="aff-sc"><b id="affThumb"></b></div>
         </div>
         <div class="aff-ft"><span>Scroll depth <b id="affDepth">0%</b></span><span>Articles read <b id="affSeen">0</b></span><span>Click <b id="affClk">none</b></span></div>
+      </div>
+      <div class="trail" id="trail" aria-live="polite">
+        <div class="tr-h"><b>Then browsed on xmtrading.com</b><span class="tr-n" id="trN">0 pages</span></div>
+        <ol id="trList"></ol>
       </div>
     </section>
 
@@ -631,10 +649,11 @@ body { background: #f5f5f5; }
       <div class="ad-col">
         <h3><i><span data-ico="check"></span></i>Adapts per visitor</h3>
         <ul>
-          <li><b>Headline, subline and button label</b><span>On the homepage, the registration page and the next step.</span></li>
+          <li><b>Two homepage blocks</b><span>The hero visual and the link under the button. The hero headline, subline, button and background stay as today.</span></li>
+          <li><b>Registration and next-step copy</b><span>Headline, subline and button label on the registration page and the next step.</span></li>
           <li><b>One helper row on the registration form</b><span>Pre-selected account type, platform note, practice account, or a chat shortcut.</span></li>
           <li><b>Partner code field</b><span>Filled from the cookie, so there is nothing to type.</span></li>
-          <li><b>Page visual and next-step order</b><span>Bonus ticket, comparison, platform or course card; what to do first after verifying.</span></li>
+          <li><b>Next-step order</b><span>What to do first after verifying.</span></li>
           <li><b>Language and help</b><span>Local-language chat and support when the cookie says so.</span></li>
         </ul>
       </div>
@@ -665,12 +684,12 @@ body { background: #f5f5f5; }
       <span class="eyebrow">How it would ship</span>
       <h3 style="margin-top:8px">Start with what we already know.</h3>
       <div class="phase">
-        <div><em>Phase 1 · XMTrading-side signals</em><b>No partner work needed</b><small>Landing page and campaign URL, affiliate ID, referrer, language, country and device, plus a returning-client marker. The cookie is written on arrival and the pages read it.</small></div>
+        <div><em>Phase 1 · XMTrading-side signals</em><b>No partner work needed</b><small>Landing page and campaign URL, affiliate ID, referrer, the xmtrading.com pages they browse next, language, country and device, plus a returning-client marker. The cookie is written on arrival and the pages read it.</small></div>
         <div class="p2"><em>Phase 2 · What they read</em><b>Needs partner buy-in</b><small>Affiliates pass the topic of the page the visitor read, as a landing parameter or a light tag. Only worth building once Phase 1 shows lift.</small></div>
       </div>
       <ol class="ship" style="list-style:none;margin-left:0;padding-left:0">
         <li><div><b>XMTrading writes the xm_seg cookie</b><small>First-party, 90 days, segment label only. Rules above, evaluated once at the edge. Consent wording to be confirmed with Legal.</small></div></li>
-        <li><div><b>Pages read the persona</b><small>Homepage hero, registration helper row and next step come from one config, so marketing can edit copy without a release.</small></div></li>
+        <li><div><b>Pages read the persona</b><small>Homepage blocks (hero visual and link), the registration copy and helper row, and the next step come from one config, so marketing can edit copy without a release.</small></div></li>
       </ol>
       <p class="guard"><b>Guardrail:</b> keep a 10% control hold-out so the lift is measured, not assumed. Anyone without the cookie, or below the 0.60 score, sees the page they see today.</p>
     </article>
@@ -697,8 +716,8 @@ body { background: #f5f5f5; }
       aff: { url: 'bonus-broker-reviews.example/best-bonus-brokers-2026', tag: 'Comparison', title: 'Best bonus brokers 2026', hl: 'A welcome bonus lets you try live markets before you fund an account.', depth: .75, click: 'Open XMTrading account' },
       ck: { source: 'affiliate:12345', seen: ['bonus-guide', 'deposit-bonus'], lang: 'ja', ttl: 90 },
       sig: { entry: .85, content: .70, scroll: .75, source: .80 },
-      sigTx: { entry: 'Landed on bonus-guide', content: '2 of 2 pages about bonuses', scroll: '75% scrolled', source: 'Partner 12345, Japanese' },
-      hero: { badge: 'WELCOME BONUS', h: 'Your welcome bonus is ready', sub: 'Register in two minutes and we will hold your ¥13,000 credit for you.', cta: 'Claim and register', link: 'See bonus terms', vis: 'promo' },
+      sigTx: { entry: 'Landed on bonus-guide', content: '2 XMTrading pages on bonuses', scroll: '75% scrolled', source: 'Partner 12345, Japanese' },
+      hero: { link: 'See bonus terms', vis: 'promo' },
       reg: { eye: 'Welcome bonus', h: 'Claim your ¥13,000 welcome bonus', sub: 'It takes two minutes. The credit is added to your account once your ID is verified.', perks: ['No deposit needed', 'Trade live markets'], cta: 'Claim bonus and register', banner: true, row: { i: 'gift', t: 'Bonus is attached to this form', s: 'No promo code to find or paste.' } },
       next: { ico: 'gift', h: 'You are in. Your bonus is waiting.', sub: 'Verify your ID to release the ¥13,000 welcome credit.', main: { t: 'Activate your welcome bonus', p: 'Upload your ID in about three minutes. The credit appears right after approval. Terms are illustrative.', cta: 'Verify and activate' }, more: [{ i: 'chart', t: 'Place your first trade', s: 'Open the Portal with the bonus credit ready' }, { i: 'phone', t: 'Get the app', s: 'Trade your bonus from your phone' }] }
     },
@@ -707,8 +726,8 @@ body { background: #f5f5f5; }
       aff: { url: 'forex-compare.example/standard-vs-zero-vs-kiwami', tag: 'Guide', title: 'Standard vs Zero vs KIWAMI: which account?', hl: 'Active traders weigh spread against commission. Beginners often start simple.', depth: .65, click: 'Compare accounts' },
       ck: { source: 'affiliate:12345', seen: ['account-types', 'zero-account'], lang: 'en', ttl: 90 },
       sig: { entry: .80, content: .75, scroll: .65, source: .75 },
-      sigTx: { entry: 'Landed on account-types', content: '2 of 2 pages on accounts', scroll: '65% scrolled', source: 'Partner 12345, English' },
-      hero: { badge: 'ACCOUNTS', h: 'Find the account that fits you', sub: 'Three account types, one clear comparison. Pick the one that matches how you trade.', cta: 'Open the right account', link: 'Compare in detail', vis: 'cmp' },
+      sigTx: { entry: 'Landed on account-types', content: '2 XMTrading pages on accounts', scroll: '65% scrolled', source: 'Partner 12345, English' },
+      hero: { link: 'Compare in detail', vis: 'cmp' },
       reg: { eye: 'Account types', h: 'Open the account that fits you', sub: 'You compared Standard, Zero and KIWAMI. We pre-selected Zero, and you can switch it later.', perks: ['Pre-selected: Zero', 'Switch any time'], cta: 'Register and choose account', row: { i: 'wallet', t: 'Account type: Zero', s: 'Pre-selected from your comparison. Change it any time.', b: 'Change' } },
       next: { ico: 'wallet', h: 'Let us open the right account.', sub: 'Based on what you compared, Zero is pre-selected.', main: { t: 'Open your Zero account', p: 'Pre-selected from your comparison. Confirm it, or switch to Standard or KIWAMI before you fund it.', cta: 'Open Zero account' }, more: [{ i: 'play', t: 'Try it on a demo first', s: 'Same account type, practice funds' }, { i: 'users', t: 'Ask an account specialist', s: 'Short chat, no sales call' }] }
     },
@@ -717,8 +736,8 @@ body { background: #f5f5f5; }
       aff: { url: 'trading-tools.example/mt5-vs-trader-pro', tag: 'Review', title: 'MT5 vs XMTD Trader Pro: which to use?', hl: 'MT5 for robots and deep charting. The app for quick trades on the go.', depth: .55, click: 'Download platform' },
       ck: { source: 'affiliate:12345', seen: ['mt5-review', 'app-review'], lang: 'en', ttl: 90 },
       sig: { entry: .75, content: .60, scroll: .55, source: .70 },
-      sigTx: { entry: 'Landed on mt5-review', content: '2 of 2 pages on platforms', scroll: '55% scrolled', source: 'Partner 12345, English' },
-      hero: { badge: 'PLATFORMS', h: 'Trade on MT5 or the XMTD app', sub: 'One account and one balance. Desktop power, or one-tap trading on your phone.', cta: 'Register and download', link: 'Compare platforms', vis: 'plat' },
+      sigTx: { entry: 'Landed on mt5-review', content: '2 XMTrading pages on platforms', scroll: '55% scrolled', source: 'Partner 12345, English' },
+      hero: { link: 'Compare platforms', vis: 'plat' },
       reg: { eye: 'Platforms', h: 'Register, then pick your platform', sub: 'Your MT5 login and your app login are created together, with one set of funds.', perks: ['MT5', 'XMTD Trader Pro', 'Web Portal'], cta: 'Register and download', row: { i: 'monitor', t: 'Platforms: MT5 and XMTD Trader Pro', s: 'Both logins are created together.' } },
       next: { ico: 'monitor', h: 'Download your platform.', sub: 'Your account number and server are ready.', main: { t: 'Get MetaTrader 5', p: 'Sign in with your new account number. The server is pre-filled so there is nothing to look up.', cta: 'Download MT5' }, more: [{ i: 'qr', t: 'XMTD Trader Pro', s: 'Scan the QR code to install the app' }, { i: 'globe', t: 'Web Portal', s: 'Nothing to install. Trade in the browser' }] }
     },
@@ -727,8 +746,8 @@ body { background: #f5f5f5; }
       aff: { url: 'learn-fx.example/beginners-course', tag: 'Course', title: 'Forex for beginners: a 7-day course', hl: 'Lesson 1 covers pips, lots and how to read a price quote.', depth: .85, click: 'Start free course' },
       ck: { source: 'affiliate:12345', seen: ['beginner-course', 'demo-guide'], lang: 'en', ttl: 90 },
       sig: { entry: .90, content: .80, scroll: .85, source: .60 },
-      sigTx: { entry: 'Landed on beginner-course', content: '2 of 2 pages on learning', scroll: '85% scrolled', source: 'Partner 12345, English' },
-      hero: { badge: 'LEARN', h: 'Learn first, trade when ready', sub: 'A free beginner course and a practice account. No deposit until you decide.', cta: 'Start learning free', link: 'See the course', vis: 'learn' },
+      sigTx: { entry: 'Landed on beginner-course', content: '2 XMTrading pages on learning', scroll: '85% scrolled', source: 'Partner 12345, English' },
+      hero: { link: 'See the course', vis: 'learn' },
       reg: { eye: 'Learn first', h: 'Your free course starts here', sub: 'Create a free account to unlock the lessons and a practice account with virtual funds.', perks: ['Free course', 'Practice account', 'No deposit'], cta: 'Create free account', row: { i: 'book', t: 'Practice account included', s: 'Virtual funds, no deposit needed.' } },
       next: { ico: 'book', h: 'Start your first lesson.', sub: 'Your practice account is ready too.', main: { t: 'Lesson 1: What is a pip?', p: 'Four minutes, no jargon. Finish it and the next lesson unlocks.', cta: 'Start lesson 1' }, more: [{ i: 'play', t: 'Practice account', s: '100,000 virtual funds, no risk' }, { i: 'users', t: 'Beginner webinar', s: 'Live Q&A, replay available' }] }
     },
@@ -737,8 +756,8 @@ body { background: #f5f5f5; }
       aff: { url: 'fx-hikaku.example/ja/xm-support-review', tag: 'Review (JA)', title: 'XMTrading review: Japanese support, tested', hl: 'Reviewers rate Japanese-language support and help with account setup.', depth: .60, click: 'Open XMTrading account' },
       ck: { source: 'affiliate:12345', seen: ['jp-support', 'broker-review'], lang: 'ja', ttl: 90 },
       sig: { entry: .70, content: .65, scroll: .60, source: .90 },
-      sigTx: { entry: 'Landed on jp-support', content: '2 of 2 pages on support', scroll: '60% scrolled', source: 'Partner 12345, Japanese' },
-      hero: { badge: 'SUPPORT', h: 'Real people, in your language', sub: 'Japanese-speaking specialists help with registration, verification and your first deposit.', cta: 'Register with help', link: 'Talk to support first', vis: 'chat' },
+      sigTx: { entry: 'Landed on jp-support', content: '2 XMTrading pages on support', scroll: '60% scrolled', source: 'Partner 12345, Japanese' },
+      hero: { link: 'Talk to support first', vis: 'chat' },
       reg: { eye: 'Support', h: 'Register with a person on hand', sub: 'Stuck at any step? A Japanese-speaking specialist can finish it with you.', perks: ['日本語サポート', 'Chat while you register'], cta: 'Register with help', row: { i: 'headset', t: '日本語 chat is open now', s: 'A specialist can finish this with you.', b: 'Chat' } },
       next: { ico: 'headset', h: 'A person will help you finish.', sub: 'Most people ask about ID verification and their first deposit.', main: { t: 'Book a 10-minute setup call', p: 'A Japanese-speaking specialist walks you through ID verification and your first deposit.', cta: 'Choose a time' }, more: [{ i: 'bolt', t: 'Chat now', s: 'Replies in Japanese or English' }, { i: 'book', t: 'Help centre', s: 'Step-by-step guides in Japanese' }] }
     },
@@ -761,6 +780,16 @@ body { background: #f5f5f5; }
   };
   var ORDER = ['promo_seeker', 'account_comparer', 'learner', 'platform_seeker', 'support_seeker', 'casual_browser', 'returning'];
   var MIN = .6;
+  // XMTrading pages the visitor browsed after the partner page (first-party, Phase 1 signal)
+  var TRAIL = {
+    promo_seeker: [['/promotions/welcome-bonus', 'Welcome bonus', '0:48'], ['/promotions/deposit-bonus', 'Deposit bonus', '0:31']],
+    account_comparer: [['/accounts/compare', 'Compare accounts', '1:05'], ['/accounts/zero', 'Zero account', '0:44']],
+    platform_seeker: [['/platforms/mt5', 'MetaTrader 5', '0:52'], ['/platforms/trader-pro', 'XMTD Trader Pro', '0:39']],
+    learner: [['/education/beginners-course', 'Beginner\u2019s course', '1:20'], ['/demo-account', 'Practice account', '0:35']],
+    support_seeker: [['/ja/support', '\u65e5\u672c\u8a9e\u30b5\u30dd\u30fc\u30c8', '0:58'], ['/ja/how-to-register', '\u53e3\u5ea7\u958b\u8a2d\u30ac\u30a4\u30c9', '0:41']],
+    casual_browser: [['/', 'Homepage', '0:09']],
+    returning: [['/login', 'Trusted-device sign-in', '0:04']]
+  };
   var CTRL = {
     id: 'control', acc: '#00c27c', acc2: '#008454',
     hero: { badge: 'TODAY', h: 'Trade with a trusted global broker', sub: 'Forex, metals, indices, stocks and crypto CFDs on one account.', cta: 'Join today', vis: 'ctrl' },
@@ -832,6 +861,7 @@ body { background: #f5f5f5; }
     $('#affUrl').textContent = p.aff.url; $('#affTag').textContent = p.aff.tag; $('#affTitle').textContent = p.aff.title; $('#affHl').textContent = p.aff.hl;
     $('#affSeen').textContent = '0'; $('#affClk').textContent = 'none'; $('#affDepth').textContent = '0%';
     $('#affThumb').style.transform = 'translateY(0)'; $('#affArt').style.transform = 'translateY(0)';
+    $('#trN').textContent = '\u2026'; $('#trList').innerHTML = '<li class="tr-e" style="display:block">Visitor is moving on to xmtrading.com\u2026</li>';
   }
   function affDepth(p, dur, done, t) {
     var to = p.aff.depth, t0 = performance.now(), body = $('.aff-body', aff).clientHeight;
@@ -847,11 +877,22 @@ body { background: #f5f5f5; }
     function end() {
       if (t !== tok) return;
       $('#affClk').textContent = p.aff.click.indexOf('n/a') === 0 ? 'n/a' : p.aff.click;
+      trailShow(p);
       var b = $('#affBtn'); b.classList.remove('hit'); void b.offsetWidth; if (!p.client) b.classList.add('hit');
       aff.classList.remove('busy'); done();
     }
   }
+  function trailReset() {
+    $('#trN').textContent = '0 pages';
+    $('#trList').innerHTML = '<li class="tr-e" style="display:block">Waiting for a visitor to arrive</li>';
+  }
+  function trailShow(p) {
+    var rows = TRAIL[p.id] || [];
+    $('#trN').textContent = rows.length + (rows.length === 1 ? ' page' : ' pages');
+    $('#trList').innerHTML = rows.map(function (r, i) { return '<li style="--i:' + i + '"><i></i><span><b>' + r[1] + '</b><small>xmtrading.com' + esc(r[0]) + '</small></span><em>' + r[2] + '</em></li>'; }).join('');
+  }
   function affReset() {
+    trailReset();
     aff.classList.add('empty'); aff.classList.remove('busy');
     $('#affUrl').textContent = 'partner-site.example'; $('#affTag').textContent = 'Waiting'; $('#affTitle').textContent = 'Waiting for a visitor to arrive';
     $('#affHl').textContent = 'Select an affiliate page above to simulate the visit.';
@@ -976,11 +1017,12 @@ body { background: #f5f5f5; }
   }
   function homeHtml(e) {
     if (e.client) return retHtml();
-    var h = e.hero, ch = e.id !== 'control', ad = ch ? ' adp' : '', ct = ch ? CT : '';
-    return '<div class="kick' + ad + ' st" style="--i:0"><b class="xmk">' + CHEV + '</b><span class="bdg">' + h.badge + '</span>' + ct + '</div>' +
-      '<h1 class="st' + ad + '" style="--i:1">' + h.h + ct + '</h1><p class="sub st' + ad + '" style="--i:2">' + h.sub + ct + '</p>' +
-      '<div class="hcta st" style="--i:3"><button class="btn btn-primary btn-lg pill glow' + ad + '" data-go="reg">' + h.cta + ct + '</button>' + (h.link ? '<button class="lnk" data-go="reg">' + h.link + '</button>' : '') + '</div>' +
-      '<div class="vis st' + ad + '" style="--i:4">' + VIS[h.vis](e) + ct + '</div>';
+    // Hero copy, button and background are today's page for everyone. Only the visual and the link under the button follow the persona.
+    var h = CTRL.hero, ch = e.id !== 'control', ad = ch ? ' adp' : '', ct = ch ? CT : '';
+    return '<div class="kick st" style="--i:0"><b class="xmk">' + CHEV + '</b><span class="bdg">' + h.badge + '</span></div>' +
+      '<h1 class="st" style="--i:1">' + h.h + '</h1><p class="sub st" style="--i:2">' + h.sub + '</p>' +
+      '<div class="hcta st" style="--i:3"><button class="btn btn-primary btn-lg pill glow" data-go="reg">' + h.cta + '</button>' + (e.hero.link ? '<button class="lnk' + ad + '" data-go="reg">' + e.hero.link + ct + '</button>' : '') + '</div>' +
+      '<div class="vis st' + ad + '" style="--i:4;--acc:' + e.acc + '">' + VIS[e.hero.vis](e) + ct + '</div>';
   }
   var SKEL = '<div class="skd" style="width:112px;height:26px;margin-bottom:20px"></div><div class="skd" style="width:min(430px,86%);height:44px"></div><div class="skd" style="width:min(320px,66%);height:44px;margin-top:10px"></div><div class="skd" style="width:min(380px,76%);height:14px;margin:22px 0 26px"></div><div class="skd" style="width:190px;height:50px;border-radius:999px"></div><div class="skd" style="width:min(470px,100%);height:150px;margin-top:auto;border-radius:20px 20px 0 0"></div>';
   function regHtml(e) {
@@ -1008,7 +1050,7 @@ body { background: #f5f5f5; }
       '<div class="nx-side">' + n.more.map(function (m, i) { return '<button class="nx-c' + ad + ' st" style="--i:' + (4 + i) + '" data-q="' + esc(m.t) + '"><span class="ti">' + I(m.i) + '</span><span><b>' + m.t + '</b><small>' + m.s + '</small></span>' + ct + '</button>'; }).join('') + '</div></div></div>';
   }
   function viewHtml(e, tab) {
-    if (tab === 'home') return '<section class="hero' + (e.client ? ' ret' : '') + '" style="' + heroVars(e) + '"><div class="hero-in" id="heroIn">' + homeHtml(e) + '</div></section>';
+    if (tab === 'home') return '<section class="hero' + (e.client ? ' ret' : '') + '" style="' + heroVars(CTRL) + '"><div class="hero-in" id="heroIn">' + homeHtml(e) + '</div></section>';
     return tab === 'reg' ? regHtml(e) : nextHtml(e);
   }
 
@@ -1043,7 +1085,7 @@ body { background: #f5f5f5; }
     }
     if (tab === 'home' && $('.hero', sView) && state.rtab === 'home') {
       var h = $('.hero', sView), hin = $('#heroIn');
-      h.style.cssText = heroVars(e); h.classList.toggle('ret', !!e.client);
+      h.style.cssText = heroVars(CTRL); h.classList.toggle('ret', !!e.client);
       hin.classList.add('out'); clearTimeout(hin._t);
       hin._t = setTimeout(function () { hin.innerHTML = homeHtml(e); hin.classList.remove('out', 'sk'); }, 180);
     } else {
@@ -1161,11 +1203,12 @@ body { background: #f5f5f5; }
   });
 
   /* ---------- what each segment changes ---------- */
-  $('#mxT').innerHTML = '<thead><tr><th>Segment</th><th>Homepage</th><th>Registration helper</th><th>Next step</th></tr></thead><tbody>' +
+  var VIS_NAME = { promo: 'Bonus ticket', cmp: 'Account comparison', plat: 'Platform preview', learn: 'Course card', chat: 'Support chat', ctrl: 'Market card' };
+  $('#mxT').innerHTML = '<thead><tr><th>Segment</th><th>Homepage blocks</th><th>Registration helper</th><th>Next step</th></tr></thead><tbody>' +
     ORDER.filter(function (id) { return P[id].reg && P[id].reg.row; }).map(function (id) {
       var p = P[id];
-      return '<tr data-id="' + id + '"><td><span class="pn" style="--c:' + p.c + '"><i>' + I(p.ico) + '</i>' + p.short + '</span></td><td><b>' + p.hero.h + '</b><small>Button: ' + p.hero.cta + '</small></td><td><b>' + p.reg.row.t + '</b><small>Button: ' + p.reg.cta + '</small></td><td><b>' + p.next.main.t + '</b><small>' + p.next.more[0].t + '</small></td></tr>';
-    }).join('') + '<tr><td><span class="pn" style="--c:#6b7280"><i>' + I('globe') + '</i>Control</span></td><td><b>' + CTRL.hero.h + '</b><small>Button: ' + CTRL.hero.cta + '</small></td><td><b>No helper row</b><small>Button: ' + CTRL.reg.cta + '</small></td><td><b>' + CTRL.next.main.t + '</b><small>' + CTRL.next.more[0].t + '</small></td></tr></tbody>';
+      return '<tr data-id="' + id + '"><td><span class="pn" style="--c:' + p.c + '"><i>' + I(p.ico) + '</i>' + p.short + '</span></td><td><b>' + VIS_NAME[p.hero.vis] + '</b><small>Link: ' + p.hero.link + '</small></td><td><b>' + p.reg.row.t + '</b><small>Button: ' + p.reg.cta + '</small></td><td><b>' + p.next.main.t + '</b><small>' + p.next.more[0].t + '</small></td></tr>';
+    }).join('') + '<tr><td><span class="pn" style="--c:#6b7280"><i>' + I('globe') + '</i>Control</span></td><td><b>' + VIS_NAME.ctrl + '</b><small>No extra link</small></td><td><b>No helper row</b><small>Button: ' + CTRL.reg.cta + '</small></td><td><b>' + CTRL.next.main.t + '</b><small>' + CTRL.next.more[0].t + '</small></td></tr></tbody>';
   function mxMark() { var id = eff().id; $$('#mxT tbody tr').forEach(function (r) { r.classList.toggle('on', r.dataset.id === id || (id === 'control' && !r.dataset.id)); }); }
 
   /* ---------- illustrative lift chart ---------- */
@@ -1185,7 +1228,7 @@ body { background: #f5f5f5; }
     var p = P[id]; return '<span class="pchip" style="--c:' + p.c + '"><i>' + I(p.ico) + '</i>' + p.short + '</span>';
   }).join('');
   ico(document);
-  emptyCookie('no xm_seg cookie yet'); renderRules(null);
+  emptyCookie('no xm_seg cookie yet'); renderRules(null); trailReset();
   $('#dtDom').textContent = location.hostname || 'localhost';
   setSt('', 'No cookie yet');
   render('full'); moveInd(); window.addEventListener('resize', moveInd);
@@ -1203,7 +1246,7 @@ body { background: #f5f5f5; }
   XM.notes({
     title: 'Idea 04 · Segment by what they read',
     today: 'Every visitor gets the same homepage and registration form, whether they read a bonus review, an account comparison or a beginner course.',
-    proposed: 'A first-party xm_seg cookie records what the visitor came for. Headline, one helper row on the registration form and the next step follow it. Fields, legal text and prices never change. Phase 1 uses XMTrading-side signals only; partner "what they read" tags come later.',
+    proposed: 'A first-party xm_seg cookie records what the visitor came for. Two homepage blocks (hero visual and link), the registration copy and helper row, and the next step follow it. The hero headline and button stay as today. Fields, legal text and prices never change. Phase 1 uses XMTrading-side signals only; partner "what they read" tags come later.',
     why: 'Message match: someone who came for a bonus should land on the bonus, and someone comparing accounts should see Zero pre-selected. Compliance signs off promo claims; Legal confirms cookie consent.',
     metric: 'Registration rate per segment against a 10% control hold-out; login-to-trade for returning clients. Chart values are illustrative, not measured.'
   });

@@ -34,7 +34,7 @@ window.XM_IDEAS = [
     short: 'Persona-driven homepage, registration and login',
     path: 'ideas/04-segmentation/index.html',
     hypothesis: 'If we recognise what a visitor came for and adapt the message and one helper on the form to it, we stop averaging conversion and build meaningful journeys per segment. Fields, legal text and prices never change.',
-    scope: ['Phase 1: segment from XMTrading-side signals (landing page, affiliate ID, language, country, device, returning client)', 'Six personas (bonus, account comparison, learner, platform, support, returning client); everyone else sees today\'s page', 'Homepage and registration content customizable per persona: headline, subline, button, visual, helper row (pre-selected account, platform note, practice account, chat) and next step read the cookie', 'Phase 2: partner pages pass what the visitor read', 'Returning and logged-in clients get a simpler, secure way back in; 10% control hold-out'],
+    scope: ['Phase 1: segment from XMTrading-side signals (landing page, affiliate ID, the xmtrading.com pages browsed, language, country, device, returning client)', 'Six personas (bonus, account comparison, learner, platform, support, returning client); everyone else sees today\'s page', 'Homepage keeps today\'s hero; only two blocks adapt: the hero visual and the link under the button. Registration (headline, helper row such as pre-selected account, platform note, practice account or chat) and the next step read the cookie', 'Phase 2: partner pages pass what the visitor read', 'Returning and logged-in clients get a simpler, secure way back in; 10% control hold-out'],
     metric: 'North star denominator; conversion reported per segment'
   },
   {
