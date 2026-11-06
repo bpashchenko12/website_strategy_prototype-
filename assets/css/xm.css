@@ -131,7 +131,7 @@ select.inp { appearance: none; background-image: url("data:image/svg+xml,%3Csvg 
 .modal-back { position: fixed; inset: 0; z-index: 900; background: rgba(10, 12, 15, .55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .2s; }
 .modal-back.open { display: flex; }
 .modal { background: #fff; border-radius: 22px; width: 100%; max-width: 480px; box-shadow: var(--sh-l); position: relative; animation: fadeUp .28s cubic-bezier(.2, .7, .2, 1); max-height: 92vh; overflow: auto; }
-.modal .x { position: absolute; right: 14px; top: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--soft); font-size: 18px; line-height: 1; z-index: 2; }
+.modal .x { position: absolute; right: 14px; top: 14px; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--soft); font-size: 18px; line-height: 1; z-index: 2; display: grid; place-items: center; padding: 0; }
 .toast-host { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); z-index: 2000; display: grid; gap: 8px; pointer-events: none; }
 .toast { background: var(--ink); color: #fff; padding: 11px 18px; border-radius: 12px; font-size: 14px; box-shadow: var(--sh-m); animation: fadeUp .25s; display: flex; gap: 10px; align-items: center; }
 
