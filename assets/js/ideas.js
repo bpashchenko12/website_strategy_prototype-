@@ -69,7 +69,7 @@ window.XM_IDEAS = [
     metric: 'Completion of abandoned registrations and verifications after the email; email click-through; time from email to completion'
   },
   {
-    id: '18', slide: 'TBD', wave: 1, obj: 'conversion', status: 'built', effort: 'Low', priority: 'Low',
+    id: '18', slide: 28, wave: 1, obj: 'conversion', status: 'built', effort: 'Low', priority: 'Low',
     title: 'Password generator',
     short: 'One click creates a valid password',
     path: 'ideas/18-password-helper/index.html',
@@ -80,7 +80,7 @@ window.XM_IDEAS = [
     metric: 'Recovery-email click-through; form completion after the email; password-error rate on the form'
   },
   {
-    id: '09', slide: 30, wave: 2, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'High',
+    id: '09', slide: 31, wave: 2, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'High',
     title: 'Try the Portal without an account',
     short: 'Guest demo with a virtual balance',
     path: 'ideas/09-try/portal.html',
@@ -89,7 +89,7 @@ window.XM_IDEAS = [
     metric: 'Portal page to demo start; demo start to register; guest session to live account'
   },
   {
-    id: '10', slide: 31, wave: 2, obj: 'onboarding', status: 'built', effort: 'Medium', priority: 'Medium',
+    id: '10', slide: 32, wave: 2, obj: 'onboarding', status: 'built', effort: 'Medium', priority: 'Medium',
     title: 'Getting-started guide',
     short: 'Six steps, a video for each',
     path: 'ideas/10-getting-started/index.html',
@@ -98,7 +98,7 @@ window.XM_IDEAS = [
     metric: 'Hub to first PWA login; hub to FTD'
   },
   {
-    id: '11', slide: 32, wave: 2, obj: 'content', status: 'built', effort: 'High', priority: 'Medium',
+    id: '11', slide: 33, wave: 2, obj: 'content', status: 'built', effort: 'High', priority: 'Medium',
     title: 'One page per instrument',
     short: 'For search and ads, with the trade pre-filled',
     path: 'ideas/11-instrument/index.html',
@@ -107,7 +107,7 @@ window.XM_IDEAS = [
     metric: 'Content-first share; content-first to register'
   },
   {
-    id: '08', slide: 29, wave: 2, obj: 'content', status: 'built', effort: 'Medium', priority: 'Medium',
+    id: '08', slide: 34, wave: 2, obj: 'content', status: 'built', effort: 'Medium', priority: 'Medium',
     title: 'Trade ideas page',
     short: 'Top movers next to trade ideas',
     path: 'ideas/08-trade-ideas/index.html',
@@ -116,7 +116,7 @@ window.XM_IDEAS = [
     metric: 'Hub visits from search; click-through to instrument pages; locked idea to register; hub visit to first trade'
   },
   {
-    id: '12', slide: 33, wave: 3, obj: 'retention', status: 'built', effort: 'Low', priority: 'High',
+    id: '12', slide: 35, wave: 3, obj: 'retention', status: 'built', effort: 'Low', priority: 'High',
     title: 'Welcome-back offer',
     short: 'Time-limited offer with one-tap login',
     path: 'ideas/12-welcome-back/index.html',
@@ -125,7 +125,7 @@ window.XM_IDEAS = [
     metric: 'Dormant reactivation; re-deposit'
   },
   {
-    id: '13', slide: 34, wave: 3, obj: 'retention', status: 'built', effort: 'Medium', priority: 'High',
+    id: '13', slide: 36, wave: 3, obj: 'retention', status: 'built', effort: 'Medium', priority: 'High',
     title: 'Notification sign-up',
     short: 'Pop-up: email for visitors, app alerts for clients',
     path: 'ideas/13-notifications/index.html',
@@ -134,7 +134,7 @@ window.XM_IDEAS = [
     metric: 'Pop-up opt-in rate by page type; subscribers who register within 30 days; seasonal campaign click-through from subscribers; opt-out rate per channel'
   },
   {
-    id: '14', slide: 35, wave: 3, obj: 'retention', status: 'built', effort: 'Low', priority: 'Medium',
+    id: '14', slide: 37, wave: 3, obj: 'retention', status: 'built', effort: 'Low', priority: 'Medium',
     title: 'Smart login for existing clients',
     short: 'One click to where the client wants to go',
     path: 'ideas/14-login-router/index.html',
@@ -143,7 +143,7 @@ window.XM_IDEAS = [
     metric: 'Existing-account visitors to PWA login'
   },
   {
-    id: '15', slide: 36, wave: 3, obj: 'content', status: 'built', effort: 'High', priority: 'Medium',
+    id: '15', slide: 38, wave: 3, obj: 'content', status: 'built', effort: 'High', priority: 'Medium',
     title: 'Learn and earn a bonus',
     short: 'Finish lessons, get a x2 deposit bonus and a badge',
     path: 'ideas/15-learn-to-earn/index.html',
@@ -152,7 +152,7 @@ window.XM_IDEAS = [
     metric: 'Course completion to FTD'
   },
   {
-    id: '16', slide: 37, wave: 3, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
+    id: '16', slide: 39, wave: 3, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
     title: 'Refer a friend',
     short: 'Get a referral code without an account',
     path: 'ideas/16-refer/index.html',
@@ -161,7 +161,7 @@ window.XM_IDEAS = [
     metric: 'Referral registrations; referrer registrations; FTD of referred users'
   },
   {
-    id: '17', slide: 39, wave: 3, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
+    id: '17', slide: 40, wave: 3, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
     title: 'XMTrading web MCP server',
     short: 'Ask about XMTrading and open an account from your terminal',
     path: 'ideas/17-mcp/index.html',
