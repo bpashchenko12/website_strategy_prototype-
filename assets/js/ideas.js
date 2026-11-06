@@ -162,11 +162,11 @@ window.XM_IDEAS = [
   },
   {
     id: '17', slide: 39, wave: 3, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
-    title: 'XM web MCP server',
-    short: 'Ask about XM and open an account from your terminal',
+    title: 'XMTrading web MCP server',
+    short: 'Ask about XMTrading and open an account from your terminal',
     path: 'ideas/17-mcp/index.html',
-    hypothesis: 'A hosted MCP server lets people use their own AI assistant to get correct answers about XM and to start an account without opening the website. Answers come from XM\'s own facts, and the password and ID never pass through the assistant.',
-    scope: ['Web (hosted) MCP server only, nothing to install', 'Job 1: answer questions about XM from the first source, with the source named, a country check and a risk line', 'Job 2: open an account in the terminal: consent, email code, then a one-time secure link to set the password and finish verification on XM', 'Read-only tools for facts; a few write tools for registration, behind explicit consent'],
+    hypothesis: 'A hosted MCP server lets people use their own AI assistant to get correct answers about XMTrading and to start an account without opening the website. Answers come from XMTrading\'s own facts, and the password and ID never pass through the assistant.',
+    scope: ['Web (hosted) MCP server only, nothing to install', 'Job 1: answer questions about XMTrading from the first source, with the source named, a country check and a risk line', 'Job 2: open an account in the terminal: consent, email code, then a one-time secure link to set the password and finish verification on XMTrading', 'Read-only tools for facts; a few write tools for registration, behind explicit consent'],
     metric: 'Registrations started through MCP and their completion rate; share of answers with a named source; registration-quality guardrail'
   }
 ];

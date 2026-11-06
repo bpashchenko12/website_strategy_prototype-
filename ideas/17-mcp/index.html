@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>XM web MCP · XMTrading</title>
+<title>XMTrading web MCP</title>
 <link rel="stylesheet" href="../../assets/css/xm.css">
 <style>
 /* =====================================================================
-   IDEA 17 · XM web MCP server. Two jobs:
+   IDEA 17 · XMTrading web MCP server. Two jobs:
    1) answer questions about the broker from the first source
    2) open an account right in the terminal
    ===================================================================== */
@@ -126,18 +126,18 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
 <main class="wrap">
   <header class="intro">
     <span class="eyebrow">Web MCP server</span>
-    <h1>Connect your AI assistant to XM. <em>No install, one URL.</em></h1>
-    <p class="lead">A hosted MCP server with two jobs: answer questions about XM from the official source, and open an account without leaving your terminal.</p>
+    <h1>Connect your AI assistant to XMTrading. <em>No install, one URL.</em></h1>
+    <p class="lead">A hosted MCP server with two jobs: answer questions about XMTrading from the official source, and open an account without leaving your terminal.</p>
   </header>
 
   <div class="conn" role="group" aria-label="Connect">
     <span class="lb">Connect</span>
-    <code id="cfg"><span class="k">"xm"</span>: { <span class="k">"type"</span>: <span class="s">"http"</span>, <span class="k">"url"</span>: <span class="s">"https://mcp.xmtrading.com/mcp"</span> }</code>
+    <code id="cfg"><span class="k">"xmtrading"</span>: { <span class="k">"type"</span>: <span class="s">"http"</span>, <span class="k">"url"</span>: <span class="s">"https://mcp.xmtrading.com/mcp"</span> }</code>
     <button type="button" id="copy"><span class="ic" data-ic="copy"></span><span id="copyT">Copy</span></button>
   </div>
 
   <section class="jobs" aria-label="What it does">
-    <button class="job on" type="button" data-job="ask"><span class="no">1</span><span><b>Answer questions from the first source</b><p>Accounts, bonuses, platforms, verification and funding, straight from XM's own approved facts, with the source named.</p></span></button>
+    <button class="job on" type="button" data-job="ask"><span class="no">1</span><span><b>Answer questions from the first source</b><p>Accounts, bonuses, platforms, verification and funding, straight from XMTrading's own approved facts, with the source named.</p></span></button>
     <button class="job" type="button" data-job="open"><span class="no">2</span><span><b>Open an account in your terminal</b><p>Register, confirm your email and get a secure link to finish, without opening the website first.</p></span></button>
   </section>
 
@@ -151,7 +151,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
       <h3>What the server offers</h3>
       <p>The tools lit up are the ones used in the example on the left.</p>
       <ul class="tl-l" id="tools"></ul>
-      <p class="web"><span class="ic" data-ic="globe"></span><span><b>Web only.</b> A hosted HTTPS server run by XM. Nothing to install and nothing to update on the user's machine.</span></p>
+      <p class="web"><span class="ic" data-ic="globe"></span><span><b>Web only.</b> A hosted HTTPS server run by XMTrading. Nothing to install and nothing to update on the user's machine.</span></p>
     </aside>
   </section>
 
@@ -159,12 +159,12 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
     <span class="eyebrow">Guardrails</span>
     <h2>Official facts only, and the assistant never touches your password.</h2>
     <div class="gg">
-      <div class="gc"><span class="ni"><span class="ic" data-ic="book"></span></span><b>One source of truth</b><p>Answers come from approved XM content, versioned, with the source named. If it is not there, the assistant says so.</p></div>
+      <div class="gc"><span class="ni"><span class="ic" data-ic="book"></span></span><b>One source of truth</b><p>Answers come from approved XMTrading content, versioned, with the source named. If it is not there, the assistant says so.</p></div>
       <div class="gc"><span class="ni"><span class="ic" data-ic="globe"></span></span><b>Country first</b><p>Products, bonuses and rules differ by region, so the server resolves the country and regulated entity before it answers.</p></div>
       <div class="gc"><span class="ni"><span class="ic" data-ic="warn"></span></span><b>Risk warning every time</b><p>Every answer carries the risk line. The server gives information, never advice.</p></div>
       <div class="gc"><span class="ni"><span class="ic" data-ic="shield"></span></span><b>Explicit consent</b><p>An account is only created after the user accepts the client agreement and risk disclosure in the conversation.</p></div>
-      <div class="gc"><span class="ni"><span class="ic" data-ic="lock"></span></span><b>Secrets stay out of the chat</b><p>The password and ID documents are never typed into the assistant. A one-time secure link opens XM's own page for them.</p></div>
-      <div class="gc"><span class="ni"><span class="ic" data-ic="user"></span></span><b>Verification stays with XM</b><p>Email confirmation and KYC run as today. The terminal only starts the registration and hands over.</p></div>
+      <div class="gc"><span class="ni"><span class="ic" data-ic="lock"></span></span><b>Secrets stay out of the chat</b><p>The password and ID documents are never typed into the assistant. A one-time secure link opens XMTrading's own page for them.</p></div>
+      <div class="gc"><span class="ni"><span class="ic" data-ic="user"></span></span><b>Verification stays with XMTrading</b><p>Email confirmation and KYC run as today. The terminal only starts the registration and hands over.</p></div>
     </div>
     <p class="note"><span class="ic" data-ic="warn"></span><span>Prototype. The server address, tool names, timings and facts are illustrative and scripted. Nothing here calls a real service or states real regulatory facts.</span></p>
   </section>
@@ -180,21 +180,21 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
   $$('[data-ic]').forEach(function (e) { e.innerHTML = XM.icon(e.getAttribute('data-ic')); });
 
   XM.notes({
-    title: 'XM web MCP server',
-    today: 'AI assistants answer questions about XM from stale or third-party pages, and opening an account always starts on the website.',
-    proposed: 'One hosted (web) MCP server with two jobs: answer questions from XM\'s first-party facts, and let a user open an account from their terminal, handing the password and KYC to a secure XM page.',
+    title: 'XMTrading web MCP server',
+    today: 'AI assistants answer questions about XMTrading from stale or third-party pages, and opening an account always starts on the website.',
+    proposed: 'One hosted (web) MCP server with two jobs: answer questions from XMTrading\'s first-party facts, and let a user open an account from their terminal, handing the password and KYC to a secure XMTrading page.',
     why: 'Correct, consistent answers wherever people ask, and a new low-friction way to start registration.',
     metric: 'Share of AI-assisted sessions using the server, registrations started through MCP, completion of those registrations, answers with a named source.'
   });
 
   /* ---------- tools ---------- */
   var TOOLS = [
-    { f: 'get_regulator', t: 'r', d: 'Which XM entity and rules apply to a country', j: ['ask', 'open'] },
-    { f: 'search_facts', t: 'r', d: 'Search approved XM facts, returns ranked sources', j: ['ask'] },
+    { f: 'get_regulator', t: 'r', d: 'Which XMTrading entity and rules apply to a country', j: ['ask', 'open'] },
+    { f: 'search_facts', t: 'r', d: 'Search approved XMTrading facts, returns ranked sources', j: ['ask'] },
     { f: 'get_account_types', t: 'r', d: 'Account types and what differs between them', j: ['ask', 'open'] },
     { f: 'start_registration', t: 'w', d: 'Create a registration after explicit consent', j: ['open'] },
     { f: 'verify_email', t: 'w', d: 'Confirm the 6-digit code sent to the user\'s email', j: ['open'] },
-    { f: 'create_secure_link', t: 'w', d: 'One-time link to set a password and finish KYC on XM', j: ['open'] }
+    { f: 'create_secure_link', t: 'w', d: 'One-time link to set a password and finish KYC on XMTrading', j: ['open'] }
   ];
   function renderTools(job) {
     $('#tools').innerHTML = TOOLS.map(function (x) {
@@ -206,15 +206,15 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
   /* ---------- scripts ---------- */
   var SCRIPTS = {
     ask: [
-      { k: 'u', t: 'I am in Japan. Which XM account types are there, and how long does verification take?' },
-      { k: 'tool', f: 'get_regulator', t: 'r', args: { country: 'JP' }, res: { country: 'JP', entity: 'XM entity serving Japan', status: 'resolved' }, ms: 31 },
+      { k: 'u', t: 'I am in Japan. Which XMTrading account types are there, and how long does verification take?' },
+      { k: 'tool', f: 'get_regulator', t: 'r', args: { country: 'JP' }, res: { country: 'JP', entity: 'XMTrading entity serving Japan', status: 'resolved' }, ms: 31 },
       { k: 'tool', f: 'search_facts', t: 'r', args: { query: 'account types, verification time', country: 'JP' }, res: { hits: [{ id: 'account-types', score: 0.93 }, { id: 'verification', score: 0.89 }] }, ms: 74 },
       { k: 'tool', f: 'get_account_types', t: 'r', args: { country: 'JP' }, res: { source: 'account-types', version: 'v23', types: ['Micro', 'Standard', 'Ultra Low'] }, ms: 96 },
-      { k: 'a', html: '<p>XM offers three account types in Japan: <b>Micro</b>, <b>Standard</b> and <b>Ultra Low</b>. They differ mainly in lot size, spread structure and minimum deposit.</p><p>Verification needs a photo ID and a proof of address. Most reviews finish within about one business day, and you can practise on a demo account while you wait.</p>', src: ['Account types page', 'Verification help article'] }
+      { k: 'a', html: '<p>XMTrading offers three account types in Japan: <b>Micro</b>, <b>Standard</b> and <b>Ultra Low</b>. They differ mainly in lot size, spread structure and minimum deposit.</p><p>Verification needs a photo ID and a proof of address. Most reviews finish within about one business day, and you can practise on a demo account while you wait.</p>', src: ['Account types page', 'Verification help article'] }
     ],
     open: [
-      { k: 'u', t: 'Open an XM account for me. My email is alex@example.com and I live in Japan.' },
-      { k: 'tool', f: 'get_regulator', t: 'r', args: { country: 'JP' }, res: { country: 'JP', entity: 'XM entity serving Japan', account_opening: 'available' }, ms: 28 },
+      { k: 'u', t: 'Open an XMTrading account for me. My email is alex@example.com and I live in Japan.' },
+      { k: 'tool', f: 'get_regulator', t: 'r', args: { country: 'JP' }, res: { country: 'JP', entity: 'XMTrading entity serving Japan', account_opening: 'available' }, ms: 28 },
       { k: 'tool', f: 'get_account_types', t: 'r', args: { country: 'JP' }, res: { types: ['Micro', 'Standard', 'Ultra Low'] }, ms: 88 },
       { k: 'a', html: '<p>Account opening is available in Japan. Which account type would you like: <b>Micro</b>, <b>Standard</b> or <b>Ultra Low</b>?</p><p>I also need your confirmation that you accept the <b>client agreement</b> and the <b>risk disclosure</b>.</p>' },
       { k: 'u', t: 'Standard. Yes, I accept both.' },
@@ -259,7 +259,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
       if (s.k === 'u') {
         var u = line('u', ''); await sleep(500); await typeInto(u, s.t, my); await sleep(350);
       } else if (s.k === 'tool') {
-        var tl = line('tl run' + (s.t === 'w' ? ' wr' : ''), '<div class="h"><span class="fn">xm.' + s.f + '</span>(' + esc(argStr(s.args)) + ')<span class="bdg ' + s.t + '">' + (s.t === 'r' ? 'read' : 'write') + '</span><span class="ms">running…</span></div>');
+        var tl = line('tl run' + (s.t === 'w' ? ' wr' : ''), '<div class="h"><span class="fn">xmtrading.' + s.f + '</span>(' + esc(argStr(s.args)) + ')<span class="bdg ' + s.t + '">' + (s.t === 'r' ? 'read' : 'write') + '</span><span class="ms">running…</span></div>');
         var li = $('#tools [data-f="' + s.f + '"]'); if (li) li.classList.add('used');
         await sleep(620); if (my !== runId) return;
         tl.classList.remove('run'); $('.ms', tl).textContent = s.ms + ' ms';
@@ -279,7 +279,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(0, 160, 100, .55
   $$('.job').forEach(function (b) { b.addEventListener('click', function () { play(b.getAttribute('data-job')); }); });
   $('#replay').addEventListener('click', function () { play(job); });
   $('#copy').addEventListener('click', function () {
-    var t = '"xm": { "type": "http", "url": "https://mcp.xmtrading.com/mcp" }';
+    var t = '"xmtrading": { "type": "http", "url": "https://mcp.xmtrading.com/mcp" }';
     if (navigator.clipboard) navigator.clipboard.writeText(t);
     $('#copyT').textContent = 'Copied'; setTimeout(function () { $('#copyT').textContent = 'Copy'; }, 1500);
   });
