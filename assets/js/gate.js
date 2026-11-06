@@ -63,11 +63,10 @@
     g.id = 'xmGate';
     g.setAttribute('role', 'dialog');
     g.setAttribute('aria-modal', 'true');
-    g.setAttribute('aria-labelledby', 'xmGateT');
+    g.setAttribute('aria-label', 'Access password');
     g.innerHTML =
       '<form class="gc" autocomplete="off">' +
         '<div class="lg">XMTRADING<b>/</b></div>' +
-        '<h1 id="xmGateT">Website Strategy · Prototype studio</h1>' +
         '<p>This workspace is private. Enter the access password to continue.</p>' +
         '<div class="fld" id="xmF"><input type="password" id="xmPw" placeholder="Access password" aria-label="Access password" autocomplete="current-password" spellcheck="false" autocapitalize="off">' +
           '<button type="button" class="tg" id="xmTg" aria-label="Show password">Show</button></div>' +
