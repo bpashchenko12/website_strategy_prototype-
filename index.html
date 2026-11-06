@@ -484,12 +484,14 @@
     { n: 'Marios', r: 'Head of Design' },
     { n: 'Despoina', r: 'Lead BI' },
     { n: 'Kotoe', r: 'Regional Marketing Manager' },
-    { n: 'Boris Pashchenko', r: 'Product Manager', host: true }
+    { n: 'Bohdan', r: 'Product Manager', host: true, alias: 'Boris Pashchenko' },
+    { n: 'Themis', r: 'Product Team Lead' },
+    { n: 'Lily', r: 'Marketing Team Lead' }
   ];
   function review() {
     var cs = XMStore.state.comments;
     $('#revPpl').innerHTML = REVIEWERS.map(function (p) {
-      var mine = cs.filter(function (c) { return c.author && c.author.name === p.n; }), col = mine.length && mine[0].author.color || '#9aa1ab';
+      var mine = cs.filter(function (c) { return c.author && (c.author.name === p.n || c.author.name === p.alias); }), col = mine.length && mine[0].author.color || '#9aa1ab';
       return '<div class="pp"><span class="av" style="background:' + esc(col) + '">' + esc(initials(p.n)) + '</span><div class="in"><b>' + esc(p.n) + '</b><small>' + esc(p.r) + '</small></div>' +
         '<div class="st"><span class="tag t-g">' + (p.host ? 'Hosted the call' : 'Attended the call') + '</span><span class="tag grey">' + mine.length + ' comment' + (mine.length === 1 ? '' : 's') + '</span></div></div>';
     }).join('');
