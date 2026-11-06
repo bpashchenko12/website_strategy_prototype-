@@ -39,6 +39,7 @@ body { background: #f5f5f5; }
 .how li + li { border-top: 1px solid var(--line); }
 .how li u { text-decoration: none; width: 34px; height: 34px; border-radius: 50%; background: var(--g-l); color: var(--g-d); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
 .how li b { display: block; font-size: 15px; font-weight: 600; }
+.how li b .xdep { display: inline-block; vertical-align: 1px; margin-left: 8px; padding: 3px 10px; border-radius: 999px; background: #f0a500; color: #1d2024; font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .how li span { display: block; font-size: 13px; color: var(--mut); line-height: 1.45; margin-top: 2px; }
 
 /* ---------- scenes ---------- */
@@ -175,7 +176,7 @@ body { background: #f5f5f5; }
     <div>
       <span class="eyebrow">Idea 07 · Recovery</span>
       <h1>Pick up exactly where they stopped.</h1>
-      <p class="lead">Inside the PWA, registration and verification save every answer as a state while the user types. If they leave, an email brings them back to the same screen, with everything still filled in.</p>
+      <p class="lead">Registration (on the website) and verification (in the PWA) save every answer as a state while the user types. If they leave, an email brings them back to the same screen, with everything still filled in.</p>
       <div class="tabs-row">
         <div class="pill-tabs" role="tablist" aria-label="Scenes" id="tabs">
           <button type="button" role="tab" data-t="save" class="on" aria-controls="sc-save"><i>1</i>Saved as they type</button>
@@ -190,7 +191,7 @@ body { background: #f5f5f5; }
         <li><u>1</u><div><b>Type</b><span>Each answer in registration or verification is written to a saved state.</span></div></li>
         <li><u>2</u><div><b>Leave</b><span>The state keeps the last screen and every value entered so far.</span></div></li>
         <li><u>3</u><div><b>Email</b><span>A reminder names that screen. Its button is a link to it, carrying the state.</span></div></li>
-        <li><u>4</u><div><b>Return</b><span>The link opens the PWA on that screen with the answers filled in.</span></div></li>
+        <li><u>4</u><div><b>Return <em class="xdep">XM dependency</em></b><span>The link opens the website on the registration screen, or the PWA on the verification screen, with the answers filled in.</span></div></li>
       </ol>
     </div>
   </section>
@@ -205,7 +206,7 @@ body { background: #f5f5f5; }
         <div class="ncap" id="ncap"></div>
       </div>
       <div class="panel">
-        <span class="tag">Inside the PWA</span>
+        <span class="tag">Website and PWA</span>
         <h2 style="margin-top:12px">Every answer is kept as a state</h2>
         <p class="sub">Type in any field, choose a value or add a photo. The state below updates with each change. Switch screens to see it follow the user.</p>
         <div class="insp" aria-live="polite">

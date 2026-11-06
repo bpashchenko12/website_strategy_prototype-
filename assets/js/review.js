@@ -25,6 +25,8 @@
 .xr-dep { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 11px 20px; background: #fff4d6; border-bottom: 2px solid #f0a500; color: #1d2024; font-size: 14px; line-height: 1.4; text-align: center; position: relative; z-index: 5; }\
 .xr-dep b { background: #f0a500; color: #1d2024; border-radius: 999px; padding: 4px 12px; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }\
 .xr-dep span { font-weight: 600; }\
+.xr-dep.xr-flg { background: #e8efff; border-bottom-color: #3d63dd; }\
+.xr-dep.xr-flg b { background: #3d63dd; color: #fff; }\
 .xr-dock { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 2147483000; display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 18px; background: rgba(17,19,24,.92); backdrop-filter: blur(14px) saturate(1.4); box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.08); color: #fff; font-size: 13px; max-width: calc(100vw - 20px); transition: transform .25s, opacity .25s; }\
 .xr-dock.xr-off { transform: translate(-50%, 140%); opacity: 0; pointer-events: none; }\
 .xr-b { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 12px; border-radius: 12px; border: 0; background: transparent; color: #e9ecf1; font-size: 13px; font-weight: 500; white-space: nowrap; text-decoration: none; position: relative; }\
@@ -39,6 +41,7 @@
 .xr-title b { background: #008454; border-radius: 7px; padding: 2px 7px; font-size: 12px; }\
 .xr-title span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 13px; }\
 .xr-title small { opacity: .55; font-size: 11px; font-weight: 500; }\
+.xr-dl { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; margin: 0 4px; border-radius: 999px; background: #f0a500; color: #1d2024; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }\
 .xr-sep { width: 1px; height: 22px; background: rgba(255,255,255,.14); margin: 0 4px; }\
 .xr-tab { position: fixed; right: 16px; bottom: 16px; z-index: 2147483000; border: 0; border-radius: 14px; padding: 10px 14px; background: rgba(17,19,24,.92); color: #fff; font-size: 12.5px; font-weight: 600; display: none; gap: 8px; align-items: center; box-shadow: 0 8px 28px rgba(0,0,0,.3); }\
 .xr-tab.xr-show { display: inline-flex; }\
@@ -166,6 +169,7 @@ body.xr-pinmode, body.xr-pinmode * { cursor: crosshair !important; }\
       '<a class="xr-b" ' + (prev ? 'href="' + ROOT + prev.path + '" title="Previous: ' + esc(prev.title) + '  ( [ )"' : 'style="opacity:.3;pointer-events:none"') + '>' + ic('chev_l') + '</a>' +
       '<button class="xr-title" data-a="switch" title="Jump to any idea  ( / )"><b>#' + esc(idea.id) + '</b><span>' + esc(idea.title) + '</span><small>' + (bi + 1) + ' of ' + builds.length + '</small></button>' +
       '<a class="xr-b" ' + (next ? 'href="' + ROOT + next.path + '" title="Next: ' + esc(next.title) + '  ( ] )"' : 'style="opacity:.3;pointer-events:none"') + '>' + ic('chev_r') + '</a>' +
+      (idea.dep ? '<span class="xr-dl xr-hide-m">XM dependency</span>' : '') +
       '<i class="xr-sep"></i>' +
       '<button class="xr-b xr-vote" data-a="vote" title="Support this idea">' + ic('up') + '<span class="xr-lbl">Support</span><span class="xr-n" data-r="votes">0</span></button>' +
       '<button class="xr-b" data-a="drawer" title="Comments  ( C )">' + ic('chat') + '<span class="xr-lbl">Comments</span><span class="xr-n" data-r="count">0</span></button>' +
@@ -185,10 +189,10 @@ body.xr-pinmode, body.xr-pinmode * { cursor: crosshair !important; }\
       '<label>Role</label><select data-r="role"><option value="" disabled selected>Select your role</option>' + ROLES.map(function (r) { return '<option>' + r + '</option>'; }).join('') + '</select>' +
       '<button class="xr-go" data-a="id-save">Continue</button><button class="xr-no" data-a="id-close">Not now</button></div></div>';
     document.body.appendChild(root);
-    if (idea.dep) {
-      var bn = document.createElement('div'); bn.className = 'xr xr-dep'; bn.setAttribute('role', 'note');
-      bn.innerHTML = '<b>XM dependency</b><span>' + esc(idea.dep) + '</span>';
-      document.body.insertBefore(bn, document.body.firstChild);
+    if (idea.flag) {
+      var fl = document.createElement('div'); fl.className = 'xr xr-dep xr-flg'; fl.setAttribute('role', 'note');
+      fl.innerHTML = '<b>To be investigated</b><span>' + esc(idea.flag) + '</span>';
+      document.body.insertBefore(fl, document.body.firstChild);
     }
     dock = root.querySelector('.xr-dock'); drawer = root.querySelector('.xr-drawer'); list = root.querySelector('[data-r=list]'); pop = root.querySelector('[data-r=pop]');
     tab = root.querySelector('.xr-tab'); modeBar = root.querySelector('.xr-mode'); idModal = root.querySelector('.xr-modal');
