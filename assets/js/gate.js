@@ -73,7 +73,7 @@
         '<div class="er" id="xmEr" role="alert"></div>' +
         '<label class="kp"><input type="checkbox" id="xmKp" checked> Keep me signed in on this device</label>' +
         '<button type="submit" class="go" id="xmGo">Continue</button>' +
-        '<div class="ft">No password? Ask the strategy team.</div>' +
+        '<div class="ft">No password? Ask the product team.</div>' +
       '</form>';
     document.documentElement.appendChild(g);
 
