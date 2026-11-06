@@ -478,7 +478,7 @@
     if (e.target.closest('#voteBtn')) { support(); return; }
     if (e.target.closest('#cmtJump')) { showTab('fb'); var tx = $('#cmtTxt'); if (tx) { tx.focus({ preventScroll: true }); tx.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
     if (e.target.closest('#cmtPost')) { postComment(); return; }
-    if (e.target.closest('#copyLink')) { var u = location.origin + location.pathname + '#' + sel; if (navigator.clipboard) navigator.clipboard.writeText(u); XM.toast('Link to #' + sel + ' copied'); return; }
+    if (e.target.closest('#copyLink')) { var u = PUBLIC_URL + 'index.html#' + sel; if (navigator.clipboard) navigator.clipboard.writeText(u); XM.toast('Link to #' + sel + ' copied'); return; }
     if (e.target.closest('#me')) { XMIdentity.ensure(true); return; }
     if (e.target.closest('#deckBtn')) { deck(); $('#deckModal').classList.add('open'); return; }
     if (e.target.closest('#revBtn')) { review(); $('#revModal').classList.add('open'); return; }
@@ -505,8 +505,10 @@
         '<div class="st"><span class="tag t-g">' + (p.host ? 'Hosted the call' : 'Attended the call') + '</span><span class="tag grey">' + mine.length + ' comment' + (mine.length === 1 ? '' : 's') + '</span></div></div>';
     }).join('');
   }
+  /* Always the deployed address, also when the studio is opened locally */
+  var PUBLIC_URL = 'https://bpashchenko12.github.io/website_strategy_prototype-/';
   function deck() {
-    var base = location.origin + location.pathname.replace(/index\.html$/, '');
+    var base = PUBLIC_URL;
     $('#deckTbl').innerHTML = '<tr><th>Slide</th><th>Idea</th><th>URL</th><th></th></tr>' + IDEAS.filter(function (i) { return i.path; }).map(function (i) {
       var u = base + i.path; return '<tr><td>' + i.slide + '</td><td><b>#' + i.id + '</b> ' + esc(i.title) + '</td><td><code>' + esc(u) + '</code></td><td><button class="btn btn-outline btn-sm" data-copy="' + esc(u) + '">Copy</button></td></tr>';
     }).join('');
