@@ -6,7 +6,7 @@ window.XM_IDEAS = [
     title: 'Simplified homepage',
     short: 'Fewer blocks, one clear action',
     path: 'ideas/01-homepage/index.html',
-    hypothesis: 'One message, pillars for the main offerings and a fast load raise scroll depth and sign-up conversion. The site works as an affiliate traffic router to /register, so every second before the first screen appears costs registrations. Today LCP is about 4 s, because many API calls on load hold performance back, while both direct competitors fail Core Web Vitals.',
+    hypothesis: 'A simpler homepage that loads fast will get more visitors to scroll and sign up. Most of our traffic comes from affiliates and goes on to /register, so every second of waiting loses registrations. Today the homepage takes about 4 seconds to load, because it makes a large number of API calls on load (Promotions in particular). Both direct competitors also fail Core Web Vitals, so a fast page is a real advantage.',
     scope: ['Minimal hero, then one block per offering (platforms, promotions, copy trading and competitions, markets, support)', 'Live movers widget: top gainers and top losers', 'Performance first: LCP from about 4 s to 2.5 s or less (the Core Web Vitals "good" threshold), with fewer API calls on load and Core Web Vitals passing on mobile', 'Affiliate traffic lands on a fast page with one clear path to /register', 'A/B test against the current homepage as control'],
     metric: 'Variant conversion vs control (affiliate traffic included); scroll depth; LCP (baseline about 4 s, target 2.5 s or less) and Core Web Vitals pass on mobile'
   },
