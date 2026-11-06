@@ -2,7 +2,7 @@
    Numbering follows the Product Manager's brief; `slide` is the slide number in "Website Strategy" deck. */
 window.XM_IDEAS = [
   {
-    id: '01', slide: 21, wave: 1, obj: 'conversion', status: 'built', effort: 'Low', priority: 'High',
+    id: '01', slide: 21, wave: 1, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'High',
     title: 'Simplified homepage',
     short: 'Fewer blocks, one clear action',
     path: 'ideas/01-homepage/index.html',
