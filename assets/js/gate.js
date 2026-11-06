@@ -45,6 +45,8 @@
     '#xmGate .shake{animation:xmShake .35s}' +
     '@keyframes xmShake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}';
   (document.head || de).appendChild(st);
+  /* Locked pages inside a frame (previews) stay blank: only the top page asks, so it keeps keyboard focus. */
+  if (window.top !== window) return;
 
   function hex(buf) {
     return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
