@@ -22,6 +22,9 @@
   var CSS = '\
 .xr, .xr * { box-sizing: border-box; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; letter-spacing: 0; }\
 .xr button { cursor: pointer; font: inherit; }\
+.xr-dep { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 11px 20px; background: #fff4d6; border-bottom: 2px solid #f0a500; color: #1d2024; font-size: 14px; line-height: 1.4; text-align: center; position: relative; z-index: 5; }\
+.xr-dep b { background: #f0a500; color: #1d2024; border-radius: 999px; padding: 4px 12px; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }\
+.xr-dep span { font-weight: 600; }\
 .xr-dock { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 2147483000; display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 18px; background: rgba(17,19,24,.92); backdrop-filter: blur(14px) saturate(1.4); box-shadow: 0 10px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.08); color: #fff; font-size: 13px; max-width: calc(100vw - 20px); transition: transform .25s, opacity .25s; }\
 .xr-dock.xr-off { transform: translate(-50%, 140%); opacity: 0; pointer-events: none; }\
 .xr-b { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 12px; border-radius: 12px; border: 0; background: transparent; color: #e9ecf1; font-size: 13px; font-weight: 500; white-space: nowrap; text-decoration: none; position: relative; }\
@@ -182,6 +185,11 @@ body.xr-pinmode, body.xr-pinmode * { cursor: crosshair !important; }\
       '<label>Role</label><select data-r="role"><option value="" disabled selected>Select your role</option>' + ROLES.map(function (r) { return '<option>' + r + '</option>'; }).join('') + '</select>' +
       '<button class="xr-go" data-a="id-save">Continue</button><button class="xr-no" data-a="id-close">Not now</button></div></div>';
     document.body.appendChild(root);
+    if (idea.dep) {
+      var bn = document.createElement('div'); bn.className = 'xr xr-dep'; bn.setAttribute('role', 'note');
+      bn.innerHTML = '<b>XM dependency</b><span>' + esc(idea.dep) + '</span>';
+      document.body.insertBefore(bn, document.body.firstChild);
+    }
     dock = root.querySelector('.xr-dock'); drawer = root.querySelector('.xr-drawer'); list = root.querySelector('[data-r=list]'); pop = root.querySelector('[data-r=pop]');
     tab = root.querySelector('.xr-tab'); modeBar = root.querySelector('.xr-mode'); idModal = root.querySelector('.xr-modal');
     pinsEl = document.createElement('div'); pinsEl.className = 'xr xr-pins'; document.body.appendChild(pinsEl);

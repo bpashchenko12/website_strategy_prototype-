@@ -24,6 +24,7 @@ window.XM_IDEAS = [
     title: 'Easier email verification',
     short: 'Confirm with a code, like login already does',
     path: 'ideas/03-verification/index.html',
+    dep: 'Needs XM to change the registration email and the verification check: add the 6-digit code to the email and accept it on the verification step.',
     hypothesis: 'Login already uses a 6-digit code; registration still relies on a single link button. Adding the code to the registration email and making the field autofill-ready lets iPhone users, the majority of our traffic, finish verification from the keyboard without leaving the screen. We believe this lifts completion at the last step of registration.',
     scope: ['Registration email: confirm button stays primary, the 6-digit code sits next to it and in the subject line', 'Frontend: one autofill-ready one-time-code field, so iPhone suggests the code above the keyboard; paste and typing work everywhere', 'Android and desktop: copy or type the code, or tap the button, as today', 'The waiting screen continues on its own when the link is opened on any device', 'Resend with cool-down, change email, attempt limits, short expiry'],
     metric: 'Completion rate and time to complete at the verification step, split by iOS, Android and desktop (before vs after)'
@@ -42,6 +43,7 @@ window.XM_IDEAS = [
     title: 'Sign-up success page',
     short: 'Verified, then one tap into the app',
     path: 'ideas/05-success-handoff/index.html',
+    dep: 'Needs XM to issue a one-time login token and open the portal (PWA) already signed in.',
     hypothesis: 'If the page every registered user sees makes the first PWA login one tap, more of them start onboarding. Deposit, learn and getting the app are offered as secondary destinations.',
     scope: ['Primary action: continue to the portal (PWA), signed in', 'Optional destination (deposit, learn, get the app) picks the deep link', 'Deep link with a one-time login token', 'Portal opens signed in; the PWA keeps its own onboarding', 'Opt-in follow bundle: brief, webinar, alerts'],
     metric: 'Register success to first PWA login; time to it'
@@ -60,6 +62,7 @@ window.XM_IDEAS = [
     title: 'Finish-your-sign-up email',
     short: 'Reminder email returns you to where you stopped',
     path: 'ideas/07-recovery/index.html',
+    dep: 'Needs XM to save registration and verification progress in the PWA, send the reminder email and deep-link back to the exact screen.',
     hypothesis: 'If the PWA remembers what a user typed in registration or verification and an email brings them back to the exact screen with that state, more of those who leave finish both steps.',
     scope: ['Registration and verification inside the PWA save every answer as a state while the user types; the password is never stored', 'If the user leaves, the last screen and the state are kept', 'A re-targeting email names that screen and deep-links to it; the link opens the PWA on the screen with the answers filled in', 'Emails stop once the flow is completed or the state expires'],
     metric: 'Completion of abandoned registrations and verifications after the email; email click-through; time from email to completion'
@@ -69,6 +72,7 @@ window.XM_IDEAS = [
     title: 'Password generator',
     short: 'One click creates a valid password',
     path: 'ideas/18-password-helper/index.html',
+    dep: 'Needs XM to add the generator to the abandoned-registration email and let the form open from the resume link.',
     hypothesis: 'If people who stall on the password rules get an email with a one-click generator that only produces compliant, unique passwords, more of them come back and finish registration.',
     scope: ['Generator widget: compliant by construction, unique each click, copy button, runs in the browser only', 'Embedded in the abandoned-registration email (AMP for Email), hosted page as the fallback', 'Resume link opens the form with the email filled in; the password is never placed in the link'],
     metric: 'Recovery-email click-through; form completion after the email; password-error rate on the form'
@@ -153,13 +157,23 @@ window.XM_IDEAS = [
     hypothesis: 'If a visitor can share a link before registering and earn a small reward when a referral deposits, we gain a low-cost referral channel and the referrer registers to claim it.',
     scope: ['Code widget on the Refer a Friend page for non-registered visitors', 'Email to the referrer when a referral deposits, prompting registration', 'Compliance and AML review first'],
     metric: 'Referral registrations; referrer registrations; FTD of referred users'
+  },
+  {
+    id: '17', slide: 39, wave: 4, obj: 'conversion', status: 'built', effort: 'Medium', priority: 'Low',
+    title: 'XM web MCP server',
+    short: 'Ask about XM and open an account from your terminal',
+    path: 'ideas/17-mcp/index.html',
+    hypothesis: 'A hosted MCP server lets people use their own AI assistant to get correct answers about XM and to start an account without opening the website. Answers come from XM\'s own facts, and the password and ID never pass through the assistant.',
+    scope: ['Web (hosted) MCP server only, nothing to install', 'Job 1: answer questions about XM from the first source, with the source named, a country check and a risk line', 'Job 2: open an account in the terminal: consent, email code, then a one-time secure link to set the password and finish verification on XM', 'Read-only tools for facts; a few write tools for registration, behind explicit consent'],
+    metric: 'Registrations started through MCP and their completion rate; share of answers with a named source; registration-quality guardrail'
   }
 ];
 
 window.XM_WAVES = {
   1: { label: 'Wave 1', range: 'Months 0-3', theme: 'Measure, fix the key pages' },
   2: { label: 'Wave 2', range: 'Months 3-6', theme: 'Answer, and let people try' },
-  3: { label: 'Wave 3', range: 'Months 6-9', theme: 'Return, and reward learning' }
+  3: { label: 'Wave 3', range: 'Months 6-9', theme: 'Return, and reward learning' },
+  4: { label: 'Later', range: 'Beyond 9 months', theme: 'Assistants and agents' }
 };
 
 window.XM_OBJ = {
@@ -174,5 +188,5 @@ window.XM_OBJ = {
 window.XM_JOURNEYS = [
   { id: 'a', label: 'Journey A', theme: 'From first visit to a registered client', steps: ['04', '01', '02', '03', '05', '06', '07', '18'] },
   { id: 'b', label: 'Journey B', theme: 'See it, try it, learn it, fund it', steps: ['09', '11', '10', '15', '08'] },
-  { id: 'c', label: 'Journey C', theme: 'Bring clients back and keep them', steps: ['14', '12', '13', '16'] }
+  { id: 'c', label: 'Journey C', theme: 'Bring clients back and keep them', steps: ['14', '12', '13', '16', '17'] }
 ];

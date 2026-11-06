@@ -94,6 +94,9 @@
   .sh .ttl h2 { display: block; }
   .sh .ttl small { display: block; font-size: 12.5px; color: var(--mut); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sh .nav b { color: var(--ink); }
+  .dep { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; padding: 12px 18px; border-radius: 16px; background: #fff4d6; border: 1.5px solid #f0a500; color: var(--ink); font-size: 14px; line-height: 1.4; }
+  .dep b { background: #f0a500; border-radius: 999px; padding: 4px 12px; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .dep span { font-weight: 600; flex: 1; min-width: 200px; }
   .pv { display: grid; place-items: center; padding: 22px; border-radius: 24px; border: 1px solid var(--line); background: radial-gradient(120% 140% at 50% 0%, #eef1f3 0%, #e3e7ea 100%); }
   .pvbox { position: relative; overflow: hidden; border-radius: 14px; box-shadow: 0 18px 50px -12px rgba(10, 14, 20, .35), 0 0 0 1px rgba(10, 14, 20, .08); background: #fff; }
   .pvbox iframe { border: 0; display: block; background: #fff; transform-origin: 0 0; }
@@ -313,7 +316,7 @@
     if (view === 'journey') {
       XM_JOURNEYS.forEach(function (j) { grp('j' + j.id, j.label, esc(j.theme), j.steps.map(byId)); });
     } else {
-      [1, 2, 3].forEach(function (w) { var W = XM_WAVES[w]; grp('w' + w, W.label + ' · ' + W.range, esc(W.theme), IDEAS.filter(function (i) { return i.wave === w; })); });
+      [1, 2, 3, 4].forEach(function (w) { var W = XM_WAVES[w]; grp('w' + w, W.label + ' · ' + W.range, esc(W.theme), IDEAS.filter(function (i) { return i.wave === w; })); });
     }
     $('#groups').innerHTML = any ? h : '<div class="empty"><b>No ideas match</b>Try another word, or clear the filter.</div>';
     meta();
@@ -344,7 +347,7 @@
     return '<div class="sh"><button class="back" id="back" aria-label="Back to ideas">' + ic('l', 18) + '</button><span class="no" style="background:' + o.color + '">#' + i.id + '</span><div class="ttl"><h2>' + esc(i.title) + '</h2><small>' + esc(i.short) + '</small></div>' +
       '<span class="nav"><button id="pPrev" aria-label="Previous idea" ' + (pos < 1 ? 'disabled' : '') + '>' + ic('l') + '</button><span><b>' + (pos < 0 ? '–' : pos + 1) + '</b> / ' + order.length + '</span><button id="pNext" aria-label="Next idea" ' + (pos < 0 || pos > order.length - 2 ? 'disabled' : '') + '>' + ic('r') + '</button></span>' +
       '<button class="ibtn cl" id="copyLink" title="Copy link to this idea" aria-label="Copy link to this idea">' + ic('link', 17) + '</button></div>' +
-      '<div class="sb"><div class="pv" id="pv">' + (i.path ?
+      '<div class="sb">' + (i.dep ? '<div class="dep" role="note"><b>XM dependency</b><span>' + esc(i.dep) + '</span></div>' : '') + '<div class="pv" id="pv">' + (i.path ?
         '<div class="pvbox" id="pvbox"><div class="pvbar"><i></i><i></i><i></i><span>' + esc(i.path.replace(/\/index\.html$/, '').replace(/\/$/, '')) + '</span></div><div class="ld" id="ld"><i></i></div><iframe id="frame" title="Preview of ' + esc(i.title) + '" tabindex="-1"></iframe><button class="shield" id="shield" aria-label="Open the full prototype"></button><span class="hint">Open the full prototype</span></div>' :
         '<div class="pvna"><b>Not prototyped</b>' + esc(i.short) + '. Likely de-prioritised, so no visual was built.</div>') + '</div>' +
       '<div class="acts">' + (i.path ? '<a class="btn btn-primary primary opn" href="' + i.path + '">Open prototype ' + ic('arr', 18) + '<kbd class="kk">&crarr;</kbd></a>' : '') + '<button class="btn btn-outline sec" id="voteBtn"></button><button class="btn btn-outline sec" id="cmtJump" aria-label="Comment"></button>' +
