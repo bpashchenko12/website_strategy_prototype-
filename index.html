@@ -182,13 +182,33 @@
     .two { grid-template-columns: 1fr; gap: 20px; }
     .tc { padding: 18px; }
   }
-  @media (max-width: 520px) { #deckBtn, #startBtn, .cbtn .lbl, .acts .cl2 { display: none; } .acts .btn { padding-left: 12px; padding-right: 12px; font-size: 14px; } .cbtn .tag { margin-left: 0; } .me .nm { display: none; } .me { padding-right: 4px; } .gh .gn { font-size: 10.5px; } }
+  /* ---------- review process modal ---------- */
+  .rv h3 { font-size: 22px; letter-spacing: -.015em; }
+  .rv .tl { list-style: none; margin: 20px 0 6px; position: relative; display: grid; gap: 16px; }
+  .rv .tl::before { content: ''; position: absolute; left: 15px; top: 16px; bottom: 16px; width: 2px; background: var(--line-2); }
+  .rv .tl li { position: relative; padding-left: 48px; }
+  .rv .tl .n { position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--g); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; box-shadow: 0 0 0 4px #fff; }
+  .rv .tl b { display: block; font-size: 15px; }
+  .rv .tl .wh { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--g); }
+  .rv .tl p { font-size: 13.5px; color: var(--ink-2); line-height: 1.5; margin-top: 2px; }
+  .rv .sec-t { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--mut); margin: 24px 0 10px; }
+  .rv .ppl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .rv .pp { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: 14px; padding: 10px 12px; }
+  .rv .pp .av { width: 38px; height: 38px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; flex: none; }
+  .rv .pp .in { min-width: 0; flex: 1; }
+  .rv .pp b { display: block; font-size: 14px; }
+  .rv .pp small { display: block; font-size: 12px; color: var(--mut); }
+  .rv .pp .st { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+  .rv .pp .tag { font-size: 11px; white-space: nowrap; }
+  @media (max-width: 600px) { .rv .ppl { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { #deckBtn, #startBtn, #revBtn, .cbtn .lbl, .acts .cl2 { display: none; } .acts .btn { padding-left: 12px; padding-right: 12px; font-size: 14px; } .cbtn .tag { margin-left: 0; } .me .nm { display: none; } .me { padding-right: 4px; } .gh .gn { font-size: 10.5px; } }
 </style>
 </head>
 <body>
 <div class="top">
   <a class="xm-logo" id="logo" href="index.html" aria-label="XMTrading"></a><span class="sub">Website Strategy · Prototype studio</span>
   <div class="r">
+    <button class="btn btn-outline btn-sm" id="revBtn">Review process</button>
     <button class="btn btn-outline btn-sm" id="deckBtn">Slide links</button>
     <a class="btn btn-outline btn-sm cbtn" href="comments.html" id="cmtBtn"><span class="lbl">All comments</span><span class="tag" id="cmtN">0</span></a>
     <a class="btn btn-dark btn-sm" id="startBtn" href="#">Start walkthrough</a>
@@ -214,6 +234,19 @@
 </div>
 
 <div class="modal-back" id="deckModal"><div class="modal wide"><button class="x" data-close aria-label="Close">×</button><h3 style="font-size:20px">Link each slide to its prototype</h3><p class="mut" style="font-size:13.5px;margin-top:4px">Paste these URLs as hyperlinks on the slides. Keep the server running (or host this folder) so the links open for the CEO.</p><table class="tbl" id="deckTbl"></table></div></div>
+
+<div class="modal-back" id="revModal"><div class="modal wide rv"><button class="x" data-close aria-label="Close">×</button>
+  <h3>How this strategy was reviewed</h3>
+  <p class="mut" style="font-size:13.5px;margin-top:4px">The deck was walked through live with everyone below, then left open for a full week of written feedback in this studio.</p>
+  <ol class="tl">
+    <li><span class="n">1</span><span class="wh">Day 0 · Call</span><b>Walkthrough call with the whole group</b><p>All 17 ideas presented one by one against the prototypes. Everyone invited saw the same screens at the same time.</p></li>
+    <li><span class="n">2</span><span class="wh">Day 0 · Call</span><b>Discussion and first reactions</b><p>Open discussion on priorities, risks and open questions. Points raised were captured as comments on each idea.</p></li>
+    <li><span class="n">3</span><span class="wh">Day 1 – 7 · Async</span><b>One week for feedback</b><p>Each person reviewed the prototypes at their own pace and left comments, questions and support votes.</p></li>
+    <li><span class="n">4</span><span class="wh">Day 8 · Wrap-up</span><b>Feedback consolidated</b><p>All input collected on the <a href="comments.html" style="color:var(--g);font-weight:600">comments page</a> and folded into the final plan.</p></li>
+  </ol>
+  <div class="sec-t">Who saw it</div>
+  <div class="ppl" id="revPpl"></div>
+</div></div>
 
 <script src="assets/js/ideas.js"></script>
 <script src="assets/js/store.js"></script>
@@ -399,6 +432,7 @@
     var t = e.target, typing = t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
     if (e.key === 'Escape') {
       if ($('#deckModal').classList.contains('open')) { $('#deckModal').classList.remove('open'); return; }
+      if ($('#revModal').classList.contains('open')) { $('#revModal').classList.remove('open'); return; }
       if (typing && t.id === 'q') { t.value = ''; query = ''; t.blur(); groups(); ensureVisibleSel(); return; }
       if (document.body.classList.contains('so')) { document.body.classList.remove('so'); return; }
     }
@@ -409,7 +443,7 @@
       return;
     }
     if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); $('#q').focus(); $('#q').select(); return; }
-    if (e.metaKey || e.ctrlKey || e.altKey || $('#deckModal').classList.contains('open')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey || $('#deckModal').classList.contains('open') || $('#revModal').classList.contains('open')) return;
     var cur = byId(sel);
     if (e.key === '/') { e.preventDefault(); $('#q').focus(); }
     else if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'j') { e.preventDefault(); step(1); }
@@ -438,13 +472,28 @@
     if (e.target.closest('#copyLink')) { var u = location.origin + location.pathname + '#' + sel; if (navigator.clipboard) navigator.clipboard.writeText(u); XM.toast('Link to #' + sel + ' copied'); return; }
     if (e.target.closest('#me')) { XMIdentity.ensure(true); return; }
     if (e.target.closest('#deckBtn')) { deck(); $('#deckModal').classList.add('open'); return; }
-    if (e.target.closest('[data-close]') || e.target === $('#deckModal')) { $('#deckModal').classList.remove('open'); return; }
+    if (e.target.closest('#revBtn')) { review(); $('#revModal').classList.add('open'); return; }
+    if (e.target.closest('[data-close]') || e.target === $('#deckModal') || e.target === $('#revModal')) { $('#deckModal').classList.remove('open'); $('#revModal').classList.remove('open'); return; }
     var cp = e.target.closest('[data-copy]'); if (cp) { if (navigator.clipboard) navigator.clipboard.writeText(cp.getAttribute('data-copy')); XM.toast('Link copied'); }
   });
   window.addEventListener('resize', fit);
   window.addEventListener('hashchange', function () { var h = location.hash.replace('#', ''); if (byId(h) && h !== sel) select(h, { scroll: true }); });
   window.addEventListener('pageshow', function () { meta(); });
 
+  var REVIEWERS = [
+    { n: 'Marios', r: 'Head of Design' },
+    { n: 'Despoina', r: 'Lead BI' },
+    { n: 'Kotoe', r: 'Regional Marketing Manager' },
+    { n: 'Boris Pashchenko', r: 'Product Manager', host: true }
+  ];
+  function review() {
+    var cs = XMStore.state.comments;
+    $('#revPpl').innerHTML = REVIEWERS.map(function (p) {
+      var mine = cs.filter(function (c) { return c.author && c.author.name === p.n; }), col = mine.length && mine[0].author.color || '#9aa1ab';
+      return '<div class="pp"><span class="av" style="background:' + esc(col) + '">' + esc(initials(p.n)) + '</span><div class="in"><b>' + esc(p.n) + '</b><small>' + esc(p.r) + '</small></div>' +
+        '<div class="st"><span class="tag t-g">' + (p.host ? 'Hosted the call' : 'Attended the call') + '</span><span class="tag grey">' + mine.length + ' comment' + (mine.length === 1 ? '' : 's') + '</span></div></div>';
+    }).join('');
+  }
   function deck() {
     var base = location.origin + location.pathname.replace(/index\.html$/, '');
     $('#deckTbl').innerHTML = '<tr><th>Slide</th><th>Idea</th><th>URL</th><th></th></tr>' + IDEAS.filter(function (i) { return i.path; }).map(function (i) {
